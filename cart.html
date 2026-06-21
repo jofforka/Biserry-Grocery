@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cart & Checkout | Biserry Groceries</title>
   <link rel="icon" href="assets/logo.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f4f2b" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -17,7 +20,9 @@
       </div>
     </div>
 
-    <nav>
+    <button class="mobileMenuBtn" id="mobileMenuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+
+    <nav id="mainNav">
       <a href="index.html#shop">Continue Shopping</a>
       <a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a>
       <a href="#checkout">Checkout</a>
@@ -132,5 +137,6 @@
 
   <script type="module" src="js/store.js"></script>
   <script type="module" src="js/checkout.js"></script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>
