@@ -3,20 +3,21 @@ import { db, collection, getDocs, query, orderBy } from "./firebase-service.js";
 const CART_STORAGE_KEY = "biserryCart";
 
 const fallbackProducts = [
-  { id: "demo-1", name: "Premium Rice", category: "grains", price: 75000, stock: 20, imageUrl: "assets/rice.jpg", hasVariants: false },
+  { id: "demo-1", name: "Premium Rice", category: "grains", price: 75000, stock: 20, imageUrl: "assets/rice.jpg", hasVariants: false, isFeatured: true },
   {
     id: "demo-2",
     name: "Toothpaste",
     category: "household",
     hasVariants: true,
     imageUrl: "assets/household.jpg",
+    isFeatured: true,
     variants: [
       { id: "v1", name: "Colgate", price: 2500, stock: 20, imageUrl: "assets/household.jpg" },
       { id: "v2", name: "Close-Up", price: 2300, stock: 15, imageUrl: "assets/household.jpg" },
       { id: "v3", name: "Oral-B", price: 2800, stock: 10, imageUrl: "assets/household.jpg" }
     ]
   },
-  { id: "demo-3", name: "Vegetable Oil", category: "oil", price: 48000, stock: 10, imageUrl: "assets/vegetable-oil.jpg", hasVariants: false }
+  { id: "demo-3", name: "Vegetable Oil", category: "oil", price: 48000, stock: 10, imageUrl: "assets/vegetable-oil.jpg", hasVariants: false, isFeatured: true }
 ];
 
 let products = [];
@@ -28,17 +29,29 @@ let selectedDeliveryFee = 0;
 let currentCategory = "all";
 
 const productGrid = document.getElementById("productGrid");
+const featuredGrid = document.getElementById("featuredGrid");
+const recentGrid = document.getElementById("recentGrid");
 const searchInput = document.getElementById("searchInput");
+
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 const navCartCount = document.getElementById("navCartCount");
+const floatingCartCount = document.getElementById("floatingCartCount");
+
 const checkoutPreview = document.getElementById("checkoutPreview");
 const checkoutTotal = document.getElementById("checkoutTotal");
 const clearCartBtn = document.getElementById("clearCartBtn");
 const deliveryZoneSelect = document.getElementById("deliveryZone");
 const fulfillmentSelect = document.getElementById("fulfillment");
 const deliveryFeePreview = document.getElementById("deliveryFeePreview");
+
+const floatingCartBtn = document.getElementById("floatingCartBtn");
+const miniCart = document.getElementById("miniCart");
+const miniCartOverlay = document.getElementById("miniCartOverlay");
+const closeMiniCartBtn = document.getElementById("closeMiniCartBtn");
+const miniCartItems = document.getElementById("miniCartItems");
+const miniCartTotal = document.getElementById("miniCartTotal");
 
 function loadCartFromStorage() {
   try {
@@ -73,7 +86,7 @@ function showCartToast(message = "Added to cart") {
 }
 
 async function loadProducts() {
-  if (!productGrid) return;
+  if (!productGrid && !featuredGrid && !recentGrid) return;
 
   try {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
@@ -91,6 +104,8 @@ async function loadProducts() {
   }
 
   renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
 }
 
 async function loadDeliveryZones() {
@@ -142,6 +157,8 @@ function getSelectedVariant(product) {
 window.selectVariant = (productId, variantId) => {
   selectedVariants[productId] = variantId;
   renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
 };
 
 window.increaseProductQty = id => {
@@ -159,12 +176,76 @@ window.increaseProductQty = id => {
 
   selectedQuantities[id] = quantity + 1;
   renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
 };
 
 window.decreaseProductQty = id => {
   selectedQuantities[id] = Math.max(1, getSelectedQuantity(id) - 1);
   renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
 };
+
+function productCard(product) {
+  const variant = getSelectedVariant(product);
+  const quantity = getSelectedQuantity(product.id);
+  const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
+  const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
+  const image = variant?.imageUrl || product.imageUrl || product.image || "assets/logo.png";
+  const stockClass =
+    stock <= Number(product.lowStockThreshold || 5) ? "stockText low" : "stockText";
+
+  const variantHtml =
+    product.hasVariants && product.variants?.length
+      ? `
+        <div class="variantBox">
+          <label>Select Variety</label>
+          <select onchange="selectVariant('${product.id}', this.value)">
+            ${product.variants
+              .map(
+                item => `
+                <option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>
+                  ${item.name} — ${formatNaira(Number(item.price || 0))}
+                </option>
+              `
+              )
+              .join("")}
+          </select>
+        </div>
+      `
+      : "";
+
+  return `
+    <div class="card">
+      <div class="productImage">
+        <img src="${image}" alt="${product.name}">
+      </div>
+
+      <div class="cardBody">
+        <div class="productMeta">
+          <h3>${product.name}</h3>
+          <span class="categoryTag">${product.hasVariants ? "Varieties" : product.category}</span>
+        </div>
+
+        ${variantHtml}
+
+        <p class="price">${formatNaira(price)}</p>
+        <p class="${stockClass}">${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}</p>
+
+        <div class="quantityRow">
+          <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')" type="button">−</button>
+          <div class="qtyDisplay">${quantity}</div>
+          <button class="qtyBtn" onclick="increaseProductQty('${product.id}')" type="button">+</button>
+        </div>
+
+        <button class="btn addBtn" onclick="addToCart('${product.id}')" type="button" ${stock <= 0 ? "disabled" : ""}>
+          ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
+        </button>
+      </div>
+    </div>
+  `;
+}
 
 function renderProducts() {
   if (!productGrid) return;
@@ -177,72 +258,33 @@ function renderProducts() {
       product.name.toLowerCase().includes(search)
   );
 
-  if (!filtered.length) {
-    productGrid.innerHTML = '<div class="emptyState">No product found.</div>';
-    return;
-  }
+  productGrid.innerHTML = filtered.length
+    ? filtered.map(productCard).join("")
+    : '<div class="emptyState">No product found.</div>';
+}
 
-  productGrid.innerHTML = filtered
-    .map(product => {
-      const variant = getSelectedVariant(product);
-      const quantity = getSelectedQuantity(product.id);
-      const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
-      const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
-      const image = variant?.imageUrl || product.imageUrl || product.image || "assets/logo.png";
-      const stockClass =
-        stock <= Number(product.lowStockThreshold || 5) ? "stockText low" : "stockText";
+function renderFeaturedProducts() {
+  if (!featuredGrid) return;
 
-      const variantHtml =
-        product.hasVariants && product.variants?.length
-          ? `
-            <div class="variantBox">
-              <label>Select Variety</label>
-              <select onchange="selectVariant('${product.id}', this.value)">
-                ${product.variants
-                  .map(
-                    item => `
-                    <option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>
-                      ${item.name} — ${formatNaira(Number(item.price || 0))}
-                    </option>
-                  `
-                  )
-                  .join("")}
-              </select>
-            </div>
-          `
-          : "";
+  const featured = products
+    .filter(product => product.isFeatured || product.featured)
+    .slice(0, 6);
 
-      return `
-        <div class="card">
-          <div class="productImage">
-            <img src="${image}" alt="${product.name}">
-          </div>
+  const display = featured.length ? featured : products.slice(0, 3);
 
-          <div class="cardBody">
-            <div class="productMeta">
-              <h3>${product.name}</h3>
-              <span class="categoryTag">${product.hasVariants ? "Varieties" : product.category}</span>
-            </div>
+  featuredGrid.innerHTML = display.length
+    ? display.map(productCard).join("")
+    : '<div class="emptyState">No featured products yet.</div>';
+}
 
-            ${variantHtml}
+function renderRecentProducts() {
+  if (!recentGrid) return;
 
-            <p class="price">${formatNaira(price)}</p>
-            <p class="${stockClass}">${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}</p>
+  const recent = products.slice(0, 6);
 
-            <div class="quantityRow">
-              <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')" type="button">−</button>
-              <div class="qtyDisplay">${quantity}</div>
-              <button class="qtyBtn" onclick="increaseProductQty('${product.id}')" type="button">+</button>
-            </div>
-
-            <button class="btn addBtn" onclick="addToCart('${product.id}')" type="button" ${stock <= 0 ? "disabled" : ""}>
-              ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
-            </button>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+  recentGrid.innerHTML = recent.length
+    ? recent.map(productCard).join("")
+    : '<div class="emptyState">No recent products yet.</div>';
 }
 
 window.addToCart = id => {
@@ -286,6 +328,8 @@ window.addToCart = id => {
 
   saveCartToStorage();
   renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
   renderCart();
 
   showCartToast("Added to cart");
@@ -355,11 +399,39 @@ function updateDeliveryFee() {
   renderCart();
 }
 
+function renderMiniCart() {
+  if (!miniCartItems || !miniCartTotal) return;
+
+  if (!cart.length) {
+    miniCartItems.innerHTML = '<div class="emptyState">Your cart is empty.</div>';
+    miniCartTotal.textContent = formatNaira(0);
+    return;
+  }
+
+  miniCartItems.innerHTML = cart
+    .map(
+      item => `
+      <div class="miniCartItem">
+        <img src="${item.imageUrl || "assets/logo.png"}" alt="${item.name}">
+        <div>
+          <strong>${item.name}</strong>
+          <span>${formatNaira(item.price)} x ${item.quantity}</span>
+        </div>
+        <button onclick="removeFromCart('${item.cartId}')" type="button">×</button>
+      </div>
+    `
+    )
+    .join("");
+
+  miniCartTotal.textContent = formatNaira(getCartTotal());
+}
+
 function renderCart() {
   const count = getCartCount();
 
   if (cartCount) cartCount.textContent = count;
   if (navCartCount) navCartCount.textContent = count;
+  if (floatingCartCount) floatingCartCount.textContent = count;
 
   if (!cart.length) {
     if (cartItems) {
@@ -376,6 +448,7 @@ function renderCart() {
     if (checkoutTotal) checkoutTotal.textContent = formatNaira(0);
     if (deliveryFeePreview) deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
 
+    renderMiniCart();
     return;
   }
 
@@ -424,6 +497,18 @@ function renderCart() {
   if (deliveryFeePreview) {
     deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
   }
+
+  renderMiniCart();
+}
+
+function openMiniCart() {
+  if (miniCart) miniCart.classList.add("open");
+  if (miniCartOverlay) miniCartOverlay.classList.add("show");
+}
+
+function closeMiniCart() {
+  if (miniCart) miniCart.classList.remove("open");
+  if (miniCartOverlay) miniCartOverlay.classList.remove("show");
 }
 
 document.querySelectorAll(".filter").forEach(button => {
@@ -432,6 +517,15 @@ document.querySelectorAll(".filter").forEach(button => {
     button.classList.add("active");
     currentCategory = button.dataset.category;
     renderProducts();
+  });
+});
+
+document.querySelectorAll("[data-category-jump]").forEach(button => {
+  button.addEventListener("click", () => {
+    const category = button.dataset.categoryJump;
+    const filterBtn = document.querySelector(`.filter[data-category="${category}"]`);
+    if (filterBtn) filterBtn.click();
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
   });
 });
 
@@ -444,6 +538,10 @@ clearCartBtn?.addEventListener("click", () => {
   saveCartToStorage();
   renderCart();
 });
+
+floatingCartBtn?.addEventListener("click", openMiniCart);
+closeMiniCartBtn?.addEventListener("click", closeMiniCart);
+miniCartOverlay?.addEventListener("click", closeMiniCart);
 
 export function getCartForCheckout() {
   return cart;
