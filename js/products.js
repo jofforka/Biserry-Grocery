@@ -1,14 +1,1 @@
-const products = [
-  { id: 1, name: "Premium Rice", category: "grains", price: 75000, icon: "🍚" },
-  { id: 2, name: "Vegetable Oil", category: "oil", price: 48000, icon: "🛢️" },
-  { id: 3, name: "Spaghetti Pack", category: "grains", price: 12000, icon: "🍝" },
-  { id: 4, name: "Beans", category: "grains", price: 68000, icon: "🫘" },
-  { id: 5, name: "Tomato Paste", category: "spices", price: 15000, icon: "🥫" },
-  { id: 6, name: "Seasoning Cubes", category: "spices", price: 8000, icon: "🧂" },
-  { id: 7, name: "Soft Drinks", category: "drinks", price: 6500, icon: "🥤" },
-  { id: 8, name: "Bottled Water", category: "drinks", price: 3500, icon: "💧" },
-  { id: 9, name: "Garri", category: "grains", price: 45000, icon: "🥣" },
-  { id: 10, name: "Groundnut Oil", category: "oil", price: 52000, icon: "🛢️" },
-  { id: 11, name: "Detergent", category: "household", price: 9500, icon: "🧼" },
-  { id: 12, name: "Tissue Paper", category: "household", price: 5000, icon: "🧻" }
-];
+const products=[{id:1,name:"Premium Rice",category:"grains",price:75000,stock:20,image:"assets/rice.jpg"},{id:2,name:"Brown Beans",category:"grains",price:68000,stock:15,image:"assets/beans.jpg"},{id:3,name:"Vegetable Oil",category:"oil",price:48000,stock:10,image:"assets/vegetable-oil.jpg"},{id:4,name:"Spaghetti Pack",category:"grains",price:12000,stock:30,image:"assets/spaghetti.jpg"},{id:5,name:"Tomato Paste",category:"spices",price:15000,stock:25,image:"assets/tomato-paste.jpg"},{id:6,name:"Fresh Eggs",category:"fresh",price:6500,stock:18,image:"assets/eggs.jpg"},{id:7,name:"Fresh Vegetables",category:"fresh",price:5000,stock:14,image:"assets/fresh-vegetables.jpg"},{id:8,name:"Beverages",category:"drinks",price:8500,stock:22,image:"assets/beverages.jpg"},{id:9,name:"Household Items",category:"household",price:9500,stock:12,image:"assets/household.jpg"}];
