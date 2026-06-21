@@ -41,3 +41,63 @@
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
+
+/* ===== Separate Cart Page Update ===== */
+.pageHero {
+  padding: 55px 6%;
+  background: linear-gradient(135deg, #fff8e8, #f7e6b9);
+}
+
+.pageHero h2 {
+  color: var(--green);
+  font-size: 42px;
+  line-height: 1.08;
+  margin: 16px 0 8px;
+}
+
+.pageHero p {
+  max-width: 760px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.cartNavLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cartBadge {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.cartToast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--green);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.22);
+  z-index: 9999;
+  font-weight: 900;
+  opacity: 0;
+  transition: all .25s ease;
+}
+
+.cartToast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
