@@ -7,6 +7,9 @@
   <title>Biserry Groceries</title>
 
   <link rel="icon" href="assets/logo.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f4f2b" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
@@ -21,7 +24,9 @@
       </div>
     </div>
 
-    <nav>
+    <button class="mobileMenuBtn" id="mobileMenuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+
+    <nav id="mainNav">
       <a href="#categories">Categories</a>
       <a href="#featured">Featured</a>
       <a href="#shop">Shop</a>
@@ -58,7 +63,7 @@
     </div>
 
     <div class="heroCard">
-      <img src="assets/biserry-flyer.png" alt="Biserry Groceries" />
+      <img src="assets/hero-banner.png" alt="Biserry Groceries" />
     </div>
   </section>
 
@@ -211,5 +216,6 @@
   <div id="cartToast" class="cartToast">Added to cart</div>
 
   <script type="module" src="js/store.js"></script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>
