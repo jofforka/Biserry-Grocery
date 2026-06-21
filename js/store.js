@@ -1,15 +1,9 @@
 import { db, collection, getDocs, query, orderBy } from "./firebase-service.js";
 
+const CART_STORAGE_KEY = "biserryCart";
+
 const fallbackProducts = [
-  {
-    id: "demo-1",
-    name: "Premium Rice",
-    category: "grains",
-    price: 75000,
-    stock: 20,
-    imageUrl: "assets/rice.jpg",
-    hasVariants: false
-  },
+  { id: "demo-1", name: "Premium Rice", category: "grains", price: 75000, stock: 20, imageUrl: "assets/rice.jpg", hasVariants: false },
   {
     id: "demo-2",
     name: "Toothpaste",
@@ -22,19 +16,11 @@ const fallbackProducts = [
       { id: "v3", name: "Oral-B", price: 2800, stock: 10, imageUrl: "assets/household.jpg" }
     ]
   },
-  {
-    id: "demo-3",
-    name: "Vegetable Oil",
-    category: "oil",
-    price: 48000,
-    stock: 10,
-    imageUrl: "assets/vegetable-oil.jpg",
-    hasVariants: false
-  }
+  { id: "demo-3", name: "Vegetable Oil", category: "oil", price: 48000, stock: 10, imageUrl: "assets/vegetable-oil.jpg", hasVariants: false }
 ];
 
 let products = [];
-let cart = [];
+let cart = loadCartFromStorage();
 let selectedQuantities = {};
 let selectedVariants = {};
 let deliveryZones = [];
@@ -53,6 +39,18 @@ const clearCartBtn = document.getElementById("clearCartBtn");
 const deliveryZoneSelect = document.getElementById("deliveryZone");
 const fulfillmentSelect = document.getElementById("fulfillment");
 const deliveryFeePreview = document.getElementById("deliveryFeePreview");
+
+function loadCartFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCartToStorage() {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -75,6 +73,8 @@ function showCartToast(message = "Added to cart") {
 }
 
 async function loadProducts() {
+  if (!productGrid) return;
+
   try {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
@@ -94,6 +94,8 @@ async function loadProducts() {
 }
 
 async function loadDeliveryZones() {
+  if (!deliveryZoneSelect) return;
+
   try {
     const snap = await getDocs(collection(db, "delivery_zones"));
 
@@ -112,18 +114,14 @@ async function loadDeliveryZones() {
     ];
   }
 
-  if (deliveryZoneSelect) {
-    deliveryZoneSelect.innerHTML =
-      '<option value="">Select Delivery Zone</option>' +
-      deliveryZones
-        .map(
-          zone =>
-            `<option value="${zone.zone}" data-fee="${zone.fee}">
-              ${zone.zone} — ${formatNaira(Number(zone.fee))}
-            </option>`
-        )
-        .join("");
-  }
+  deliveryZoneSelect.innerHTML =
+    '<option value="">Select Delivery Zone</option>' +
+    deliveryZones
+      .map(
+        zone =>
+          `<option value="${zone.zone}" data-fee="${zone.fee}">${zone.zone} — ${formatNaira(Number(zone.fee))}</option>`
+      )
+      .join("");
 }
 
 function getSelectedQuantity(id) {
@@ -169,6 +167,8 @@ window.decreaseProductQty = id => {
 };
 
 function renderProducts() {
+  if (!productGrid) return;
+
   const search = (searchInput?.value || "").toLowerCase();
 
   const filtered = products.filter(
@@ -221,18 +221,13 @@ function renderProducts() {
           <div class="cardBody">
             <div class="productMeta">
               <h3>${product.name}</h3>
-              <span class="categoryTag">
-                ${product.hasVariants ? "Varieties" : product.category}
-              </span>
+              <span class="categoryTag">${product.hasVariants ? "Varieties" : product.category}</span>
             </div>
 
             ${variantHtml}
 
             <p class="price">${formatNaira(price)}</p>
-
-            <p class="${stockClass}">
-              ${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}
-            </p>
+            <p class="${stockClass}">${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}</p>
 
             <div class="quantityRow">
               <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')" type="button">−</button>
@@ -240,12 +235,7 @@ function renderProducts() {
               <button class="qtyBtn" onclick="increaseProductQty('${product.id}')" type="button">+</button>
             </div>
 
-            <button
-              class="btn addBtn"
-              onclick="addToCart('${product.id}')"
-              type="button"
-              ${stock <= 0 ? "disabled" : ""}
-            >
+            <button class="btn addBtn" onclick="addToCart('${product.id}')" type="button" ${stock <= 0 ? "disabled" : ""}>
               ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
             </button>
           </div>
@@ -294,6 +284,7 @@ window.addToCart = id => {
 
   selectedQuantities[id] = 1;
 
+  saveCartToStorage();
   renderProducts();
   renderCart();
 
@@ -302,7 +293,6 @@ window.addToCart = id => {
 
 window.increaseCartQty = cartId => {
   const item = cart.find(cartItem => String(cartItem.cartId) === String(cartId));
-
   if (!item) return;
 
   if (item.quantity >= Number(item.stock || 0)) {
@@ -311,12 +301,12 @@ window.increaseCartQty = cartId => {
   }
 
   item.quantity++;
+  saveCartToStorage();
   renderCart();
 };
 
 window.decreaseCartQty = cartId => {
   const item = cart.find(cartItem => String(cartItem.cartId) === String(cartId));
-
   if (!item) return;
 
   item.quantity--;
@@ -325,11 +315,13 @@ window.decreaseCartQty = cartId => {
     cart = cart.filter(cartItem => String(cartItem.cartId) !== String(cartId));
   }
 
+  saveCartToStorage();
   renderCart();
 };
 
 window.removeFromCart = cartId => {
   cart = cart.filter(cartItem => String(cartItem.cartId) !== String(cartId));
+  saveCartToStorage();
   renderCart();
 };
 
@@ -372,7 +364,7 @@ function renderCart() {
   if (!cart.length) {
     if (cartItems) {
       cartItems.innerHTML =
-        '<div class="emptyState">Your cart is empty. Select groceries from the shop section above.</div>';
+        '<div class="emptyState">Your cart is empty. Select groceries from the shop page.</div>';
     }
 
     if (checkoutPreview) {
@@ -387,44 +379,47 @@ function renderCart() {
     return;
   }
 
-  cartItems.innerHTML = cart
-    .map(
-      item => `
-      <div class="cartItem">
-        <div>
-          <strong>${item.name}</strong><br>
-          <span>${formatNaira(item.price)} x ${item.quantity}</span><br>
-          <span>Subtotal: ${formatNaira(item.price * item.quantity)}</span>
+  if (cartItems) {
+    cartItems.innerHTML = cart
+      .map(
+        item => `
+        <div class="cartItem">
+          <div>
+            <strong>${item.name}</strong><br>
+            <span>${formatNaira(item.price)} x ${item.quantity}</span><br>
+            <span>Subtotal: ${formatNaira(item.price * item.quantity)}</span>
+          </div>
+
+          <div class="cartControls">
+            <button onclick="decreaseCartQty('${item.cartId}')" type="button">−</button>
+            <span>${item.quantity}</span>
+            <button onclick="increaseCartQty('${item.cartId}')" type="button">+</button>
+            <button class="removeBtn" onclick="removeFromCart('${item.cartId}')" type="button">×</button>
+          </div>
         </div>
+      `
+      )
+      .join("");
+  }
 
-        <div class="cartControls">
-          <button onclick="decreaseCartQty('${item.cartId}')" type="button">−</button>
-          <span>${item.quantity}</span>
-          <button onclick="increaseCartQty('${item.cartId}')" type="button">+</button>
-          <button class="removeBtn" onclick="removeFromCart('${item.cartId}')" type="button">×</button>
+  if (checkoutPreview) {
+    checkoutPreview.innerHTML = cart
+      .map(
+        item => `
+        <div class="previewItem">
+          <div>
+            <strong>${item.name}</strong><br>
+            <span>${formatNaira(item.price)} x ${item.quantity}</span>
+          </div>
+          <strong>${formatNaira(item.price * item.quantity)}</strong>
         </div>
-      </div>
-    `
-    )
-    .join("");
+      `
+      )
+      .join("");
+  }
 
-  checkoutPreview.innerHTML = cart
-    .map(
-      item => `
-      <div class="previewItem">
-        <div>
-          <strong>${item.name}</strong><br>
-          <span>${formatNaira(item.price)} x ${item.quantity}</span>
-        </div>
-
-        <strong>${formatNaira(item.price * item.quantity)}</strong>
-      </div>
-    `
-    )
-    .join("");
-
-  cartTotal.textContent = formatNaira(getCartTotal());
-  checkoutTotal.textContent = formatNaira(getCartTotal());
+  if (cartTotal) cartTotal.textContent = formatNaira(getCartTotal());
+  if (checkoutTotal) checkoutTotal.textContent = formatNaira(getCartTotal());
 
   if (deliveryFeePreview) {
     deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
@@ -446,6 +441,7 @@ fulfillmentSelect?.addEventListener("change", updateDeliveryFee);
 
 clearCartBtn?.addEventListener("click", () => {
   cart = [];
+  saveCartToStorage();
   renderCart();
 });
 
@@ -471,6 +467,7 @@ export function getCartTotalForCheckout() {
 
 export function clearCartAfterOrder() {
   cart = [];
+  saveCartToStorage();
   renderCart();
 }
 
