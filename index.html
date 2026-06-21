@@ -3,24 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Biserry Groceries | Fresh Organic Foodstuff</title>
+
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
   <header class="topbar">
     <div class="brand">
       <div class="logo-container">
         <img src="assets/logo.png" alt="Biserry Groceries Logo" class="logo-img" />
       </div>
+
       <div>
         <h1>Biserry Groceries</h1>
         <p>Fresh Organic Foodstuff • Delivery & Pickup Available</p>
       </div>
     </div>
+
     <nav>
-      <a href="#catalog">Shop</a>
-      <a href="#about">About</a>
+      <a href="#shop">Shop</a>
+      <a href="#cart">Cart</a>
       <a href="#checkout">Checkout</a>
       <a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
     </nav>
@@ -29,35 +34,39 @@
   <section class="hero">
     <div class="heroText">
       <span class="badge">Fresh • Affordable • Reliable</span>
-      <h2>Fresh Groceries, Fast Delivery, Convenient Pickup</h2>
+
+      <h2>Your everyday groceries, ordered with ease.</h2>
+
       <p>
-        Browse our grocery catalog, place orders from anywhere, pay securely,
-        and choose delivery or pickup. Fresh foodstuff, household essentials,
-        beverages, grains, spices, and more — all from one trusted store.
+        Shop foodstuff, beverages, fresh items, and household essentials from Biserry Groceries.
+        Select your items, choose quantity, checkout, and send your order directly to us.
       </p>
+
       <div class="heroActions">
-        <a href="#catalog" class="btn">Start Shopping</a>
-        <a href="https://wa.me/2348100584211" target="_blank" class="btn outline">Chat on WhatsApp</a>
+        <a href="#shop" class="btn">Shop Now</a>
+        <a href="#checkout" class="btn outline">Go to Checkout</a>
       </div>
     </div>
+
     <div class="heroCard">
-      <img src="assets/biserry-flyer.png" alt="Biserry Groceries Banner" />
+      <img src="assets/hero-banner.png" alt="Biserry Groceries Banner" />
     </div>
   </section>
 
-  <section id="about" class="values">
-    <div><h3>Fresh & Organic</h3><p>Quality products you can trust.</p></div>
-    <div><h3>Affordable</h3><p>Great prices for every family.</p></div>
-    <div><h3>Reliable</h3><p>Trusted service, every time.</p></div>
-    <div><h3>Community</h3><p>Proudly serving our community.</p></div>
+  <section class="storeSteps">
+    <div><span>1</span><h3>Select Products</h3><p>Pick items and choose the quantity you need.</p></div>
+    <div><span>2</span><h3>Review Cart</h3><p>See your items, quantities, and total amount.</p></div>
+    <div><span>3</span><h3>Checkout</h3><p>Choose delivery or pickup and send your order.</p></div>
   </section>
 
-  <section id="catalog" class="catalog">
+  <section id="shop" class="shopSection">
     <div class="sectionHead">
       <div>
+        <span class="sectionLabel">Online Store</span>
         <h2>Shop Groceries</h2>
-        <p>Select your items and checkout for delivery or pickup.</p>
+        <p>Choose your products and quantity. Your cart will update automatically.</p>
       </div>
+
       <input id="searchInput" type="search" placeholder="Search groceries..." />
     </div>
 
@@ -74,37 +83,87 @@
     <div id="productGrid" class="productGrid"></div>
   </section>
 
-  <section class="cartSection">
-    <h2>Your Cart</h2>
+  <section id="cart" class="cartSection">
+    <div class="sectionHead">
+      <div>
+        <span class="sectionLabel">Order Summary</span>
+        <h2>Your Cart</h2>
+        <p>Review selected products before checkout.</p>
+      </div>
+
+      <button class="btn outline" id="clearCartBtn" type="button">Clear Cart</button>
+    </div>
+
     <div id="cartItems" class="cartItems"></div>
-    <div class="cartTotal"><strong>Total:</strong> <span id="cartTotal">₦0</span></div>
+
+    <div class="cartFooter">
+      <div><span>Items Selected</span><strong id="cartCount">0</strong></div>
+      <div><span>Total Amount</span><strong id="cartTotal">₦0</strong></div>
+      <a href="#checkout" class="btn">Proceed to Checkout</a>
+    </div>
   </section>
 
   <section id="checkout" class="checkout">
-    <h2>Checkout</h2>
-    <p>Fill your details. Your order will be sent directly to Biserry Groceries on WhatsApp.</p>
+    <div class="checkoutIntro">
+      <span class="sectionLabel">Official Checkout</span>
+      <h2>Complete Your Order</h2>
+      <p>
+        Fill in your details, select delivery or pickup, choose payment method, and submit your order.
+        Biserry Groceries will confirm availability and payment before dispatch.
+      </p>
+    </div>
 
-    <form id="checkoutForm">
-      <div class="grid2">
-        <input required id="customerName" placeholder="Full Name" />
-        <input required id="customerPhone" placeholder="Phone Number" />
-      </div>
-      <textarea required id="customerAddress" placeholder="Delivery address or pickup note"></textarea>
-      <div class="grid2">
-        <select id="fulfillment">
-          <option value="Delivery">Delivery</option>
-          <option value="Pickup">Pickup</option>
-        </select>
-        <select id="paymentMethod">
-          <option value="Bank Transfer">Bank Transfer</option>
-          <option value="Cash on Delivery">Cash on Delivery</option>
-          <option value="Card Payment">Card Payment</option>
-          <option value="USSD">USSD</option>
-          <option value="Mobile Money">Mobile Money</option>
-        </select>
-      </div>
-      <button class="btn" type="submit">Send Order on WhatsApp</button>
-    </form>
+    <div class="checkoutGrid">
+      <form id="checkoutForm" class="checkoutForm">
+        <h3>Customer Information</h3>
+
+        <div class="grid2">
+          <input required id="customerName" placeholder="Full Name" />
+          <input required id="customerPhone" placeholder="Phone Number" />
+        </div>
+
+        <textarea required id="customerAddress" placeholder="Delivery address or pickup note"></textarea>
+
+        <div class="grid2">
+          <select id="fulfillment">
+            <option value="Delivery">Delivery</option>
+            <option value="Pickup">Pickup</option>
+          </select>
+
+          <select id="paymentMethod">
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Cash on Delivery">Cash on Delivery</option>
+            <option value="Card Payment">Card Payment</option>
+            <option value="USSD">USSD</option>
+            <option value="Mobile Money">Mobile Money</option>
+          </select>
+        </div>
+
+        <button class="btn checkoutBtn" type="submit">Submit Order on WhatsApp</button>
+      </form>
+
+      <aside class="checkoutSummary">
+        <h3>Checkout Summary</h3>
+        <div id="checkoutPreview" class="checkoutPreview"></div>
+
+        <div class="summaryLine">
+          <span>Total</span>
+          <strong id="checkoutTotal">₦0</strong>
+        </div>
+
+        <div class="paymentBox">
+          <h4>Payment Options</h4>
+          <p>Bank Transfer • Card Payment • USSD • Mobile Money • Cash on Delivery</p>
+        </div>
+
+        <div class="storeContact">
+          <p><strong>Biserry Groceries</strong></p>
+          <p>Amac Market, Abuja</p>
+          <p>+234 810 058 4211</p>
+          <p>@biserry_groceries</p>
+        </div>
+      </aside>
+    </div>
   </section>
 
   <footer>
