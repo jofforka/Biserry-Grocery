@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orders | Biserry Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="adminShell">
+    <aside class="sidebar">
+      <img src="../assets/logo.png" alt="Biserry Groceries">
+      <h2>Biserry OS</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="products.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="customers.html">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="../index.html">View Store</a>
+      <button id="logoutBtn" type="button">Logout</button>
+    </aside>
+
+    <main class="adminMain">
+      <div class="adminTop">
+        <h1>Orders & Delivery</h1>
+      </div>
+
+      
+<section class="adminPanel">
+  <h2>Customer Orders</h2>
+  <div class="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Order Status</th>
+          <th>Delivery</th>
+          <th>Items</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTable"></tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin-auth.js"></script>
+  <script type="module" src="../js/admin-orders.js"></script>
+</body>
+</html>
