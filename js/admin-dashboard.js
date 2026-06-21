@@ -97,3 +97,4 @@ if (importDemoProductsBtn) {
 }
 
 loadDashboard().catch(error => alert(error.message));
+
