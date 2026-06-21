@@ -1,1 +1,54 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Customer Records</title><link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/admin.css"></head><body><div class="admin-shell"><aside class="sidebar"><h2>Biserry OS</h2><a href="dashboard.html">Dashboard</a><a href="products.html">Products & Inventory</a><a href="orders.html">Orders & Delivery</a><a href="customers.html">Customers</a><a href="reports.html">Reports</a><a href="../index.html">View Store</a><button id="logoutBtn" class="btn gold" style="margin-top:20px">Logout</button></aside><main class="admin-main"><div class="admin-top"><h1>Customer Records</h1></div><div class="panel"><h2>Customers</h2><table class="table"><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Orders</th></tr></thead><tbody id="customersTable"></tbody></table></div></main></div><script type="module" src="../js/admin-auth.js"></script><script type="module" src="../js/admin-customers.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customers | Biserry Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="adminShell">
+    <aside class="sidebar">
+      <img src="../assets/logo.png" alt="Biserry Groceries">
+      <h2>Biserry OS</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="products.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="customers.html">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="../index.html">View Store</a>
+      <button id="logoutBtn" type="button">Logout</button>
+    </aside>
+
+    <main class="adminMain">
+      <div class="adminTop">
+        <h1>Customer Records</h1>
+      </div>
+
+      
+<section class="adminPanel">
+  <h2>Customer Records</h2>
+  <div class="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Fulfillment</th>
+          <th>Payment Method</th>
+          <th>Last Order Total</th>
+        </tr>
+      </thead>
+      <tbody id="customersTable"></tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin-auth.js"></script>
+  <script type="module" src="../js/admin-customers.js"></script>
+</body>
+</html>
