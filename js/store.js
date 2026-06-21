@@ -79,14 +79,14 @@ async function loadProducts() {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
 
-    products = snap.docs.map(d => ({
-      id: d.id,
-      ...d.data()
+    products = snap.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     if (!products.length) products = fallbackProducts;
-  } catch (e) {
-    console.warn(e.message);
+  } catch (error) {
+    console.warn(error.message);
     products = fallbackProducts;
   }
 
@@ -97,9 +97,9 @@ async function loadDeliveryZones() {
   try {
     const snap = await getDocs(collection(db, "delivery_zones"));
 
-    deliveryZones = snap.docs.map(d => ({
-      id: d.id,
-      ...d.data()
+    deliveryZones = snap.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     if (!deliveryZones.length) throw new Error("empty");
@@ -117,9 +117,9 @@ async function loadDeliveryZones() {
       '<option value="">Select Delivery Zone</option>' +
       deliveryZones
         .map(
-          z =>
-            `<option value="${z.zone}" data-fee="${z.fee}">
-              ${z.zone} — ${formatNaira(Number(z.fee))}
+          zone =>
+            `<option value="${zone.zone}" data-fee="${zone.fee}">
+              ${zone.zone} — ${formatNaira(Number(zone.fee))}
             </option>`
         )
         .join("");
@@ -131,12 +131,12 @@ function getSelectedQuantity(id) {
 }
 
 function getSelectedVariant(product) {
-  if (!product.hasVariants) return null;
+  if (!product || !product.hasVariants) return null;
 
   const variantId = selectedVariants[product.id] || product.variants?.[0]?.id;
 
   return (
-    product.variants?.find(v => String(v.id) === String(variantId)) ||
+    product.variants?.find(variant => String(variant.id) === String(variantId)) ||
     product.variants?.[0]
   );
 }
@@ -147,7 +147,9 @@ window.selectVariant = (productId, variantId) => {
 };
 
 window.increaseProductQty = id => {
-  const product = products.find(x => String(x.id) === String(id));
+  const product = products.find(item => String(item.id) === String(id));
+  if (!product) return;
+
   const variant = getSelectedVariant(product);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
   const quantity = getSelectedQuantity(id);
@@ -219,7 +221,9 @@ function renderProducts() {
           <div class="cardBody">
             <div class="productMeta">
               <h3>${product.name}</h3>
-              <span class="categoryTag">${product.hasVariants ? "Varieties" : product.category}</span>
+              <span class="categoryTag">
+                ${product.hasVariants ? "Varieties" : product.category}
+              </span>
             </div>
 
             ${variantHtml}
@@ -231,12 +235,17 @@ function renderProducts() {
             </p>
 
             <div class="quantityRow">
-              <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')">−</button>
+              <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')" type="button">−</button>
               <div class="qtyDisplay">${quantity}</div>
-              <button class="qtyBtn" onclick="increaseProductQty('${product.id}')">+</button>
+              <button class="qtyBtn" onclick="increaseProductQty('${product.id}')" type="button">+</button>
             </div>
 
-            <button class="btn addBtn" onclick="addToCart('${product.id}')" ${stock <= 0 ? "disabled" : ""}>
+            <button
+              class="btn addBtn"
+              onclick="addToCart('${product.id}')"
+              type="button"
+              ${stock <= 0 ? "disabled" : ""}
+            >
               ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
             </button>
           </div>
@@ -247,7 +256,9 @@ function renderProducts() {
 }
 
 window.addToCart = id => {
-  const product = products.find(x => String(x.id) === String(id));
+  const product = products.find(item => String(item.id) === String(id));
+  if (!product) return;
+
   const variant = getSelectedVariant(product);
   const quantity = getSelectedQuantity(id);
 
@@ -290,7 +301,9 @@ window.addToCart = id => {
 };
 
 window.increaseCartQty = cartId => {
-  const item = cart.find(i => String(i.cartId) === String(cartId));
+  const item = cart.find(cartItem => String(cartItem.cartId) === String(cartId));
+
+  if (!item) return;
 
   if (item.quantity >= Number(item.stock || 0)) {
     alert("Quantity cannot exceed available stock.");
@@ -302,21 +315,21 @@ window.increaseCartQty = cartId => {
 };
 
 window.decreaseCartQty = cartId => {
-  const item = cart.find(i => String(i.cartId) === String(cartId));
+  const item = cart.find(cartItem => String(cartItem.cartId) === String(cartId));
 
   if (!item) return;
 
   item.quantity--;
 
   if (item.quantity <= 0) {
-    cart = cart.filter(i => String(i.cartId) !== String(cartId));
+    cart = cart.filter(cartItem => String(cartItem.cartId) !== String(cartId));
   }
 
   renderCart();
 };
 
 window.removeFromCart = cartId => {
-  cart = cart.filter(i => String(i.cartId) !== String(cartId));
+  cart = cart.filter(cartItem => String(cartItem.cartId) !== String(cartId));
   renderCart();
 };
 
@@ -338,7 +351,10 @@ function getCartCount() {
 function updateDeliveryFee() {
   if (fulfillmentSelect?.value === "Pickup") {
     selectedDeliveryFee = 0;
-    if (deliveryZoneSelect) deliveryZoneSelect.value = "Pickup";
+
+    if (deliveryZoneSelect) {
+      deliveryZoneSelect.value = "Pickup";
+    }
   } else {
     const selectedOption = deliveryZoneSelect?.selectedOptions?.[0];
     selectedDeliveryFee = Number(selectedOption?.dataset?.fee || 0);
@@ -354,18 +370,19 @@ function renderCart() {
   if (navCartCount) navCartCount.textContent = count;
 
   if (!cart.length) {
-    cartItems.innerHTML =
-      '<div class="emptyState">Your cart is empty. Select groceries from the shop section above.</div>';
-
-    checkoutPreview.innerHTML =
-      '<div class="emptyState">No item selected yet.</div>';
-
-    cartTotal.textContent = formatNaira(0);
-    checkoutTotal.textContent = formatNaira(0);
-
-    if (deliveryFeePreview) {
-      deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
+    if (cartItems) {
+      cartItems.innerHTML =
+        '<div class="emptyState">Your cart is empty. Select groceries from the shop section above.</div>';
     }
+
+    if (checkoutPreview) {
+      checkoutPreview.innerHTML =
+        '<div class="emptyState">No item selected yet.</div>';
+    }
+
+    if (cartTotal) cartTotal.textContent = formatNaira(0);
+    if (checkoutTotal) checkoutTotal.textContent = formatNaira(0);
+    if (deliveryFeePreview) deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
 
     return;
   }
@@ -381,10 +398,10 @@ function renderCart() {
         </div>
 
         <div class="cartControls">
-          <button onclick="decreaseCartQty('${item.cartId}')">−</button>
+          <button onclick="decreaseCartQty('${item.cartId}')" type="button">−</button>
           <span>${item.quantity}</span>
-          <button onclick="increaseCartQty('${item.cartId}')">+</button>
-          <button class="removeBtn" onclick="removeFromCart('${item.cartId}')">×</button>
+          <button onclick="increaseCartQty('${item.cartId}')" type="button">+</button>
+          <button class="removeBtn" onclick="removeFromCart('${item.cartId}')" type="button">×</button>
         </div>
       </div>
     `
