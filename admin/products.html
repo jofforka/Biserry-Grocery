@@ -1,1 +1,115 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Products & Inventory</title><link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/admin.css"></head><body><div class="admin-shell"><aside class="sidebar"><h2>Biserry OS</h2><a href="dashboard.html">Dashboard</a><a href="products.html">Products & Inventory</a><a href="orders.html">Orders & Delivery</a><a href="customers.html">Customers</a><a href="reports.html">Reports</a><a href="../index.html">View Store</a><button id="logoutBtn" class="btn gold" style="margin-top:20px">Logout</button></aside><main class="admin-main"><div class="admin-top"><h1>Products & Inventory</h1></div><div class="panel"><h2>Add Product</h2><form id="productForm"><div class="form-grid"><input id="name" required placeholder="Product Name"><select id="category"><option value="grains">Grains</option><option value="oil">Oil</option><option value="spices">Spices</option><option value="drinks">Drinks</option><option value="household">Household</option><option value="fresh">Fresh Produce</option></select></div><div class="form-grid"><input id="price" type="number" required placeholder="Price"><input id="stock" type="number" required placeholder="Stock Quantity"></div><div class="form-grid"><input id="lowStockThreshold" type="number" placeholder="Low Stock Alert e.g. 5"><input id="image" type="file" accept="image/*"></div><button class="btn" type="submit">Save Product</button></form></div><div class="panel"><h2>Product List</h2><table class="table"><thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead><tbody id="productsTable"></tbody></table></div></main></div><script type="module" src="../js/admin-auth.js"></script><script type="module" src="../js/admin-products.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Products | Biserry Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="adminShell">
+    <aside class="sidebar">
+      <img src="../assets/logo.png" alt="Biserry Groceries">
+      <h2>Biserry OS</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="products.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="customers.html">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="../index.html">View Store</a>
+      <button id="logoutBtn" type="button">Logout</button>
+    </aside>
+
+    <main class="adminMain">
+      <div class="adminTop">
+        <h1>Products & Inventory</h1>
+      </div>
+
+      
+<section class="adminPanel">
+  <h2 id="formTitle">Add Product</h2>
+  <form id="productForm" class="adminForm">
+    <input type="hidden" id="productId">
+
+    <div class="grid2">
+      <div>
+        <label>Product Name</label>
+        <input id="name" required placeholder="Product Name">
+      </div>
+
+      <div>
+        <label>Category</label>
+        <select id="category">
+          <option value="grains">Grains</option>
+          <option value="oil">Oil</option>
+          <option value="spices">Spices</option>
+          <option value="fresh">Fresh Produce</option>
+          <option value="drinks">Drinks</option>
+          <option value="household">Household</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>Price</label>
+        <input id="price" type="number" required placeholder="Price">
+      </div>
+
+      <div>
+        <label>Stock</label>
+        <input id="stock" type="number" required placeholder="Stock Quantity">
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>Low Stock Alert Level</label>
+        <input id="lowStockThreshold" type="number" placeholder="Example: 5">
+      </div>
+
+      <div>
+        <label>Product Image</label>
+        <input id="imageFile" type="file" accept="image/*">
+      </div>
+    </div>
+
+    <div>
+      <label>Existing Image URL / Asset Path</label>
+      <input id="imageUrl" placeholder="assets/rice.jpg or uploaded image URL">
+    </div>
+
+    <div class="formActions">
+      <button class="btn" type="submit" id="saveBtn">Save Product</button>
+      <button class="btn outline" type="button" id="cancelBtn">Cancel Edit</button>
+    </div>
+  </form>
+</section>
+
+<section class="adminPanel">
+  <h2>Product Inventory</h2>
+  <div class="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productsTable"></tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin-auth.js"></script>
+  <script type="module" src="../js/admin-products.js"></script>
+</body>
+</html>
