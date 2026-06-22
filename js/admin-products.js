@@ -1,1 +1,399 @@
-import { protectAdminPage } from "./admin-auth.js";import { db,storage,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,serverTimestamp,ref,uploadBytes,getDownloadURL } from "./firebase-service.js";protectAdminPage();let editingId=null,editingImageUrl="",variants=[];const form=document.getElementById("productForm"),nameInput=document.getElementById("name"),categoryInput=document.getElementById("category"),hasVariantsInput=document.getElementById("hasVariants"),priceInput=document.getElementById("price"),stockInput=document.getElementById("stock"),lowStockInput=document.getElementById("lowStockThreshold"),imageFileInput=document.getElementById("imageFile"),imageUrlInput=document.getElementById("imageUrl"),productsTable=document.getElementById("productsTable"),formTitle=document.getElementById("formTitle"),saveBtn=document.getElementById("saveBtn"),cancelBtn=document.getElementById("cancelBtn"),singleProductFields=document.getElementById("singleProductFields"),variantProductFields=document.getElementById("variantProductFields"),variantRows=document.getElementById("variantRows"),addVariantBtn=document.getElementById("addVariantBtn");function formatNaira(a){return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(a||0)}function makeVariantId(){return"v-"+Date.now()+"-"+Math.floor(Math.random()*99999)}function toggleProductType(){const h=hasVariantsInput.value==="true";singleProductFields.style.display=h?"none":"block";variantProductFields.style.display=h?"block":"none"}function renderVariantRows(){variantRows.innerHTML=variants.length?variants.map((v,i)=>`<div class="variantRow"><div><label>Variant Name</label><input value="${v.name||""}" onchange="updateVariant(${i}, 'name', this.value)" placeholder="Colgate"></div><div><label>Price</label><input type="number" value="${v.price||0}" onchange="updateVariant(${i}, 'price', this.value)"></div><div><label>Stock</label><input type="number" value="${v.stock||0}" onchange="updateVariant(${i}, 'stock', this.value)"></div><div><label>Image URL</label><input value="${v.imageUrl||""}" onchange="updateVariant(${i}, 'imageUrl', this.value)" placeholder="assets/household.jpg"></div><button type="button" onclick="removeVariant(${i})">Remove</button></div>`).join(""):'<div class="emptyState">No variant added yet.</div>'}window.updateVariant=(i,f,val)=>{variants[i][f]=(f==="price"||f==="stock")?Number(val):val};window.removeVariant=i=>{variants.splice(i,1);renderVariantRows()};addVariantBtn.addEventListener("click",()=>{variants.push({id:makeVariantId(),name:"",price:0,stock:0,imageUrl:""});renderVariantRows()});hasVariantsInput.addEventListener("change",toggleProductType);async function uploadImage(file){if(!file)return"";const r=ref(storage,`product-images/${Date.now()}-${file.name}`);await uploadBytes(r,file);return await getDownloadURL(r)}function resetForm(){form.reset();editingId=null;editingImageUrl="";variants=[];formTitle.textContent="Add Product";saveBtn.textContent="Save Product";hasVariantsInput.value="false";toggleProductType();renderVariantRows()}async function loadProducts(){const snap=await getDocs(collection(db,"products"));productsTable.innerHTML="";snap.forEach(ds=>{const p=ds.data(),isV=!!p.hasVariants,total=isV?(p.variants||[]).reduce((s,v)=>s+Number(v.stock||0),0):Number(p.stock||0),priceDisplay=isV?`${(p.variants||[]).length} varieties`:formatNaira(Number(p.price||0)),img=p.imageUrl||p.variants?.[0]?.imageUrl||"assets/logo.png";productsTable.innerHTML+=`<tr><td><img src="${img}"></td><td>${p.name}</td><td>${isV?"Variants":"Single"}</td><td>${p.category}</td><td>${priceDisplay}</td><td>${total}</td><td><div class="actionBtns"><button class="editBtn" onclick="editProduct('${ds.id}','${encodeURIComponent(JSON.stringify(p))}')">Edit</button><button class="deleteBtn" onclick="deleteProduct('${ds.id}')">Delete</button></div></td></tr>`})}form.addEventListener("submit",async e=>{e.preventDefault();const h=hasVariantsInput.value==="true";let imageUrl=imageUrlInput?.value.trim()||editingImageUrl||"assets/logo.png";if(!h&&imageFileInput.files[0])imageUrl=await uploadImage(imageFileInput.files[0]);let data={name:nameInput.value.trim(),category:categoryInput.value,hasVariants:h,lowStockThreshold:Number(lowStockInput.value||5),updatedAt:serverTimestamp()};if(h){if(!variants.length){alert("Please add at least one variant.");return}const clean=variants.map(v=>({id:v.id||makeVariantId(),name:v.name,price:Number(v.price||0),stock:Number(v.stock||0),imageUrl:v.imageUrl||"assets/logo.png"}));data={...data,variants:clean,imageUrl:clean[0]?.imageUrl||"assets/logo.png",price:Number(clean[0]?.price||0),stock:clean.reduce((s,v)=>s+Number(v.stock||0),0)}}else data={...data,price:Number(priceInput.value||0),stock:Number(stockInput.value||0),imageUrl,variants:[]};try{if(editingId){await updateDoc(doc(db,"products",editingId),data);alert("Product updated.")}else{await addDoc(collection(db,"products"),{...data,createdAt:serverTimestamp()});alert("Product added.")}resetForm();loadProducts()}catch(err){alert("Product save failed: "+err.message)}});window.editProduct=(id,enc)=>{const p=JSON.parse(decodeURIComponent(enc));editingId=id;editingImageUrl=p.imageUrl||"";nameInput.value=p.name||"";categoryInput.value=p.category||"grains";hasVariantsInput.value=p.hasVariants?"true":"false";lowStockInput.value=p.lowStockThreshold||5;if(p.hasVariants){variants=p.variants||[]}else{priceInput.value=p.price||0;stockInput.value=p.stock||0;imageUrlInput.value=p.imageUrl||"";variants=[]}toggleProductType();renderVariantRows();formTitle.textContent="Edit Product";saveBtn.textContent="Update Product";window.scrollTo({top:0,behavior:"smooth"})};window.deleteProduct=async id=>{if(!confirm("Delete this product?"))return;await deleteDoc(doc(db,"products",id));alert("Product deleted.");loadProducts()};cancelBtn.addEventListener("click",resetForm);toggleProductType();renderVariantRows();loadProducts().catch(e=>alert(e.message));
+import { protectAdminPage } from "./admin-auth.js";
+import {
+  db,
+  storage,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "./firebase-service.js";
+
+protectAdminPage();
+
+let editingId = null;
+let editingImageUrl = "";
+let variants = [];
+
+const form = document.getElementById("productForm");
+const nameInput = document.getElementById("name");
+const categoryInput = document.getElementById("category");
+const productTypeInput = document.getElementById("productType");
+const priceInput = document.getElementById("price");
+const stockInput = document.getElementById("stock");
+const lowStockInput = document.getElementById("lowStockThreshold");
+const isFeaturedInput = document.getElementById("isFeatured");
+const productNoteInput = document.getElementById("productNote");
+const imageFileInput = document.getElementById("imageFile");
+const imageUrlInput = document.getElementById("imageUrl");
+const productsTable = document.getElementById("productsTable");
+const formTitle = document.getElementById("formTitle");
+const saveBtn = document.getElementById("saveBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const singleProductFields = document.getElementById("singleProductFields");
+const variantProductFields = document.getElementById("variantProductFields");
+const variantRows = document.getElementById("variantRows");
+const addVariantBtn = document.getElementById("addVariantBtn");
+const variantSectionTitle = document.getElementById("variantSectionTitle");
+const variantSectionHelp = document.getElementById("variantSectionHelp");
+
+function formatNaira(amount) {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0
+  }).format(amount || 0);
+}
+
+function makeVariantId() {
+  return "v-" + Date.now() + "-" + Math.floor(Math.random() * 99999);
+}
+
+function getVariantLabel() {
+  if (productTypeInput.value === "sizes") return "Size";
+  if (productTypeInput.value === "varieties") return "Variety";
+  return "Option";
+}
+
+function getVariantPlaceholder() {
+  if (productTypeInput.value === "sizes") return "e.g. Small, Medium, Large, 500g, 1kg";
+  if (productTypeInput.value === "varieties") return "e.g. Colgate, Close-Up, Strawberry";
+  return "Option name";
+}
+
+function toggleProductType() {
+  const productType = productTypeInput.value;
+  const hasOptions = productType === "sizes" || productType === "varieties";
+  const label = getVariantLabel();
+
+  singleProductFields.style.display = hasOptions ? "none" : "block";
+  variantProductFields.style.display = hasOptions ? "block" : "none";
+
+  variantSectionTitle.textContent = productType === "sizes"
+    ? "Product Sizes"
+    : productType === "varieties"
+      ? "Product Varieties"
+      : "Product Options";
+
+  variantSectionHelp.textContent = productType === "sizes"
+    ? "Example: Goldimo → Small, Medium, Large. Each size can have a different price, stock and image."
+    : productType === "varieties"
+      ? "Example: Toothpaste → Colgate, Close-Up, Oral-B. Each variety can have a different price, stock and image."
+      : "Add each option with its own price, stock and image.";
+
+  addVariantBtn.textContent = "Add " + label;
+  renderVariantRows();
+}
+
+function renderVariantRows() {
+  const label = getVariantLabel();
+
+  if (!variants.length) {
+    variantRows.innerHTML = `<div class="emptyState">No ${label.toLowerCase()} added yet.</div>`;
+    return;
+  }
+
+  variantRows.innerHTML = variants.map((variant, index) => `
+    <div class="variantRow upgradedVariantRow">
+      <div>
+        <label>${label} Name</label>
+        <input value="${variant.name || ""}" onchange="updateVariant(${index}, 'name', this.value)" placeholder="${getVariantPlaceholder()}">
+      </div>
+
+      <div>
+        <label>Price</label>
+        <input type="number" value="${variant.price || 0}" onchange="updateVariant(${index}, 'price', this.value)" placeholder="Price">
+      </div>
+
+      <div>
+        <label>Stock</label>
+        <input type="number" value="${variant.stock || 0}" onchange="updateVariant(${index}, 'stock', this.value)" placeholder="Stock">
+      </div>
+
+      <div>
+        <label>${label} Image Upload</label>
+        <input type="file" accept="image/*" onchange="setVariantImageFile(${index}, this.files[0])">
+      </div>
+
+      <div>
+        <label>Image URL / Asset Path</label>
+        <input value="${variant.imageUrl || ""}" onchange="updateVariant(${index}, 'imageUrl', this.value)" placeholder="assets/product.jpg">
+      </div>
+
+      <div class="variantPreviewCell">
+        <label>Preview</label>
+        <img src="${variant.imageUrl || "../assets/logo.png"}" alt="${variant.name || label}">
+      </div>
+
+      <button type="button" onclick="removeVariant(${index})">Remove</button>
+    </div>
+  `).join("");
+}
+
+window.updateVariant = function(index, field, value) {
+  if (!variants[index]) return;
+
+  variants[index][field] = field === "price" || field === "stock"
+    ? Number(value)
+    : value;
+};
+
+window.setVariantImageFile = function(index, file) {
+  if (!variants[index]) return;
+  variants[index].imageFile = file || null;
+};
+
+window.removeVariant = function(index) {
+  variants.splice(index, 1);
+  renderVariantRows();
+};
+
+addVariantBtn.addEventListener("click", () => {
+  variants.push({
+    id: makeVariantId(),
+    name: "",
+    price: 0,
+    stock: 0,
+    imageUrl: "",
+    imageFile: null
+  });
+
+  renderVariantRows();
+});
+
+productTypeInput.addEventListener("change", toggleProductType);
+
+async function uploadImage(file) {
+  if (!file) return "";
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const imageRef = ref(storage, `product-images/${Date.now()}-${safeName}`);
+
+  await uploadBytes(imageRef, file);
+
+  return await getDownloadURL(imageRef);
+}
+
+async function prepareVariantsForSave() {
+  const cleaned = [];
+
+  for (const variant of variants) {
+    let imageUrl = variant.imageUrl || "assets/logo.png";
+
+    if (variant.imageFile) {
+      imageUrl = await uploadImage(variant.imageFile);
+    }
+
+    cleaned.push({
+      id: variant.id || makeVariantId(),
+      name: variant.name,
+      price: Number(variant.price || 0),
+      stock: Number(variant.stock || 0),
+      imageUrl
+    });
+  }
+
+  return cleaned;
+}
+
+function resetForm() {
+  form.reset();
+
+  editingId = null;
+  editingImageUrl = "";
+  variants = [];
+
+  formTitle.textContent = "Add Product";
+  saveBtn.textContent = "Save Product";
+
+  productTypeInput.value = "single";
+  lowStockInput.value = 5;
+  if (isFeaturedInput) isFeaturedInput.value = "false";
+
+  toggleProductType();
+}
+
+function productTypeFromProduct(product) {
+  if (product.optionType === "sizes") return "sizes";
+  if (product.optionType === "varieties") return "varieties";
+  if (product.variantLabel === "Size") return "sizes";
+  if (product.variantLabel === "Variety") return "varieties";
+  if (product.hasVariants) return "varieties";
+  return "single";
+}
+
+async function loadProducts() {
+  const snap = await getDocs(collection(db, "products"));
+  productsTable.innerHTML = "";
+
+  snap.forEach(docSnap => {
+    const product = docSnap.data();
+    const productType = productTypeFromProduct(product);
+    const isOptionProduct = productType === "sizes" || productType === "varieties";
+    const optionLabel = productType === "sizes" ? "Sizes" : productType === "varieties" ? "Varieties" : "Single";
+
+    const totalStock = isOptionProduct
+      ? (product.variants || []).reduce((sum, item) => sum + Number(item.stock || 0), 0)
+      : Number(product.stock || 0);
+
+    const priceDisplay = isOptionProduct
+      ? `${(product.variants || []).length} ${optionLabel.toLowerCase()}`
+      : formatNaira(Number(product.price || 0));
+
+    const image = product.imageUrl || product.variants?.[0]?.imageUrl || "../assets/logo.png";
+
+    productsTable.innerHTML += `
+      <tr>
+        <td><img src="${image}" alt="${product.name}"></td>
+        <td>
+          <strong>${product.name}</strong>
+          ${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}
+        </td>
+        <td>${optionLabel}</td>
+        <td>${product.category || ""}</td>
+        <td>${priceDisplay}</td>
+        <td>${totalStock}</td>
+        <td>
+          <div class="actionBtns">
+            <button class="editBtn" onclick="editProduct('${docSnap.id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
+            <button class="deleteBtn" onclick="deleteProduct('${docSnap.id}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const productType = productTypeInput.value;
+  const hasOptions = productType === "sizes" || productType === "varieties";
+  const variantLabel = productType === "sizes" ? "Size" : productType === "varieties" ? "Variety" : "";
+
+  let imageUrl = imageUrlInput?.value.trim() || editingImageUrl || "assets/logo.png";
+
+  if (!hasOptions && imageFileInput.files[0]) {
+    imageUrl = await uploadImage(imageFileInput.files[0]);
+  }
+
+  let productData = {
+    name: nameInput.value.trim(),
+    category: categoryInput.value,
+    productType,
+    optionType: hasOptions ? productType : "",
+    variantLabel,
+    hasVariants: hasOptions,
+    lowStockThreshold: Number(lowStockInput.value || 5),
+    isFeatured: isFeaturedInput ? isFeaturedInput.value === "true" : false,
+    productNote: productNoteInput ? productNoteInput.value.trim() : "",
+    updatedAt: serverTimestamp()
+  };
+
+  if (hasOptions) {
+    if (!variants.length) {
+      alert(`Please add at least one ${variantLabel.toLowerCase()}.`);
+      return;
+    }
+
+    const cleanedVariants = await prepareVariantsForSave();
+
+    const invalidVariant = cleanedVariants.find(item => !item.name || Number(item.price || 0) <= 0);
+
+    if (invalidVariant) {
+      alert(`Each ${variantLabel.toLowerCase()} needs a name and price.`);
+      return;
+    }
+
+    productData = {
+      ...productData,
+      variants: cleanedVariants,
+      imageUrl: cleanedVariants[0]?.imageUrl || "assets/logo.png",
+      price: Number(cleanedVariants[0]?.price || 0),
+      stock: cleanedVariants.reduce((sum, item) => sum + Number(item.stock || 0), 0)
+    };
+  } else {
+    productData = {
+      ...productData,
+      variants: [],
+      imageUrl,
+      price: Number(priceInput.value || 0),
+      stock: Number(stockInput.value || 0)
+    };
+  }
+
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, "products", editingId), productData);
+      alert("Product updated.");
+    } else {
+      await addDoc(collection(db, "products"), {
+        ...productData,
+        createdAt: serverTimestamp()
+      });
+      alert("Product added.");
+    }
+
+    resetForm();
+    loadProducts();
+  } catch (error) {
+    alert("Product save failed: " + error.message);
+  }
+});
+
+window.editProduct = function(id, encodedProduct) {
+  const product = JSON.parse(decodeURIComponent(encodedProduct));
+  const productType = productTypeFromProduct(product);
+
+  editingId = id;
+  editingImageUrl = product.imageUrl || "";
+
+  nameInput.value = product.name || "";
+  categoryInput.value = product.category || "grains";
+  productTypeInput.value = productType;
+  lowStockInput.value = product.lowStockThreshold || 5;
+
+  if (isFeaturedInput) isFeaturedInput.value = product.isFeatured ? "true" : "false";
+  if (productNoteInput) productNoteInput.value = product.productNote || "";
+
+  if (productType === "single") {
+    priceInput.value = product.price || 0;
+    stockInput.value = product.stock || 0;
+    imageUrlInput.value = product.imageUrl || "";
+    variants = [];
+  } else {
+    variants = (product.variants || []).map(item => ({
+      ...item,
+      imageFile: null
+    }));
+  }
+
+  toggleProductType();
+
+  formTitle.textContent = "Edit Product";
+  saveBtn.textContent = "Update Product";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+window.deleteProduct = async function(id) {
+  if (!confirm("Delete this product?")) return;
+
+  try {
+    await deleteDoc(doc(db, "products", id));
+    alert("Product deleted.");
+    loadProducts();
+  } catch (error) {
+    alert("Delete failed: " + error.message);
+  }
+};
+
+cancelBtn.addEventListener("click", resetForm);
+
+toggleProductType();
+loadProducts().catch(error => alert(error.message));
