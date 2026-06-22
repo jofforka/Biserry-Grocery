@@ -3,21 +3,58 @@ import { db, collection, getDocs, query, orderBy } from "./firebase-service.js";
 const CART_STORAGE_KEY = "biserryCart";
 
 const fallbackProducts = [
-  { id: "demo-1", name: "Premium Rice", category: "grains", price: 75000, stock: 20, imageUrl: "assets/rice.jpg", hasVariants: false, isFeatured: true },
+  {
+    id: "demo-1",
+    name: "Premium Rice",
+    category: "grains",
+    price: 75000,
+    stock: 20,
+    imageUrl: "assets/rice.jpg",
+    hasVariants: false,
+    isFeatured: true
+  },
   {
     id: "demo-2",
     name: "Toothpaste",
     category: "household",
     hasVariants: true,
+    variantLabel: "Variety",
     imageUrl: "assets/household.jpg",
     isFeatured: true,
     variants: [
-      { id: "v1", name: "Colgate", price: 2500, stock: 20, imageUrl: "assets/household.jpg" },
-      { id: "v2", name: "Close-Up", price: 2300, stock: 15, imageUrl: "assets/household.jpg" },
-      { id: "v3", name: "Oral-B", price: 2800, stock: 10, imageUrl: "assets/household.jpg" }
+      {
+        id: "v1",
+        name: "Colgate",
+        price: 2500,
+        stock: 20,
+        imageUrl: "assets/household.jpg"
+      },
+      {
+        id: "v2",
+        name: "Close-Up",
+        price: 2300,
+        stock: 15,
+        imageUrl: "assets/household.jpg"
+      },
+      {
+        id: "v3",
+        name: "Oral-B",
+        price: 2800,
+        stock: 10,
+        imageUrl: "assets/household.jpg"
+      }
     ]
   },
-  { id: "demo-3", name: "Vegetable Oil", category: "oil", price: 48000, stock: 10, imageUrl: "assets/vegetable-oil.jpg", hasVariants: false, isFeatured: true }
+  {
+    id: "demo-3",
+    name: "Vegetable Oil",
+    category: "oil",
+    price: 48000,
+    stock: 10,
+    imageUrl: "assets/vegetable-oil.jpg",
+    hasVariants: false,
+    isFeatured: true
+  }
 ];
 
 let products = [];
@@ -71,6 +108,24 @@ function formatNaira(amount) {
     currency: "NGN",
     maximumFractionDigits: 0
   }).format(amount || 0);
+}
+
+function normalizeImageUrl(url) {
+  if (!url) return "assets/logo.png";
+
+  const cleanUrl = String(url).trim();
+
+  const fileMatch = cleanUrl.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (fileMatch && fileMatch[1]) {
+    return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+  }
+
+  const idMatch = cleanUrl.match(/[?&]id=([^&]+)/);
+  if (cleanUrl.includes("drive.google.com") && idMatch && idMatch[1]) {
+    return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1000`;
+  }
+
+  return cleanUrl;
 }
 
 function showCartToast(message = "Added to cart") {
@@ -134,7 +189,9 @@ async function loadDeliveryZones() {
     deliveryZones
       .map(
         zone =>
-          `<option value="${zone.zone}" data-fee="${zone.fee}">${zone.zone} — ${formatNaira(Number(zone.fee))}</option>`
+          `<option value="${zone.zone}" data-fee="${zone.fee}">
+            ${zone.zone} — ${formatNaira(Number(zone.fee))}
+          </option>`
       )
       .join("");
 }
@@ -156,6 +213,7 @@ function getSelectedVariant(product) {
 
 window.selectVariant = (productId, variantId) => {
   selectedVariants[productId] = variantId;
+
   renderProducts();
   renderFeaturedProducts();
   renderRecentProducts();
@@ -175,6 +233,7 @@ window.increaseProductQty = id => {
   }
 
   selectedQuantities[id] = quantity + 1;
+
   renderProducts();
   renderFeaturedProducts();
   renderRecentProducts();
@@ -182,6 +241,7 @@ window.increaseProductQty = id => {
 
 window.decreaseProductQty = id => {
   selectedQuantities[id] = Math.max(1, getSelectedQuantity(id) - 1);
+
   renderProducts();
   renderFeaturedProducts();
   renderRecentProducts();
@@ -190,9 +250,27 @@ window.decreaseProductQty = id => {
 function productCard(product) {
   const variant = getSelectedVariant(product);
   const quantity = getSelectedQuantity(product.id);
+
   const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
-  const image = variant?.imageUrl || product.imageUrl || product.image || "assets/logo.png";
+
+  const rawImage =
+    variant?.imageUrl ||
+    product.imageUrl ||
+    product.image ||
+    "assets/logo.png";
+
+  const image = normalizeImageUrl(rawImage);
+
+  const optionLabel = product.variantLabel || "Variety";
+
+  const tagLabel =
+    product.variantLabel
+      ? `${product.variantLabel}s`
+      : product.hasVariants
+        ? "Varieties"
+        : product.category;
+
   const stockClass =
     stock <= Number(product.lowStockThreshold || 5) ? "stockText low" : "stockText";
 
@@ -200,7 +278,7 @@ function productCard(product) {
     product.hasVariants && product.variants?.length
       ? `
         <div class="variantBox">
-          <label>Select ${product.variantLabel || "Variety"}</label>
+          <label>Select ${optionLabel}</label>
           <select onchange="selectVariant('${product.id}', this.value)">
             ${product.variants
               .map(
@@ -219,19 +297,22 @@ function productCard(product) {
   return `
     <div class="card">
       <div class="productImage">
-        <img src="${image}" alt="${product.name}">
+        <img src="${image}" alt="${product.name}" onerror="this.src='assets/logo.png'">
       </div>
 
       <div class="cardBody">
         <div class="productMeta">
           <h3>${product.name}</h3>
-          <span class="categoryTag">${product.variantLabel ? product.variantLabel + "s" : product.hasVariants ? "Varieties" : product.category}</span>
+          <span class="categoryTag">${tagLabel}</span>
         </div>
 
         ${variantHtml}
 
         <p class="price">${formatNaira(price)}</p>
-        <p class="${stockClass}">${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}</p>
+
+        <p class="${stockClass}">
+          ${stock > 0 ? `Available Stock: ${stock}` : "Out of Stock"}
+        </p>
 
         <div class="quantityRow">
           <button class="qtyBtn" onclick="decreaseProductQty('${product.id}')" type="button">−</button>
@@ -297,7 +378,16 @@ window.addToCart = id => {
   const cartId = variant ? `${product.id}__${variant.id}` : product.id;
   const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
+
   const displayName = variant ? `${product.name} - ${variant.name}` : product.name;
+
+  const rawImage =
+    variant?.imageUrl ||
+    product.imageUrl ||
+    product.image ||
+    "assets/logo.png";
+
+  const imageUrl = normalizeImageUrl(rawImage);
 
   const existing = cart.find(item => String(item.cartId) === String(cartId));
 
@@ -316,10 +406,11 @@ window.addToCart = id => {
       name: displayName,
       baseProductName: product.name,
       variantName: variant?.name || null,
+      variantLabel: product.variantLabel || null,
       category: product.category,
       price,
       stock,
-      imageUrl: variant?.imageUrl || product.imageUrl || "assets/logo.png",
+      imageUrl,
       quantity
     });
   }
@@ -327,6 +418,7 @@ window.addToCart = id => {
   selectedQuantities[id] = 1;
 
   saveCartToStorage();
+
   renderProducts();
   renderFeaturedProducts();
   renderRecentProducts();
@@ -412,7 +504,7 @@ function renderMiniCart() {
     .map(
       item => `
       <div class="miniCartItem">
-        <img src="${item.imageUrl || "assets/logo.png"}" alt="${item.name}">
+        <img src="${normalizeImageUrl(item.imageUrl)}" alt="${item.name}" onerror="this.src='assets/logo.png'">
         <div>
           <strong>${item.name}</strong>
           <span>${formatNaira(item.price)} x ${item.quantity}</span>
@@ -514,8 +606,10 @@ function closeMiniCart() {
 document.querySelectorAll(".filter").forEach(button => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
+
     button.classList.add("active");
     currentCategory = button.dataset.category;
+
     renderProducts();
   });
 });
@@ -524,8 +618,12 @@ document.querySelectorAll("[data-category-jump]").forEach(button => {
   button.addEventListener("click", () => {
     const category = button.dataset.categoryJump;
     const filterBtn = document.querySelector(`.filter[data-category="${category}"]`);
+
     if (filterBtn) filterBtn.click();
-    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+
+    document.getElementById("shop")?.scrollIntoView({
+      behavior: "smooth"
+    });
   });
 });
 
