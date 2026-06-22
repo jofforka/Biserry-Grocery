@@ -200,7 +200,7 @@ function productCard(product) {
     product.hasVariants && product.variants?.length
       ? `
         <div class="variantBox">
-          <label>Select Variety</label>
+          <label>Select ${product.variantLabel || "Variety"}</label>
           <select onchange="selectVariant('${product.id}', this.value)">
             ${product.variants
               .map(
@@ -225,7 +225,7 @@ function productCard(product) {
       <div class="cardBody">
         <div class="productMeta">
           <h3>${product.name}</h3>
-          <span class="categoryTag">${product.hasVariants ? "Varieties" : product.category}</span>
+          <span class="categoryTag">${product.variantLabel ? product.variantLabel + "s" : product.hasVariants ? "Varieties" : product.category}</span>
         </div>
 
         ${variantHtml}
