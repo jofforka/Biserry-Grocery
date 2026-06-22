@@ -1,18 +1,16 @@
 import { protectAdminPage } from "./admin-auth.js";
 import {
   db,
-  storage,
   collection,
   addDoc,
   getDocs,
   doc,
   updateDoc,
   deleteDoc,
-  serverTimestamp,
-  ref,
-  uploadBytes,
-  getDownloadURL
+  serverTimestamp
 } from "./firebase-service.js";
+
+import { uploadImageToGoogleDrive } from "./google-drive-upload.js";
 
 protectAdminPage();
 
@@ -171,12 +169,7 @@ productTypeInput.addEventListener("change", toggleProductType);
 async function uploadImage(file) {
   if (!file) return "";
 
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-  const imageRef = ref(storage, `product-images/${Date.now()}-${safeName}`);
-
-  await uploadBytes(imageRef, file);
-
-  return await getDownloadURL(imageRef);
+  return await uploadImageToGoogleDrive(file);
 }
 
 async function prepareVariantsForSave() {
