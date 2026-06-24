@@ -1,29 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Login | Biserry Groceries</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="../css/admin.css">
-</head>
-<body>
-  <main class="loginPage">
-    <section class="loginCard">
-      <img src="../assets/logo.png" alt="Biserry Groceries">
-      <h1>Admin Login</h1>
-      <p>Sign in to manage Biserry Groceries OS.</p>
+/* ===== Admin Login Page ===== */
+.loginPage{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:30px;
+  background:linear-gradient(135deg,#fff8e8,#f7e6b9);
+}
 
-      <form id="loginForm">
-        <input id="email" type="email" required placeholder="Admin Email">
-        <input id="password" type="password" required placeholder="Password">
-        <button class="btn" type="submit">Login</button>
-      </form>
+.loginCard{
+  width:100%;
+  max-width:460px;
+  background:#fff;
+  border:1px solid #e9ddc3;
+  border-radius:28px;
+  padding:34px;
+  box-shadow:0 20px 45px rgba(0,0,0,.12);
+}
 
-      <p><a href="../index.html">Back to Store</a></p>
-    </section>
-  </main>
+.loginCard img{
+  width:96px;
+  height:96px;
+  object-fit:contain;
+  border-radius:50%;
+  background:#fff;
+  display:block;
+  margin-bottom:18px;
+}
 
-  <script type="module" src="../js/admin-auth.js"></script>
-</body>
-</html>
+.loginCard h1{
+  color:#0f4f2b;
+  font-size:34px;
+  margin:0 0 10px;
+}
+
+.loginCard p{
+  color:#666;
+  margin-bottom:20px;
+}
+
+.loginCard form{
+  display:grid;
+  gap:14px;
+}
+
+.loginCard input{
+  width:100%;
+  padding:15px 16px;
+  border-radius:16px;
+  border:1px solid #e9ddc3;
+  font-size:15px;
+}
+
+.loginCard .btn{
+  width:100%;
+}
+
+.loginCard a{
+  color:#0f4f2b;
+  font-weight:800;
+}
