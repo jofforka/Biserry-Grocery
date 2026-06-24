@@ -8,7 +8,7 @@
   Replace GOOGLE_DRIVE_UPLOAD_URL below with your deployed Apps Script Web App URL.
 */
 
-export const GOOGLE_DRIVE_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbxJlljQAW6EEfrqKj9yCMJ3PqxQUiy9GgmucxKv-zvTx8x_LTpJAZfu80xZVVchEWgu/exec";
+export const GOOGLE_DRIVE_UPLOAD_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
 export function isGoogleDriveUploadConfigured() {
   return (
