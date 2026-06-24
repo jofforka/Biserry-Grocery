@@ -4,98 +4,79 @@
   <meta charset="UTF-8">
   <title>Dashboard | Biserry Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
+
 <body>
   <div class="adminShell">
     <aside class="sidebar">
       <img src="../assets/logo.png" alt="Biserry Groceries">
+
       <h2>Biserry OS</h2>
-      <a href="dashboard.html">Dashboard</a>
+
+      <a href="dashboard.html" class="active">Dashboard</a>
       <a href="products.html">Products</a>
+      <a href="bulk-upload.html">Bulk Upload</a>
       <a href="orders.html">Orders</a>
       <a href="customers.html">Customers</a>
       <a href="reports.html">Reports</a>
+      <a href="delivery-zones.html">Delivery Zones</a>
+      <a href="inventory-logs.html">Inventory Logs</a>
       <a href="../index.html">View Store</a>
+
       <button id="logoutBtn" type="button">Logout</button>
     </aside>
 
     <main class="adminMain">
       <div class="adminTop">
-        <h1>Admin Dashboard</h1>
+        <div>
+          <h1>Admin Dashboard</h1>
+          <p>Overview of Biserry Groceries orders, products, revenue and stock alerts.</p>
+        </div>
       </div>
 
-      
-<div class="adminGrid">
-  <div class="summaryCard"><h3>Products</h3><p id="productCount">0</p></div>
-  <div class="summaryCard"><h3>Orders</h3><p id="orderCount">0</p></div>
-  <div class="summaryCard"><h3>Pending Orders</h3><p id="pendingCount">0</p></div>
-  <div class="summaryCard"><h3>Revenue</h3><p id="revenue">₦0</p></div>
-</div>
+      <div class="adminGrid">
+        <div class="summaryCard">
+          <h3>Products</h3>
+          <p id="productCount">0</p>
+        </div>
 
-<section class="adminPanel">
-  <h2>Quick Setup</h2>
-  <p>
-    If the storefront is showing demo products, click below to import those products into Firebase.
-    After import, you can edit or delete them from the Products page.
-  </p>
-  <button class="btn" id="importDemoProductsBtn" type="button">Import Demo Products to Firebase</button>
-</section>
+        <div class="summaryCard">
+          <h3>Orders</h3>
+          <p id="orderCount">0</p>
+        </div>
 
-<section class="adminPanel">
-  <h2>Low Stock Alerts</h2>
-  <div id="lowStockList"></div>
-</section>
+        <div class="summaryCard">
+          <h3>Pending Orders</h3>
+          <p id="pendingCount">0</p>
+        </div>
 
-    </main>
-  </div>
-
-  <script type="module" src="../js/admin-auth.js"></script>
-  <script type="module" src="../js/admin-dashboard.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard | Biserry Admin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="../css/admin.css">
-</head>
-<body>
-  <div class="adminShell">
-    <aside class="sidebar">
-      <img src="../assets/logo.png" alt="Biserry Groceries">
-      <h2>Biserry OS</h2>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="products.html">Products</a>
-      <a href="orders.html">Orders</a>
-      <a href="customers.html">Customers</a>
-      <a href="reports.html">Reports</a>
-      <a href="../index.html">View Store</a>
-      <button id="logoutBtn" type="button">Logout</button>
-    </aside>
-
-    <main class="adminMain">
-      <div class="adminTop">
-        <h1>Admin Dashboard</h1>
+        <div class="summaryCard">
+          <h3>Revenue</h3>
+          <p id="revenue">₦0</p>
+        </div>
       </div>
 
-      
-<div class="adminGrid">
-  <div class="summaryCard"><h3>Products</h3><p id="productCount">0</p></div>
-  <div class="summaryCard"><h3>Orders</h3><p id="orderCount">0</p></div>
-  <div class="summaryCard"><h3>Pending Orders</h3><p id="pendingCount">0</p></div>
-  <div class="summaryCard"><h3>Revenue</h3><p id="revenue">₦0</p></div>
-</div>
+      <section class="adminPanel">
+        <h2>Quick Setup</h2>
 
-<section class="adminPanel">
-  <h2>Low Stock Alerts</h2>
-  <div id="lowStockList"></div>
-</section>
+        <p>
+          If the storefront is showing demo products, click below to import those
+          products into Firebase. After import, you can edit or delete them from
+          the Products page.
+        </p>
 
+        <button class="btn" id="importDemoProductsBtn" type="button">
+          Import Demo Products to Firebase
+        </button>
+      </section>
+
+      <section class="adminPanel">
+        <h2>Low Stock Alerts</h2>
+        <div id="lowStockList"></div>
+      </section>
     </main>
   </div>
 
