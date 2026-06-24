@@ -4,6 +4,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  doc,
+  updateDoc,
   query,
   where,
   serverTimestamp
@@ -19,8 +21,14 @@ const previewTable = document.getElementById("previewTable");
 const uploadStatus = document.getElementById("uploadStatus");
 const previewSummary = document.getElementById("previewSummary");
 const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
+const downloadPriceTemplateBtn = document.getElementById("downloadPriceTemplateBtn");
+const downloadStockTemplateBtn = document.getElementById("downloadStockTemplateBtn");
 
 let parsedProducts = [];
+
+function getUploadMode() {
+  return document.querySelector("input[name='uploadMode']:checked")?.value || "upsert";
+}
 
 function showStatus(message, isError = false) {
   uploadStatus.style.display = "block";
@@ -87,20 +95,28 @@ function groupRowsIntoProducts(rows) {
     if (!name) continue;
 
     const category = row.category?.trim().toLowerCase() || "household";
+    const sku = row.sku?.trim() || "";
     const hasVariants = normalizeBoolean(row.hasVariants);
+    const optionType = row.optionType?.trim().toLowerCase() || (hasVariants ? "varieties" : "");
+    const variantLabel = optionType === "sizes" ? "Size" : optionType === "varieties" ? "Variety" : "";
     const variantName = row.variantName?.trim();
+    const variantSku = row.variantSku?.trim() || "";
     const price = normalizeNumber(row.price);
     const stock = normalizeNumber(row.stock);
     const lowStockThreshold = normalizeNumber(row.lowStockThreshold || 5);
     const imageUrl = row.imageUrl?.trim() || "assets/logo.png";
 
     if (hasVariants) {
-      const key = `${name.toLowerCase()}__${category}`;
+      const key = sku ? `sku__${sku}` : `${name.toLowerCase()}__${category}`;
 
       if (!productMap.has(key)) {
         productMap.set(key, {
           name,
           category,
+          sku,
+          productType: optionType,
+          optionType,
+          variantLabel,
           hasVariants: true,
           lowStockThreshold,
           imageUrl,
@@ -113,6 +129,7 @@ function groupRowsIntoProducts(rows) {
       product.variants.push({
         id: makeVariantId(variantName || name),
         name: variantName || name,
+        sku: variantSku,
         price,
         stock,
         imageUrl
@@ -122,11 +139,15 @@ function groupRowsIntoProducts(rows) {
       product.price = Number(product.variants[0]?.price || 0);
       product.imageUrl = product.variants[0]?.imageUrl || imageUrl;
     } else {
-      const key = `${name.toLowerCase()}__single__${category}`;
+      const key = sku ? `sku__${sku}` : `${name.toLowerCase()}__single__${category}`;
 
       productMap.set(key, {
         name,
         category,
+        sku,
+        productType: "single",
+        optionType: "",
+        variantLabel: "",
         hasVariants: false,
         price,
         stock,
@@ -155,11 +176,15 @@ function parseCsvToRows(csvText) {
   }
 
   const headers = parseCsvLine(lines[0]).map(normalizeHeader);
+
   const requiredHeaders = [
     "name",
     "category",
+    "sku",
     "hasVariants",
+    "optionType",
     "variantName",
+    "variantSku",
     "price",
     "stock",
     "lowStockThreshold",
@@ -185,21 +210,22 @@ function parseCsvToRows(csvText) {
 
 function renderPreview() {
   if (!parsedProducts.length) {
-    previewTable.innerHTML = `<tr><td colspan="6">No products previewed yet.</td></tr>`;
+    previewTable.innerHTML = `<tr><td colspan="7">No products previewed yet.</td></tr>`;
     previewSummary.style.display = "none";
     importBtn.disabled = true;
     return;
   }
 
+  const mode = getUploadMode();
   const totalVariants = parsedProducts.reduce((sum, product) => {
     return sum + (product.hasVariants ? product.variants.length : 0);
   }, 0);
 
   previewSummary.style.display = "block";
-  previewSummary.textContent = `${parsedProducts.length} product(s) ready. ${totalVariants} variant(s) detected.`;
+  previewSummary.textContent = `${parsedProducts.length} product(s) ready. ${totalVariants} option(s). Mode: ${mode}.`;
 
   previewTable.innerHTML = parsedProducts.map(product => {
-    const type = product.hasVariants ? "Variants" : "Single";
+    const type = product.hasVariants ? (product.variantLabel === "Size" ? "Sizes" : "Varieties") : "Single";
     const priceOrVariants = product.hasVariants
       ? product.variants.map(v => `${v.name}: ₦${Number(v.price).toLocaleString()}`).join("<br>")
       : `₦${Number(product.price).toLocaleString()}`;
@@ -208,16 +234,21 @@ function renderPreview() {
       ? product.variants.map(v => `${v.name}: ${v.stock}`).join("<br>")
       : product.stock;
 
-    const image = product.imageUrl || product.variants?.[0]?.imageUrl || "assets/logo.png";
+    const action = mode === "price"
+      ? "Update price"
+      : mode === "stock"
+        ? "Update stock"
+        : "Import/update";
 
     return `
       <tr>
         <td>${product.name}</td>
+        <td>${product.sku || ""}</td>
         <td>${type}</td>
         <td>${product.category}</td>
         <td>${priceOrVariants}</td>
         <td>${stock}</td>
-        <td><img src="${image}" alt="${product.name}" style="width:60px;height:50px;object-fit:cover;border-radius:10px;"></td>
+        <td>${action}</td>
       </tr>
     `;
   }).join("");
@@ -225,61 +256,141 @@ function renderPreview() {
   importBtn.disabled = false;
 }
 
-async function productExists(name, category) {
-  const q = query(
+async function findExistingProduct(product) {
+  if (product.sku) {
+    const skuQuery = query(collection(db, "products"), where("sku", "==", product.sku));
+    const skuSnap = await getDocs(skuQuery);
+    if (!skuSnap.empty) return skuSnap.docs[0];
+  }
+
+  const nameQuery = query(
     collection(db, "products"),
-    where("name", "==", name),
-    where("category", "==", category)
+    where("name", "==", product.name),
+    where("category", "==", product.category)
   );
 
-  const snap = await getDocs(q);
-  return !snap.empty;
+  const nameSnap = await getDocs(nameQuery);
+  return nameSnap.empty ? null : nameSnap.docs[0];
 }
 
-async function importProducts() {
+function mergeVariants(existingProduct, incomingProduct, mode) {
+  const existingVariants = existingProduct.variants || [];
+  const incomingVariants = incomingProduct.variants || [];
+
+  const merged = [...existingVariants];
+
+  for (const incoming of incomingVariants) {
+    const matchIndex = merged.findIndex(existing => {
+      if (incoming.sku && existing.sku) return incoming.sku === existing.sku;
+      return String(existing.name || "").toLowerCase() === String(incoming.name || "").toLowerCase();
+    });
+
+    if (matchIndex >= 0) {
+      if (mode === "price") {
+        merged[matchIndex].price = incoming.price;
+      } else if (mode === "stock") {
+        merged[matchIndex].stock = incoming.stock;
+      } else {
+        merged[matchIndex] = {
+          ...merged[matchIndex],
+          ...incoming
+        };
+      }
+    } else if (mode === "upsert") {
+      merged.push(incoming);
+    }
+  }
+
+  return merged;
+}
+
+async function processProducts() {
   if (!parsedProducts.length) {
-    alert("No products to import.");
+    alert("No products to process.");
     return;
   }
 
-  const confirmImport = confirm(
-    "Import these products to Firebase? Existing products with the same name and category will be skipped."
-  );
+  const mode = getUploadMode();
+  const confirmImport = confirm(`Process this sheet using mode: ${mode}?`);
 
   if (!confirmImport) return;
 
   importBtn.disabled = true;
-  importBtn.textContent = "Importing...";
+  importBtn.textContent = "Processing...";
 
-  let imported = 0;
+  let created = 0;
+  let updated = 0;
   let skipped = 0;
 
   try {
     for (const product of parsedProducts) {
-      const exists = await productExists(product.name, product.category);
+      const existingDoc = await findExistingProduct(product);
 
-      if (exists) {
-        skipped++;
+      if (!existingDoc) {
+        if (mode === "upsert") {
+          await addDoc(collection(db, "products"), {
+            ...product,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          created++;
+        } else {
+          skipped++;
+        }
+
         continue;
       }
 
-      await addDoc(collection(db, "products"), {
-        ...product,
-        createdAt: serverTimestamp(),
+      const existingProduct = existingDoc.data();
+      let updateData = {
         updatedAt: serverTimestamp()
-      });
+      };
 
-      imported++;
+      if (product.hasVariants) {
+        const mergedVariants = mergeVariants(existingProduct, product, mode);
+
+        updateData.variants = mergedVariants;
+        updateData.stock = mergedVariants.reduce((sum, item) => sum + Number(item.stock || 0), 0);
+        updateData.price = Number(mergedVariants[0]?.price || existingProduct.price || 0);
+        updateData.hasVariants = true;
+        updateData.variantLabel = product.variantLabel || existingProduct.variantLabel || "";
+        updateData.optionType = product.optionType || existingProduct.optionType || "";
+
+        if (mode === "upsert") {
+          updateData = {
+            ...updateData,
+            name: product.name,
+            category: product.category,
+            sku: product.sku || existingProduct.sku || "",
+            imageUrl: product.imageUrl || existingProduct.imageUrl || "assets/logo.png",
+            lowStockThreshold: product.lowStockThreshold || existingProduct.lowStockThreshold || 5
+          };
+        }
+      } else {
+        if (mode === "price") {
+          updateData.price = product.price;
+        } else if (mode === "stock") {
+          updateData.stock = product.stock;
+        } else {
+          updateData = {
+            ...product,
+            updatedAt: serverTimestamp()
+          };
+        }
+      }
+
+      await updateDoc(doc(db, "products", existingDoc.id), updateData);
+      updated++;
     }
 
-    showStatus(`Import completed. Imported: ${imported}. Skipped duplicates: ${skipped}.`);
+    showStatus(`Completed. Created: ${created}. Updated: ${updated}. Skipped: ${skipped}.`);
     parsedProducts = [];
     renderPreview();
   } catch (error) {
-    showStatus("Import failed: " + error.message, true);
+    showStatus("Processing failed: " + error.message, true);
   } finally {
     importBtn.disabled = false;
-    importBtn.textContent = "Import to Firebase";
+    importBtn.textContent = "Process Sheet";
   }
 }
 
@@ -313,26 +424,42 @@ clearPreviewBtn.addEventListener("click", () => {
   hideStatus();
 });
 
-importBtn.addEventListener("click", importProducts);
+importBtn.addEventListener("click", processProducts);
+document.querySelectorAll("input[name='uploadMode']").forEach(input => input.addEventListener("change", renderPreview));
 
-downloadTemplateBtn.addEventListener("click", () => {
-  const csvTemplate = [
-    "name,category,hasVariants,variantName,price,stock,lowStockThreshold,imageUrl",
-    "Toothpaste,household,true,Colgate,2500,20,5,assets/colgate.jpg",
-    "Toothpaste,household,true,Close-Up,2300,15,5,assets/closeup.jpg",
-    "Rice 50kg,grains,false,,85000,20,5,assets/rice.jpg",
-    "Vegetable Oil 5L,oil,false,,12000,30,5,assets/oil.jpg"
-  ].join("\\n");
-
-  const blob = new Blob([csvTemplate], { type: "text/csv" });
+function downloadCsv(filename, rows) {
+  const blob = new Blob([rows.join("\\n")], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = "biserry-products-template.csv";
+  link.download = filename;
   link.click();
 
   URL.revokeObjectURL(url);
+}
+
+downloadTemplateBtn.addEventListener("click", () => {
+  downloadCsv("biserry-full-product-template.csv", [
+    "name,category,sku,hasVariants,optionType,variantName,variantSku,price,stock,lowStockThreshold,imageUrl",
+    "Goldimo,grains,GLD,true,sizes,900g,GLD-900G,5000,20,5,assets/goldimo-900g.jpg",
+    "Goldimo,grains,GLD,true,sizes,300g,GLD-300G,2500,15,5,assets/goldimo-300g.jpg",
+    "Rice 50kg,grains,RICE-50KG,false,,,85000,20,5,assets/rice.jpg"
+  ]);
+});
+
+downloadPriceTemplateBtn.addEventListener("click", () => {
+  downloadCsv("biserry-price-update-template.csv", [
+    "name,category,sku,hasVariants,optionType,variantName,variantSku,price,stock,lowStockThreshold,imageUrl",
+    "Goldimo,grains,GLD,true,sizes,900g,GLD-900G,5500,,,"
+  ]);
+});
+
+downloadStockTemplateBtn.addEventListener("click", () => {
+  downloadCsv("biserry-stock-count-template.csv", [
+    "name,category,sku,hasVariants,optionType,variantName,variantSku,price,stock,lowStockThreshold,imageUrl",
+    "Goldimo,grains,GLD,true,sizes,900g,GLD-900G,,40,,"
+  ]);
 });
 
 renderPreview();
