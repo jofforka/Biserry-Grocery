@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Products & Inventory</title>
+
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
+
 <body>
 <div class="adminShell">
   <aside class="sidebar">
     <img src="../assets/logo.png" alt="Biserry Logo">
     <h2>Biserry OS</h2>
+
     <a href="dashboard.html">Dashboard</a>
     <a href="products.html" class="active">Products</a>
     <a href="bulk-upload.html">Bulk Upload</a>
@@ -21,6 +25,7 @@
     <a href="delivery-zones.html">Delivery Zones</a>
     <a href="inventory-logs.html">Inventory Logs</a>
     <a href="../index.html">View Store</a>
+
     <button id="logoutBtn" type="button">Logout</button>
   </aside>
 
@@ -28,7 +33,7 @@
     <div class="adminTop">
       <div>
         <h1>Products & Inventory</h1>
-        <p>Manage single products, product sizes, product varieties, stock and images.</p>
+        <p>Manage products, sizes, varieties, SKU/barcode, stock and prices.</p>
       </div>
     </div>
 
@@ -59,6 +64,11 @@
 
         <div class="grid2">
           <div>
+            <label>SKU / Barcode</label>
+            <input id="sku" placeholder="Optional SKU or barcode">
+          </div>
+
+          <div>
             <label>Product Type</label>
             <select id="productType">
               <option value="single">Single Product</option>
@@ -66,14 +76,14 @@
               <option value="varieties">Product With Varieties</option>
             </select>
           </div>
+        </div>
 
+        <div class="grid2">
           <div>
             <label>Low Stock Alert Level</label>
             <input id="lowStockThreshold" type="number" value="5">
           </div>
-        </div>
 
-        <div class="grid2">
           <div>
             <label>Homepage Display</label>
             <select id="isFeatured">
@@ -81,11 +91,11 @@
               <option value="true">Featured Product</option>
             </select>
           </div>
+        </div>
 
-          <div>
-            <label>Product Note</label>
-            <input id="productNote" placeholder="Optional note e.g. Available in different sizes">
-          </div>
+        <div>
+          <label>Product Note</label>
+          <input id="productNote" placeholder="Optional note e.g. Available in different sizes">
         </div>
 
         <div id="singleProductFields">
@@ -118,7 +128,7 @@
           <div class="variantHeader">
             <div>
               <h3 id="variantSectionTitle">Product Options</h3>
-              <p id="variantSectionHelp">Add each size or variety with its own price, stock and image.</p>
+              <p id="variantSectionHelp">Add each size or variety with its own price, stock, SKU and image.</p>
             </div>
 
             <button class="btn outline" type="button" id="addVariantBtn">Add Option</button>
@@ -139,20 +149,22 @@
         <div>
           <span class="sectionLabel">Inventory Management</span>
           <h2>Product Inventory</h2>
-          <p>Manage products individually or upload many products using a CSV sell sheet.</p>
+          <p>Search by name, SKU, barcode, category, size or variety.</p>
         </div>
 
         <div class="adminActions">
-          <a href="bulk-upload.html" class="btn outline">Bulk Upload CSV</a>
+          <a href="bulk-upload.html" class="btn outline">Bulk Upload / Update</a>
         </div>
       </div>
+
+      <input id="adminProductSearch" class="adminSearchInput" placeholder="Search by product name, SKU, barcode, category, size or variety...">
 
       <div class="tableWrap">
         <table>
           <thead>
             <tr>
               <th>Image</th>
-              <th>Name</th>
+              <th>Name / SKU</th>
               <th>Type</th>
               <th>Category</th>
               <th>Price / Options</th>
