@@ -136,7 +136,7 @@ function renderVariantRows() {
         <img src="${variant.imageUrl || "../assets/logo.png"}" alt="${variant.name || label}">
       </div>
 
-      <button type="button" onclick="removeVariant(${index})">Remove</button>
+      <div class="variantActions"><button class="duplicateVariantBtn" type="button" onclick="duplicateVariant(${index})">Duplicate</button><button class="removeVariantBtn" type="button" onclick="removeVariant(${index})">Remove</button></div>
     </div>
   `).join("");
 }
@@ -152,6 +152,21 @@ window.updateVariant = function(index, field, value) {
 window.setVariantImageFile = function(index, file) {
   if (!variants[index]) return;
   variants[index].imageFile = file || null;
+};
+
+window.duplicateVariant = function(index) {
+  const original = variants[index];
+  if (!original) return;
+
+  variants.splice(index + 1, 0, {
+    ...original,
+    id: makeVariantId(),
+    name: `${original.name || "Option"} Copy`,
+    sku: original.sku ? `${original.sku}-COPY` : "",
+    imageFile: null
+  });
+
+  renderVariantRows();
 };
 
 window.removeVariant = function(index) {
@@ -263,6 +278,7 @@ function renderProductsTable(products) {
         <td>
           <div class="actionBtns">
             <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
+            <button class="duplicateBtn" onclick="duplicateProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Duplicate</button>
             <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
           </div>
         </td>
@@ -420,6 +436,37 @@ window.editProduct = function(id, encodedProduct) {
   saveBtn.textContent = "Update Product";
 
   window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+window.duplicateProduct = async function(id, encodedProduct) {
+  const product = JSON.parse(decodeURIComponent(encodedProduct));
+
+  const duplicatedVariants = (product.variants || []).map(variant => ({
+    ...variant,
+    id: makeVariantId(),
+    sku: variant.sku ? `${variant.sku}-COPY` : ""
+  }));
+
+  const duplicatedProduct = {
+    ...product,
+    name: `${product.name || "Product"} Copy`,
+    sku: product.sku ? `${product.sku}-COPY` : "",
+    variants: duplicatedVariants,
+    isFeatured: false,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+
+  try {
+    const newDoc = await addDoc(collection(db, "products"), duplicatedProduct);
+
+    alert("Product duplicated. The copy has been created and opened for editing.");
+
+    await loadProducts();
+    window.editProduct(newDoc.id, encodeURIComponent(JSON.stringify(duplicatedProduct)));
+  } catch (error) {
+    alert("Duplicate failed: " + error.message);
+  }
 };
 
 window.deleteProduct = async function(id) {
