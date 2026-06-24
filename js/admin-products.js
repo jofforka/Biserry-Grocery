@@ -482,6 +482,5 @@ window.deleteProduct = async function(id) {
 };
 
 cancelBtn.addEventListener("click", resetForm);
-
 toggleProductType();
 loadProducts().catch(error => alert(error.message));
