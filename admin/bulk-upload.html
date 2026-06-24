@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bulk Upload | Biserry Admin</title>
+  <title>Bulk Upload & Update | Biserry Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="../css/styles.css">
@@ -17,7 +17,7 @@
 
       <a href="dashboard.html">Dashboard</a>
       <a href="products.html">Products</a>
-      <a href="bulk-upload.html">Bulk Upload</a>
+      <a href="bulk-upload.html" class="active">Bulk Upload</a>
       <a href="orders.html">Orders</a>
       <a href="customers.html">Customers</a>
       <a href="reports.html">Reports</a>
@@ -31,16 +31,41 @@
     <main class="adminMain">
       <div class="adminTop">
         <div>
-          <h1>Bulk Product Upload</h1>
-          <p>Upload a CSV sell sheet to import many products at once.</p>
+          <h1>Bulk Upload & Inventory Updates</h1>
+          <p>Import new products, update existing prices, update stock count, and manage SKU/barcode.</p>
         </div>
       </div>
 
       <section class="adminPanel">
-        <span class="sectionLabel">Sell Sheet Format</span>
+        <span class="sectionLabel">Upload Mode</span>
+        <h2>Choose What This Sheet Should Do</h2>
+
+        <div class="modeGrid">
+          <label class="modeCard">
+            <input type="radio" name="uploadMode" value="upsert" checked>
+            <strong>Smart Import / Update</strong>
+            <span>Add new products. If product already exists, update it instead of creating duplicate.</span>
+          </label>
+
+          <label class="modeCard">
+            <input type="radio" name="uploadMode" value="price">
+            <strong>Price Update Only</strong>
+            <span>Only update prices. Stock and other details remain unchanged.</span>
+          </label>
+
+          <label class="modeCard">
+            <input type="radio" name="uploadMode" value="stock">
+            <strong>Stock Count Update Only</strong>
+            <span>Only update stock count. Prices remain unchanged.</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="adminPanel">
+        <span class="sectionLabel">Sheet Format</span>
         <h2>Required CSV Columns</h2>
 
-        <p>Your CSV should contain these exact column names:</p>
+        <p>Your CSV should contain these exact column names. You may leave optional fields blank.</p>
 
         <div class="tableWrap">
           <table>
@@ -53,28 +78,31 @@
             </thead>
 
             <tbody>
-              <tr><td>name</td><td>Toothpaste</td><td>Main product name</td></tr>
-              <tr><td>category</td><td>household</td><td>grains, oil, spices, fresh, drinks, household</td></tr>
-              <tr><td>hasVariants</td><td>true</td><td>true for products with varieties, false for single product</td></tr>
-              <tr><td>variantName</td><td>Colgate</td><td>Only needed for product varieties</td></tr>
-              <tr><td>price</td><td>2500</td><td>Product or variant price</td></tr>
+              <tr><td>name</td><td>Goldimo</td><td>Main product name</td></tr>
+              <tr><td>category</td><td>grains</td><td>Product category</td></tr>
+              <tr><td>sku</td><td>GLD-900G</td><td>SKU or barcode. Useful for searching and updating.</td></tr>
+              <tr><td>hasVariants</td><td>true</td><td>true for sizes/varieties, false for single product</td></tr>
+              <tr><td>optionType</td><td>sizes</td><td>sizes, varieties, or blank</td></tr>
+              <tr><td>variantName</td><td>900g</td><td>Size/variety name</td></tr>
+              <tr><td>variantSku</td><td>GLD-900G</td><td>SKU/barcode for size/variety</td></tr>
+              <tr><td>price</td><td>5000</td><td>Product or variant price</td></tr>
               <tr><td>stock</td><td>20</td><td>Available stock quantity</td></tr>
               <tr><td>lowStockThreshold</td><td>5</td><td>Low stock alert level</td></tr>
-              <tr><td>imageUrl</td><td>assets/colgate.jpg</td><td>Image path or Firebase image URL</td></tr>
+              <tr><td>imageUrl</td><td>assets/goldimo.jpg</td><td>Image URL or asset path</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="bulkActions">
-          <button class="btn outline" id="downloadTemplateBtn" type="button">
-            Download CSV Template
-          </button>
+          <button class="btn outline" id="downloadTemplateBtn" type="button">Download Full Template</button>
+          <button class="btn outline" id="downloadPriceTemplateBtn" type="button">Download Price Update Template</button>
+          <button class="btn outline" id="downloadStockTemplateBtn" type="button">Download Stock Count Template</button>
         </div>
       </section>
 
       <section class="adminPanel">
         <span class="sectionLabel">Upload CSV</span>
-        <h2>Import Products</h2>
+        <h2>Preview Before Import</h2>
 
         <input id="csvFile" type="file" accept=".csv,text/csv">
 
@@ -90,12 +118,10 @@
         <div class="adminListHead">
           <div>
             <span class="sectionLabel">Preview</span>
-            <h2>Products Ready for Import</h2>
+            <h2>Rows Ready for Processing</h2>
           </div>
 
-          <button class="btn" id="importBtn" type="button" disabled>
-            Import to Firebase
-          </button>
+          <button class="btn" id="importBtn" type="button" disabled>Process Sheet</button>
         </div>
 
         <div id="previewSummary" class="storeNotice" style="display:none;"></div>
@@ -105,11 +131,12 @@
             <thead>
               <tr>
                 <th>Product</th>
+                <th>SKU</th>
                 <th>Type</th>
                 <th>Category</th>
-                <th>Price / Variants</th>
+                <th>Price / Options</th>
                 <th>Stock</th>
-                <th>Image</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="previewTable"></tbody>
