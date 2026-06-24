@@ -17,10 +17,12 @@ protectAdminPage();
 let editingId = null;
 let editingImageUrl = "";
 let variants = [];
+let allProducts = [];
 
 const form = document.getElementById("productForm");
 const nameInput = document.getElementById("name");
 const categoryInput = document.getElementById("category");
+const skuInput = document.getElementById("sku");
 const productTypeInput = document.getElementById("productType");
 const priceInput = document.getElementById("price");
 const stockInput = document.getElementById("stock");
@@ -30,6 +32,7 @@ const productNoteInput = document.getElementById("productNote");
 const imageFileInput = document.getElementById("imageFile");
 const imageUrlInput = document.getElementById("imageUrl");
 const productsTable = document.getElementById("productsTable");
+const adminProductSearch = document.getElementById("adminProductSearch");
 const formTitle = document.getElementById("formTitle");
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
@@ -79,10 +82,10 @@ function toggleProductType() {
       : "Product Options";
 
   variantSectionHelp.textContent = productType === "sizes"
-    ? "Example: Goldimo → Small, Medium, Large. Each size can have a different price, stock and image."
+    ? "Example: Goldimo → Small, Medium, Large. Each size can have a different SKU, price, stock and image."
     : productType === "varieties"
-      ? "Example: Toothpaste → Colgate, Close-Up, Oral-B. Each variety can have a different price, stock and image."
-      : "Add each option with its own price, stock and image.";
+      ? "Example: Toothpaste → Colgate, Close-Up, Oral-B. Each variety can have a different SKU, price, stock and image."
+      : "Add each option with its own SKU, price, stock and image.";
 
   addVariantBtn.textContent = "Add " + label;
   renderVariantRows();
@@ -101,6 +104,11 @@ function renderVariantRows() {
       <div>
         <label>${label} Name</label>
         <input value="${variant.name || ""}" onchange="updateVariant(${index}, 'name', this.value)" placeholder="${getVariantPlaceholder()}">
+      </div>
+
+      <div>
+        <label>${label} SKU / Barcode</label>
+        <input value="${variant.sku || ""}" onchange="updateVariant(${index}, 'sku', this.value)" placeholder="Optional">
       </div>
 
       <div>
@@ -155,6 +163,7 @@ addVariantBtn.addEventListener("click", () => {
   variants.push({
     id: makeVariantId(),
     name: "",
+    sku: "",
     price: 0,
     stock: 0,
     imageUrl: "",
@@ -168,7 +177,6 @@ productTypeInput.addEventListener("change", toggleProductType);
 
 async function uploadImage(file) {
   if (!file) return "";
-
   return await uploadImageToGoogleDrive(file);
 }
 
@@ -185,6 +193,7 @@ async function prepareVariantsForSave() {
     cleaned.push({
       id: variant.id || makeVariantId(),
       name: variant.name,
+      sku: variant.sku || "",
       price: Number(variant.price || 0),
       stock: Number(variant.stock || 0),
       imageUrl
@@ -220,12 +229,10 @@ function productTypeFromProduct(product) {
   return "single";
 }
 
-async function loadProducts() {
-  const snap = await getDocs(collection(db, "products"));
+function renderProductsTable(products) {
   productsTable.innerHTML = "";
 
-  snap.forEach(docSnap => {
-    const product = docSnap.data();
+  products.forEach(({ id, product }) => {
     const productType = productTypeFromProduct(product);
     const isOptionProduct = productType === "sizes" || productType === "varieties";
     const optionLabel = productType === "sizes" ? "Sizes" : productType === "varieties" ? "Varieties" : "Single";
@@ -239,12 +246,14 @@ async function loadProducts() {
       : formatNaira(Number(product.price || 0));
 
     const image = product.imageUrl || product.variants?.[0]?.imageUrl || "../assets/logo.png";
+    const skuText = product.sku ? `<br><small>SKU: ${product.sku}</small>` : "";
 
     productsTable.innerHTML += `
       <tr>
         <td><img src="${image}" alt="${product.name}"></td>
         <td>
           <strong>${product.name}</strong>
+          ${skuText}
           ${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}
         </td>
         <td>${optionLabel}</td>
@@ -253,14 +262,52 @@ async function loadProducts() {
         <td>${totalStock}</td>
         <td>
           <div class="actionBtns">
-            <button class="editBtn" onclick="editProduct('${docSnap.id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
-            <button class="deleteBtn" onclick="deleteProduct('${docSnap.id}')">Delete</button>
+            <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
+            <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
           </div>
         </td>
       </tr>
     `;
   });
 }
+
+function productMatchesSearch(product, term) {
+  const variantsText = (product.variants || [])
+    .map(v => `${v.name || ""} ${v.sku || ""}`)
+    .join(" ");
+
+  const haystack = `
+    ${product.name || ""}
+    ${product.sku || ""}
+    ${product.category || ""}
+    ${product.productNote || ""}
+    ${variantsText}
+  `.toLowerCase();
+
+  return haystack.includes(term);
+}
+
+async function loadProducts() {
+  const snap = await getDocs(collection(db, "products"));
+
+  allProducts = snap.docs.map(docSnap => ({
+    id: docSnap.id,
+    product: docSnap.data()
+  }));
+
+  renderProductsTable(allProducts);
+}
+
+adminProductSearch?.addEventListener("input", () => {
+  const term = adminProductSearch.value.trim().toLowerCase();
+
+  if (!term) {
+    renderProductsTable(allProducts);
+    return;
+  }
+
+  renderProductsTable(allProducts.filter(item => productMatchesSearch(item.product, term)));
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -278,6 +325,7 @@ form.addEventListener("submit", async (event) => {
   let productData = {
     name: nameInput.value.trim(),
     category: categoryInput.value,
+    sku: skuInput ? skuInput.value.trim() : "",
     productType,
     optionType: hasOptions ? productType : "",
     variantLabel,
@@ -295,7 +343,6 @@ form.addEventListener("submit", async (event) => {
     }
 
     const cleanedVariants = await prepareVariantsForSave();
-
     const invalidVariant = cleanedVariants.find(item => !item.name || Number(item.price || 0) <= 0);
 
     if (invalidVariant) {
@@ -348,6 +395,7 @@ window.editProduct = function(id, encodedProduct) {
 
   nameInput.value = product.name || "";
   categoryInput.value = product.category || "grains";
+  if (skuInput) skuInput.value = product.sku || "";
   productTypeInput.value = productType;
   lowStockInput.value = product.lowStockThreshold || 5;
 
