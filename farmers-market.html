@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Farmers Market | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"></head>
+<body>
+<header class="topbar"><div class="brand"><img src="assets/logo.png" class="logo-img"><div><h1>Biserry Groceries</h1><p>Farmers Market Concierge</p></div></div><button class="mobileMenuBtn" id="mobileMenuBtn" type="button">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="farmers-market.html">Farmers Market</a><a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a><a href="checkout.html">Checkout</a></nav></header>
+
+<section class="pageHero"><span class="sectionLabel">Farmers Market Concierge</span><h2>Send us your shopping list.</h2><p>Tell us what you need from the market. We will source it and deliver to you.</p></section>
+
+<section class="farmersMarket standaloneFarmers">
+  <div class="farmersCopy"><h2>What we can source</h2><p>Fresh vegetables, fruits, spices, meat, fish, foodstuff, bulk items, and special requests.</p><ul><li>Fresh market sourcing</li><li>Custom shopping list</li><li>Delivery to your location</li><li>WhatsApp follow-up</li></ul></div>
+  <form id="farmersMarketForm" class="farmersForm"><h3>Submit Your Market List</h3><div class="grid2"><input id="fmName" required placeholder="Full name"><input id="fmPhone" required placeholder="Phone / WhatsApp"></div><input id="fmAddress" required placeholder="Delivery address"><textarea id="fmList" required placeholder="Write your shopping list here"></textarea><div class="grid2"><input id="fmBudget" placeholder="Budget range e.g. ₦30,000 - ₦50,000"><input id="fmDate" type="date"></div><textarea id="fmNotes" placeholder="Extra notes or preference"></textarea><button class="btn" type="submit">Submit Market List</button><p class="formNote">Your request will be saved and prepared for WhatsApp confirmation.</p></form>
+</section>
+
+<div id="cartToast" class="cartToast">Submitted</div><nav class="bottomNav"><a href="index.html">🏠<span>Home</span></a><a href="shop.html">🔍<span>Shop</span></a><button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button><a href="farmers-market.html">🌾<span>Market</span></a><a href="admin/login.html">👤<span>Admin</span></a></nav><footer><p><strong>Biserry Groceries</strong></p></footer><script type="module" src="js/store.js"></script></body></html>
