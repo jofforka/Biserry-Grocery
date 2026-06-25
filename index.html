@@ -25,20 +25,38 @@
   </nav>
 </header>
 
-<section class="hero">
-  <div class="heroCopy">
-    <span class="badge">Fresh • Affordable • Reliable</span>
-    <h2>Groceries delivered without market stress.</h2>
-    <p>Shop everyday groceries or send us your market list. Biserry Groceries will source and deliver to your doorstep.</p>
-    <div class="heroActions">
-      <a href="shop.html" class="btn">Shop Products</a>
-      <a href="farmers-market.html" class="btn outline">Send Market List</a>
-    </div>
-    <div class="trustStrip">
-      <span>🚚 Delivery</span><span>🛒 Pickup</span><span>🌾 Market Sourcing</span><span>💬 WhatsApp Support</span>
+<section class="heroSlider" id="home">
+  <div class="heroSlide active" style="background-image:url('assets/hero-banner.png')">
+    <div class="heroOverlay">
+      <span class="badge">Fresh • Affordable • Reliable</span>
+      <h2>Groceries Delivered Without Market Stress</h2>
+      <p>Shop everyday groceries from your phone and get them delivered.</p>
+      <a href="shop.html" class="btn">Shop Now</a>
     </div>
   </div>
-  <div class="heroCard"><img src="assets/hero-banner.png" alt="Biserry Groceries" onerror="this.src='assets/logo.png'"></div>
+
+  <div class="heroSlide" style="background-image:url('assets/rice.jpg')">
+    <div class="heroOverlay">
+      <span class="badge">Foodstuff & Grains</span>
+      <h2>Stock Your Kitchen With Ease</h2>
+      <p>Rice, beans, pasta, flour, garri and more.</p>
+      <a href="shop.html?category=grains" class="btn">Shop Grains</a>
+    </div>
+  </div>
+
+  <div class="heroSlide" style="background-image:url('assets/fresh-vegetables.jpg')">
+    <div class="heroOverlay">
+      <span class="badge">Farmers Market</span>
+      <h2>Send Us Your Market List</h2>
+      <p>We source fresh items from the market and deliver to you.</p>
+      <a href="farmers-market.html" class="btn">Send List</a>
+    </div>
+  </div>
+
+  <button class="heroArrow heroPrev" type="button">‹</button>
+  <button class="heroArrow heroNext" type="button">›</button>
+
+  <div class="heroDots" id="heroDots"></div>
 </section>
 
 <section class="storeSteps">
