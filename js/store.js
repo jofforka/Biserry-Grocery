@@ -72,3 +72,49 @@ export function clearCartAfterOrder(){cart=[];saveCart();renderCart()}
 
 await loadProducts();
 renderCart();
+
+function initHeroSlider(){
+  const slides = [...document.querySelectorAll(".heroSlide")];
+  const dotsWrap = document.getElementById("heroDots");
+  const prevBtn = document.querySelector(".heroPrev");
+  const nextBtn = document.querySelector(".heroNext");
+
+  if (!slides.length || !dotsWrap) return;
+
+  let current = 0;
+
+  dotsWrap.innerHTML = slides
+    .map((_, index) => `<button type="button" data-slide="${index}"></button>`)
+    .join("");
+
+  const dots = [...dotsWrap.querySelectorAll("button")];
+
+  function showSlide(index){
+    current = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("active", i === current);
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("active", i === current);
+    });
+  }
+
+  prevBtn?.addEventListener("click", () => showSlide(current - 1));
+  nextBtn?.addEventListener("click", () => showSlide(current + 1));
+
+  dots.forEach(dot => {
+    dot.addEventListener("click", () => {
+      showSlide(Number(dot.dataset.slide));
+    });
+  });
+
+  showSlide(0);
+
+  setInterval(() => {
+    showSlide(current + 1);
+  }, 5500);
+}
+
+initHeroSlider();
