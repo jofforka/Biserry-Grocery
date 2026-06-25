@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Biserry Groceries</title>
 
-  <link rel="icon" href="assets/logo.png" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0f4f2b" />
-  <link rel="apple-touch-icon" href="assets/logo.png" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
   <header class="topbar">
     <div class="brand">
-      <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries Logo" />
+      <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries Logo">
 
       <div>
         <h1>Biserry Groceries</h1>
@@ -24,46 +21,43 @@
       </div>
     </div>
 
-    <button class="mobileMenuBtn" id="mobileMenuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+    <button class="mobileMenuBtn" id="mobileMenuBtn" type="button" aria-label="Open menu">☰</button>
 
     <nav id="mainNav">
+      <a href="index.html">Home</a>
       <a href="#categories">Categories</a>
       <a href="#featured">Featured</a>
       <a href="#shop">Shop</a>
-
-      <a href="cart.html" class="cartNavLink">
-        Cart <span id="navCartCount" class="cartBadge">0</span>
-      </a>
-
-      <a href="cart.html#checkout">Checkout</a>
+      <a href="#cart" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a>
+      <a href="checkout.html">Checkout</a>
       <a href="admin/login.html">Admin</a>
-
-      <a class="btn small" href="https://wa.me/2348100584211" target="_blank">
-        WhatsApp
-      </a>
+      <a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
     </nav>
   </header>
 
-  <section class="hero">
-    <div>
-      <span class="badge">Fresh • Affordable • Reliable</span>
-
-      <h2>Your everyday groceries, ordered with ease.</h2>
-
-      <p>
-        Shop foodstuff, beverages, fresh items, and household essentials from
-        Biserry Groceries. Add products to your cart, continue shopping, and
-        checkout when ready.
+  <section class="hero heroCarousel" id="home">
+    <div class="heroCopy">
+      <span class="badge" id="heroBadge">Fresh • Affordable • Reliable</span>
+      <h2 id="heroTitle">Fresh groceries delivered to your doorstep.</h2>
+      <p id="heroText">
+        Shop foodstuff, beverages, household essentials and fresh items from Biserry Groceries.
+        Select products, choose quantity and checkout with ease.
       </p>
 
       <div class="heroActions">
         <a href="#shop" class="btn">Shop Now</a>
-        <a href="cart.html" class="btn outline">View Cart</a>
+        <a href="#featured" class="btn outline">View Deals</a>
+      </div>
+
+      <div class="trustStrip">
+        <span>🚚 Fast Delivery</span>
+        <span>🛒 Easy Checkout</span>
+        <span>💬 WhatsApp Support</span>
       </div>
     </div>
 
     <div class="heroCard">
-      <img src="assets/biserry-flyer.png" alt="Biserry Groceries" />
+      <img id="heroImage" src="assets/hero-banner.png" alt="Biserry Groceries">
     </div>
   </section>
 
@@ -71,19 +65,19 @@
     <div>
       <span>1</span>
       <h3>Select Products</h3>
-      <p>Pick items and choose quantity.</p>
+      <p>Pick items, sizes or varieties.</p>
     </div>
 
     <div>
       <span>2</span>
-      <h3>Preview Cart</h3>
-      <p>Use the floating cart to preview your items.</p>
+      <h3>Review Cart</h3>
+      <p>See quantity, subtotal and delivery options.</p>
     </div>
 
     <div>
       <span>3</span>
       <h3>Checkout</h3>
-      <p>Choose delivery or pickup and submit your order.</p>
+      <p>Submit order and receive support on WhatsApp.</p>
     </div>
   </section>
 
@@ -91,40 +85,40 @@
     <div class="sectionHead">
       <div>
         <span class="sectionLabel">Shop by Category</span>
-        <h2>Browse Popular Categories</h2>
-        <p>Quickly jump to the type of product you need.</p>
+        <h2>Browse Popular Sections</h2>
+        <p>Quickly jump into the items you need most.</p>
       </div>
     </div>
 
     <div class="categoryGrid">
-      <button class="categoryCard" data-category-jump="grains">
-        <img src="assets/rice.jpg" alt="Grains">
-        <span>Grains</span>
+      <button class="categoryCard" type="button" data-category-jump="grains">
+        <img src="assets/rice.jpg" alt="Grains" onerror="this.src='assets/logo.png'">
+        <strong>Grains</strong>
       </button>
 
-      <button class="categoryCard" data-category-jump="oil">
-        <img src="assets/vegetable-oil.jpg" alt="Oil">
-        <span>Oil</span>
+      <button class="categoryCard" type="button" data-category-jump="oil">
+        <img src="assets/vegetable-oil.jpg" alt="Oil" onerror="this.src='assets/logo.png'">
+        <strong>Oil</strong>
       </button>
 
-      <button class="categoryCard" data-category-jump="spices">
-        <img src="assets/tomato-paste.jpg" alt="Spices">
-        <span>Spices</span>
+      <button class="categoryCard" type="button" data-category-jump="spices">
+        <img src="assets/tomato-paste.jpg" alt="Spices" onerror="this.src='assets/logo.png'">
+        <strong>Spices</strong>
       </button>
 
-      <button class="categoryCard" data-category-jump="fresh">
-        <img src="assets/fresh-vegetables.jpg" alt="Fresh Produce">
-        <span>Fresh Produce</span>
+      <button class="categoryCard" type="button" data-category-jump="fresh">
+        <img src="assets/fresh-vegetables.jpg" alt="Fresh Produce" onerror="this.src='assets/logo.png'">
+        <strong>Fresh Produce</strong>
       </button>
 
-      <button class="categoryCard" data-category-jump="drinks">
-        <img src="assets/beverages.jpg" alt="Drinks">
-        <span>Drinks</span>
+      <button class="categoryCard" type="button" data-category-jump="drinks">
+        <img src="assets/beverages.jpg" alt="Drinks" onerror="this.src='assets/logo.png'">
+        <strong>Drinks</strong>
       </button>
 
-      <button class="categoryCard" data-category-jump="household">
-        <img src="assets/household.jpg" alt="Household">
-        <span>Household</span>
+      <button class="categoryCard" type="button" data-category-jump="household">
+        <img src="assets/household.jpg" alt="Household" onerror="this.src='assets/logo.png'">
+        <strong>Household</strong>
       </button>
     </div>
   </section>
@@ -133,69 +127,109 @@
     <div class="sectionHead">
       <div>
         <span class="sectionLabel">Featured Products</span>
-        <h2>Recommended This Week</h2>
-        <p>Promote your best products and current offers here.</p>
+        <h2>Recommended for You</h2>
+        <p>Popular everyday products picked for quick shopping.</p>
       </div>
     </div>
 
-    <div id="featuredGrid" class="productGrid compactGrid"></div>
+    <div id="featuredGrid" class="productGrid compactGrid">
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+    </div>
   </section>
 
-  <section id="recent" class="recentSection">
+  <section class="recentSection">
     <div class="sectionHead">
       <div>
         <span class="sectionLabel">Recently Added</span>
         <h2>New in Store</h2>
-        <p>Latest products added by the admin.</p>
+        <p>Freshly updated inventory from Biserry Groceries.</p>
       </div>
     </div>
 
-    <div id="recentGrid" class="productGrid compactGrid"></div>
+    <div id="recentGrid" class="productGrid compactGrid">
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+    </div>
   </section>
 
   <section id="shop" class="shopSection">
-    <div class="sectionHead">
-      <div>
-        <span class="sectionLabel">Online Store</span>
-        <h2>Shop Groceries</h2>
-        <p>
-          Products are loaded from Firebase. Products with varieties will show a
-          variety selector.
-        </p>
+    <div class="stickyShopTools">
+      <div class="sectionHead shopHead">
+        <div>
+          <span class="sectionLabel">Online Store</span>
+          <h2>Shop Groceries</h2>
+          <p>Select your groceries, choose quantity, and checkout in minutes.</p>
+        </div>
+
+        <input id="searchInput" type="search" placeholder="Search groceries, brands, sizes...">
       </div>
 
-      <input id="searchInput" type="search" placeholder="Search groceries..." />
+      <div class="filters">
+        <button class="filter active" data-category="all" type="button">All</button>
+        <button class="filter" data-category="grains" type="button">Grains</button>
+        <button class="filter" data-category="oil" type="button">Oil</button>
+        <button class="filter" data-category="spices" type="button">Spices</button>
+        <button class="filter" data-category="fresh" type="button">Fresh Produce</button>
+        <button class="filter" data-category="drinks" type="button">Drinks</button>
+        <button class="filter" data-category="household" type="button">Household</button>
+      </div>
     </div>
 
-    <div class="filters">
-      <button class="filter active" data-category="all">All</button>
-      <button class="filter" data-category="grains">Grains</button>
-      <button class="filter" data-category="oil">Oil</button>
-      <button class="filter" data-category="spices">Spices</button>
-      <button class="filter" data-category="fresh">Fresh Produce</button>
-      <button class="filter" data-category="drinks">Drinks</button>
-      <button class="filter" data-category="household">Household</button>
+    <div id="productGrid" class="productGrid">
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard"></div>
     </div>
-
-    <div id="productGrid" class="productGrid"></div>
   </section>
 
-  <footer>
-    <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
-    <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
-  </footer>
+  <section id="cart" class="cartSection">
+    <div class="sectionHead">
+      <div>
+        <span class="sectionLabel">Order Summary</span>
+        <h2>Your Cart</h2>
+        <p>Review selected products before checkout.</p>
+      </div>
 
-  <button id="floatingCartBtn" class="floatingCartBtn" type="button">
-    🛒 <span id="floatingCartCount">0</span>
+      <button class="btn outline" id="clearCartBtn" type="button">Clear Cart</button>
+    </div>
+
+    <div id="cartItems" class="cartItems"></div>
+
+    <div class="cartFooter">
+      <div>
+        <span>Items Selected</span>
+        <strong id="cartCount">0</strong>
+      </div>
+
+      <div>
+        <span>Total Amount</span>
+        <strong id="cartTotal">₦0</strong>
+      </div>
+
+      <a href="checkout.html" class="btn">Proceed to Checkout</a>
+    </div>
+  </section>
+
+  <div id="cartToast" class="cartToast">Added to cart</div>
+
+  <button class="floatingCartBtn" id="floatingCartBtn" type="button" aria-label="Open cart">
+    🛒
+    <span id="floatingCartCount">0</span>
   </button>
 
-  <div id="miniCartOverlay" class="miniCartOverlay"></div>
+  <div class="miniCartOverlay" id="miniCartOverlay"></div>
 
-  <aside id="miniCart" class="miniCart">
+  <aside class="miniCart" id="miniCart">
     <div class="miniCartHeader">
       <div>
         <h3>Your Cart</h3>
-        <p>Quick preview before checkout</p>
+        <p>Review your selected items.</p>
       </div>
 
       <button id="closeMiniCartBtn" type="button">×</button>
@@ -204,18 +238,29 @@
     <div id="miniCartItems" class="miniCartItems"></div>
 
     <div class="miniCartFooter">
-      <div>
+      <div class="summaryLine">
         <span>Total</span>
         <strong id="miniCartTotal">₦0</strong>
       </div>
 
-      <a href="cart.html" class="btn">Review & Checkout</a>
+      <a href="checkout.html" class="btn">Review & Checkout</a>
     </div>
   </aside>
 
-  <div id="cartToast" class="cartToast">Added to cart</div>
+  <nav class="bottomNav">
+    <a href="index.html">🏠<span>Home</span></a>
+    <a href="#shop">🔍<span>Search</span></a>
+    <button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button>
+    <a href="#featured">⭐<span>Featured</span></a>
+    <a href="admin/login.html">👤<span>Admin</span></a>
+  </nav>
+
+  <footer>
+    <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
+    <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
+    <p>Fresh • Affordable • Reliable</p>
+  </footer>
 
   <script type="module" src="js/store.js"></script>
-  <script src="js/mobile-nav.js"></script>
 </body>
 </html>
