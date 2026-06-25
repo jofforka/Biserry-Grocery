@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmers Market Requests | Biserry Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="adminShell">
+  <aside class="sidebar">
+    <img src="../assets/logo.png" alt="Biserry Logo">
+    <h2>Biserry OS</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="bulk-upload.html">Bulk Upload</a>
+    <a href="orders.html">Orders</a>
+    <a href="farmers-market.html" class="active">Farmers Market</a>
+    <a href="customers.html">Customers</a>
+    <a href="reports.html">Reports</a>
+    <a href="../index.html">View Store</a>
+    <button id="logoutBtn" type="button">Logout</button>
+  </aside>
+
+  <main class="adminMain">
+    <div class="adminTop">
+      <h1>Farmers Market Requests</h1>
+      <p>Manage customer shopping-list requests.</p>
+    </div>
+
+    <section class="adminPanel">
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>List</th>
+              <th>Budget</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="farmersRequestsTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="../js/admin-auth.js"></script>
+<script type="module" src="../js/admin-farmers-market.js"></script>
+</body>
+</html>
