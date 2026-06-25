@@ -36,3 +36,129 @@ nav{display:flex;align-items:center;gap:14px}nav a{text-decoration:none;color:va
 .compactHero{padding:34px 5%}
 .standaloneFarmers{background:#fff}
 .categoryCard{text-decoration:none}
+
+.heroSlider{
+  position:relative;
+  min-height:calc(100vh - 88px);
+  overflow:hidden;
+  background:#000;
+}
+
+.heroSlide{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .7s ease;
+  display:flex;
+  align-items:center;
+  padding:7%;
+}
+
+.heroSlide.active{
+  opacity:1;
+  visibility:visible;
+}
+
+.heroSlide::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.25),rgba(0,0,0,.12));
+}
+
+.heroOverlay{
+  position:relative;
+  z-index:2;
+  max-width:620px;
+  color:#fff;
+}
+
+.heroOverlay h2{
+  font-size:58px;
+  line-height:1.02;
+  margin:18px 0;
+}
+
+.heroOverlay p{
+  font-size:20px;
+  line-height:1.6;
+  margin-bottom:24px;
+}
+
+.heroArrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  color:var(--green);
+  font-size:34px;
+  cursor:pointer;
+}
+
+.heroPrev{left:24px}
+.heroNext{right:24px}
+
+.heroDots{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:24px;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.heroDots button{
+  width:11px;
+  height:11px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.55);
+  cursor:pointer;
+}
+
+.heroDots button.active{
+  background:var(--gold);
+}
+
+@media(max-width:760px){
+  .heroSlider{
+    min-height:calc(100vh - 82px);
+  }
+
+  .heroSlide{
+    padding:24px;
+    align-items:flex-end;
+    padding-bottom:105px;
+  }
+
+  .heroSlide::before{
+    background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.28));
+  }
+
+  .heroOverlay h2{
+    font-size:36px;
+  }
+
+  .heroOverlay p{
+    font-size:16px;
+  }
+
+  .heroArrow{
+    width:40px;
+    height:40px;
+    font-size:28px;
+  }
+
+  .heroPrev{left:12px}
+  .heroNext{right:12px}
+}
