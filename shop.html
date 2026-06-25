@@ -1,2 +1,36 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Shop | Biserry Groceries</title><link rel="stylesheet" href="../css/styles.css"></head><body><header class="site-header"><div class="brand"><div class="logo">BG</div><div><h1>Biserry Groceries</h1><p>Shop fresh groceries</p></div></div><nav class="nav"><a href="../index.html">Home</a><a href="cart.html">Cart</a><a href="checkout.html">Checkout</a></nav></header><section class="section"><div class="section-title"><div><h2>Grocery Catalog</h2><p>Search, select, and add items to cart.</p></div><input id="searchInput" class="search" type="search" placeholder="Search products..."></div><div class="filters"><button class="filter active" data-category="all">All</button><button class="filter" data-category="grains">Grains</button><button class="filter" data-category="oil">Oil</button><button class="filter" data-category="spices">Spices</button><button class="filter" data-category="drinks">Drinks</button><button class="filter" data-category="household">Household</button><button class="filter" data-category="fresh">Fresh Produce</button></div><div id="productGrid" class="product-grid"></div></section><script type="module" src="../js/store.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><img src="assets/logo.png" class="logo-img"><div><h1>Biserry Groceries</h1><p>Shop products faster</p></div></div>
+  <button class="mobileMenuBtn" id="mobileMenuBtn" type="button">☰</button>
+  <nav id="mainNav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="farmers-market.html">Farmers Market</a><a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a><a href="checkout.html">Checkout</a><a href="admin/login.html">Admin</a></nav>
+</header>
 
+<section class="pageHero compactHero"><span class="sectionLabel">Online Store</span><h2>Shop Groceries</h2><p>Search, filter, select quantity and add products to your cart.</p></section>
+
+<section id="shop" class="shopSection">
+  <div class="stickyShopTools">
+    <div class="sectionHead shopHead"><div><h2>Product Catalog</h2><p>Compact view for faster browsing.</p></div><input id="searchInput" type="search" placeholder="Search product, category, size or SKU..."></div>
+    <div class="filters">
+      <button class="filter active" data-category="all" type="button">All</button>
+      <button class="filter" data-category="grains" type="button">Grains</button>
+      <button class="filter" data-category="oil" type="button">Oil</button>
+      <button class="filter" data-category="spices" type="button">Spices</button>
+      <button class="filter" data-category="fresh" type="button">Fresh</button>
+      <button class="filter" data-category="drinks" type="button">Drinks</button>
+      <button class="filter" data-category="household" type="button">Household</button>
+    </div>
+  </div>
+  <div id="productGrid" class="productGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
+</section>
+
+<div id="cartToast" class="cartToast">Added to cart</div><button class="floatingCartBtn" id="floatingCartBtn" type="button">🛒<span id="floatingCartCount">0</span></button><div class="miniCartOverlay" id="miniCartOverlay"></div><aside class="miniCart" id="miniCart"><div class="miniCartHeader"><div><h3>Your Cart</h3><p>Quick preview</p></div><button id="closeMiniCartBtn" type="button">×</button></div><div id="miniCartItems" class="miniCartItems"></div><div class="miniCartFooter"><div class="summaryLine"><span>Total</span><strong id="miniCartTotal">₦0</strong></div><a href="cart.html" class="btn">Review Cart</a></div></aside>
+<nav class="bottomNav"><a href="index.html">🏠<span>Home</span></a><a href="shop.html">🔍<span>Shop</span></a><button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button><a href="farmers-market.html">🌾<span>Market</span></a><a href="admin/login.html">👤<span>Admin</span></a></nav>
+<footer><p><strong>Biserry Groceries</strong></p></footer>
+<script type="module" src="js/store.js"></script>
+</body></html>
