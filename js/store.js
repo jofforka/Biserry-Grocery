@@ -1,6 +1,8 @@
 import { db, collection, getDocs, query, orderBy } from "./firebase-service.js";
 
 const CART_STORAGE_KEY = "biserryCart";
+const WISHLIST_STORAGE_KEY = "biserryWishlist";
+const RECENT_STORAGE_KEY = "biserryRecentlyViewed";
 
 const fallbackProducts = [
   {
@@ -11,7 +13,8 @@ const fallbackProducts = [
     stock: 20,
     imageUrl: "assets/rice.jpg",
     hasVariants: false,
-    isFeatured: true
+    isFeatured: true,
+    productNote: "Quality rice and grains for family meals."
   },
   {
     id: "demo-2",
@@ -21,28 +24,11 @@ const fallbackProducts = [
     variantLabel: "Variety",
     imageUrl: "assets/household.jpg",
     isFeatured: true,
+    productNote: "Household essentials with selectable varieties.",
     variants: [
-      {
-        id: "v1",
-        name: "Colgate",
-        price: 2500,
-        stock: 20,
-        imageUrl: "assets/household.jpg"
-      },
-      {
-        id: "v2",
-        name: "Close-Up",
-        price: 2300,
-        stock: 15,
-        imageUrl: "assets/household.jpg"
-      },
-      {
-        id: "v3",
-        name: "Oral-B",
-        price: 2800,
-        stock: 10,
-        imageUrl: "assets/household.jpg"
-      }
+      { id: "v1", name: "Colgate", price: 2500, stock: 20, imageUrl: "assets/household.jpg" },
+      { id: "v2", name: "Close-Up", price: 2300, stock: 15, imageUrl: "assets/household.jpg" },
+      { id: "v3", name: "Oral-B", price: 2800, stock: 10, imageUrl: "assets/household.jpg" }
     ]
   },
   {
@@ -53,20 +39,43 @@ const fallbackProducts = [
     stock: 10,
     imageUrl: "assets/vegetable-oil.jpg",
     hasVariants: false,
-    isFeatured: true
+    isFeatured: true,
+    productNote: "Cooking oil for everyday meals."
+  }
+];
+
+const heroSlides = [
+  {
+    badge: "Fresh • Affordable • Reliable",
+    title: "Fresh groceries delivered to your doorstep.",
+    text: "Shop foodstuff, beverages, household essentials and fresh items from Biserry Groceries.",
+    image: "assets/hero-banner.png"
+  },
+  {
+    badge: "Fast Delivery",
+    title: "Order from home. We handle the delivery.",
+    text: "Choose your items, review your cart, and send your order directly to Biserry Groceries.",
+    image: "assets/fresh-vegetables.jpg"
+  },
+  {
+    badge: "Everyday Essentials",
+    title: "Stock your kitchen without market stress.",
+    text: "From grains to oil, drinks, spices and household items — everything in one place.",
+    image: "assets/rice.jpg"
   }
 ];
 
 let products = [];
 let cart = loadCartFromStorage();
+let wishlist = loadWishlistFromStorage();
 let selectedQuantities = {};
 let selectedVariants = {};
 let deliveryZones = [];
 let selectedDeliveryFee = 0;
 let currentCategory = "all";
-
 let activeModalProductId = null;
 let activeModalImageIndex = 0;
+let heroIndex = 0;
 
 const productGrid = document.getElementById("productGrid");
 const featuredGrid = document.getElementById("featuredGrid");
@@ -78,6 +87,7 @@ const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 const navCartCount = document.getElementById("navCartCount");
 const floatingCartCount = document.getElementById("floatingCartCount");
+const bottomCartCount = document.getElementById("bottomCartCount");
 
 const checkoutPreview = document.getElementById("checkoutPreview");
 const checkoutTotal = document.getElementById("checkoutTotal");
@@ -87,11 +97,15 @@ const fulfillmentSelect = document.getElementById("fulfillment");
 const deliveryFeePreview = document.getElementById("deliveryFeePreview");
 
 const floatingCartBtn = document.getElementById("floatingCartBtn");
+const bottomCartBtn = document.getElementById("bottomCartBtn");
 const miniCart = document.getElementById("miniCart");
 const miniCartOverlay = document.getElementById("miniCartOverlay");
 const closeMiniCartBtn = document.getElementById("closeMiniCartBtn");
 const miniCartItems = document.getElementById("miniCartItems");
 const miniCartTotal = document.getElementById("miniCartTotal");
+
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const mainNav = document.getElementById("mainNav");
 
 function loadCartFromStorage() {
   try {
@@ -103,6 +117,24 @@ function loadCartFromStorage() {
 
 function saveCartToStorage() {
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
+
+function loadWishlistFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWishlistToStorage() {
+  localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(wishlist));
+}
+
+function saveRecentlyViewed(productId) {
+  const existing = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) || "[]");
+  const updated = [productId, ...existing.filter(id => String(id) !== String(productId))].slice(0, 12);
+  localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(updated));
 }
 
 function formatNaira(amount) {
@@ -141,6 +173,25 @@ function showCartToast(message = "Added to cart") {
   setTimeout(() => {
     cartToast.classList.remove("show");
   }, 1600);
+}
+
+function startHeroCarousel() {
+  const badge = document.getElementById("heroBadge");
+  const title = document.getElementById("heroTitle");
+  const text = document.getElementById("heroText");
+  const image = document.getElementById("heroImage");
+
+  if (!badge || !title || !text || !image) return;
+
+  setInterval(() => {
+    heroIndex = (heroIndex + 1) % heroSlides.length;
+    const slide = heroSlides[heroIndex];
+
+    badge.textContent = slide.badge;
+    title.textContent = slide.title;
+    text.textContent = slide.text;
+    image.src = slide.image;
+  }, 5200);
 }
 
 async function loadProducts() {
@@ -190,12 +241,7 @@ async function loadDeliveryZones() {
   deliveryZoneSelect.innerHTML =
     '<option value="">Select Delivery Zone</option>' +
     deliveryZones
-      .map(
-        zone =>
-          `<option value="${zone.zone}" data-fee="${zone.fee}">
-            ${zone.zone} — ${formatNaira(Number(zone.fee))}
-          </option>`
-      )
+      .map(zone => `<option value="${zone.zone}" data-fee="${zone.fee}">${zone.zone} — ${formatNaira(Number(zone.fee))}</option>`)
       .join("");
 }
 
@@ -225,6 +271,21 @@ window.selectVariant = (productId, variantId) => {
     activeModalImageIndex = 0;
     refreshProductModal();
   }
+};
+
+window.toggleWishlist = productId => {
+  if (wishlist.includes(productId)) {
+    wishlist = wishlist.filter(id => id !== productId);
+    showCartToast("Removed from wishlist");
+  } else {
+    wishlist.push(productId);
+    showCartToast("Added to wishlist");
+  }
+
+  saveWishlistToStorage();
+  renderProducts();
+  renderFeaturedProducts();
+  renderRecentProducts();
 };
 
 window.increaseProductQty = id => {
@@ -266,25 +327,12 @@ function productCard(product) {
   const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
 
-  const rawImage =
-    variant?.imageUrl ||
-    product.imageUrl ||
-    product.image ||
-    "assets/logo.png";
-
+  const rawImage = variant?.imageUrl || product.imageUrl || product.image || "assets/logo.png";
   const image = normalizeImageUrl(rawImage);
-
-  const optionLabel = product.variantLabel || "Variety";
-
-  const tagLabel =
-    product.variantLabel
-      ? `${product.variantLabel}s`
-      : product.hasVariants
-        ? "Varieties"
-        : product.category;
-
-  const stockClass =
-    stock <= Number(product.lowStockThreshold || 5) ? "stockText low" : "stockText";
+  const optionLabel = product.variantLabel || (product.optionType === "sizes" ? "Size" : "Variety");
+  const tagLabel = product.variantLabel ? `${product.variantLabel}s` : product.hasVariants ? "Varieties" : product.category;
+  const stockClass = stock <= Number(product.lowStockThreshold || 5) ? "stockText low" : "stockText";
+  const isWishlisted = wishlist.includes(product.id);
 
   const variantHtml =
     product.hasVariants && product.variants?.length
@@ -293,13 +341,7 @@ function productCard(product) {
           <label>Select ${optionLabel}</label>
           <select onchange="selectVariant('${product.id}', this.value)">
             ${product.variants
-              .map(
-                item => `
-                <option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>
-                  ${item.name} — ${formatNaira(Number(item.price || 0))}
-                </option>
-              `
-              )
+              .map(item => `<option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>${item.name} — ${formatNaira(Number(item.price || 0))}</option>`)
               .join("")}
           </select>
         </div>
@@ -310,13 +352,22 @@ function productCard(product) {
     <div class="card">
       <button class="productImage productImageButton" type="button" onclick="openProductModal('${product.id}')">
         <img src="${image}" alt="${product.name}" onerror="this.src='assets/logo.png'">
+        <span class="imageHint">Tap to view</span>
       </button>
 
       <div class="cardBody">
+        <div class="productBadges">
+          ${(product.isFeatured || product.featured) ? '<span class="productBadge">Featured</span>' : ''}
+          ${stock <= Number(product.lowStockThreshold || 5) && stock > 0 ? '<span class="productBadge">Low Stock</span>' : ''}
+          ${product.isBestSeller ? '<span class="productBadge">Best Seller</span>' : ''}
+        </div>
+
         <div class="productMeta">
           <h3>${product.name}</h3>
           <span class="categoryTag">${tagLabel}</span>
         </div>
+
+        <div class="ratingLine">★★★★★ <span>(Popular)</span></div>
 
         ${variantHtml}
 
@@ -332,9 +383,12 @@ function productCard(product) {
           <button class="qtyBtn" onclick="increaseProductQty('${product.id}')" type="button">+</button>
         </div>
 
-        <button class="btn addBtn" onclick="addToCart('${product.id}')" type="button" ${stock <= 0 ? "disabled" : ""}>
-          ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
-        </button>
+        <div class="productActionRow">
+          <button class="wishlistBtn ${isWishlisted ? "active" : ""}" onclick="toggleWishlist('${product.id}')" type="button">♥</button>
+          <button class="btn addBtn" onclick="addToCart('${product.id}')" type="button" ${stock <= 0 ? "disabled" : ""}>
+            ${stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`}
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -345,11 +399,14 @@ function renderProducts() {
 
   const search = (searchInput?.value || "").toLowerCase();
 
-  const filtered = products.filter(
-    product =>
+  const filtered = products.filter(product => {
+    const variantText = (product.variants || []).map(v => `${v.name} ${v.sku || ""}`).join(" ").toLowerCase();
+
+    return (
       (currentCategory === "all" || product.category === currentCategory) &&
-      product.name.toLowerCase().includes(search)
-  );
+      `${product.name} ${product.category} ${product.sku || ""} ${variantText}`.toLowerCase().includes(search)
+    );
+  });
 
   productGrid.innerHTML = filtered.length
     ? filtered.map(productCard).join("")
@@ -359,10 +416,7 @@ function renderProducts() {
 function renderFeaturedProducts() {
   if (!featuredGrid) return;
 
-  const featured = products
-    .filter(product => product.isFeatured || product.featured)
-    .slice(0, 6);
-
+  const featured = products.filter(product => product.isFeatured || product.featured).slice(0, 6);
   const display = featured.length ? featured : products.slice(0, 3);
 
   featuredGrid.innerHTML = display.length
@@ -373,10 +427,15 @@ function renderFeaturedProducts() {
 function renderRecentProducts() {
   if (!recentGrid) return;
 
-  const recent = products.slice(0, 6);
+  const recentIds = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) || "[]");
+  const recentViewed = recentIds
+    .map(id => products.find(product => String(product.id) === String(id)))
+    .filter(Boolean);
 
-  recentGrid.innerHTML = recent.length
-    ? recent.map(productCard).join("")
+  const display = recentViewed.length ? recentViewed : products.slice(0, 6);
+
+  recentGrid.innerHTML = display.length
+    ? display.map(productCard).join("")
     : '<div class="emptyState">No recent products yet.</div>';
 }
 
@@ -386,19 +445,11 @@ window.addToCart = id => {
 
   const variant = getSelectedVariant(product);
   const quantity = getSelectedQuantity(id);
-
   const cartId = variant ? `${product.id}__${variant.id}` : product.id;
   const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
-
   const displayName = variant ? `${product.name} - ${variant.name}` : product.name;
-
-  const rawImage =
-    variant?.imageUrl ||
-    product.imageUrl ||
-    product.image ||
-    "assets/logo.png";
-
+  const rawImage = variant?.imageUrl || product.imageUrl || product.image || "assets/logo.png";
   const imageUrl = normalizeImageUrl(rawImage);
 
   const existing = cart.find(item => String(item.cartId) === String(cartId));
@@ -428,7 +479,6 @@ window.addToCart = id => {
   }
 
   selectedQuantities[id] = 1;
-
   saveCartToStorage();
 
   renderProducts();
@@ -474,10 +524,7 @@ window.removeFromCart = cartId => {
 };
 
 function getCartSubtotal() {
-  return cart.reduce(
-    (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
-    0
-  );
+  return cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0);
 }
 
 function getCartTotal() {
@@ -491,10 +538,7 @@ function getCartCount() {
 function updateDeliveryFee() {
   if (fulfillmentSelect?.value === "Pickup") {
     selectedDeliveryFee = 0;
-
-    if (deliveryZoneSelect) {
-      deliveryZoneSelect.value = "Pickup";
-    }
+    if (deliveryZoneSelect) deliveryZoneSelect.value = "Pickup";
   } else {
     const selectedOption = deliveryZoneSelect?.selectedOptions?.[0];
     selectedDeliveryFee = Number(selectedOption?.dataset?.fee || 0);
@@ -513,8 +557,7 @@ function renderMiniCart() {
   }
 
   miniCartItems.innerHTML = cart
-    .map(
-      item => `
+    .map(item => `
       <div class="miniCartItem">
         <img src="${normalizeImageUrl(item.imageUrl)}" alt="${item.name}" onerror="this.src='assets/logo.png'">
         <div>
@@ -523,8 +566,7 @@ function renderMiniCart() {
         </div>
         <button onclick="removeFromCart('${item.cartId}')" type="button">×</button>
       </div>
-    `
-    )
+    `)
     .join("");
 
   miniCartTotal.textContent = formatNaira(getCartTotal());
@@ -536,18 +578,14 @@ function renderCart() {
   if (cartCount) cartCount.textContent = count;
   if (navCartCount) navCartCount.textContent = count;
   if (floatingCartCount) floatingCartCount.textContent = count;
+  if (bottomCartCount) bottomCartCount.textContent = count;
 
   if (!cart.length) {
     if (cartItems) {
-      cartItems.innerHTML =
-        '<div class="emptyState">Your cart is empty. Select groceries from the shop page.</div>';
+      cartItems.innerHTML = '<div class="emptyState">Your cart is empty. Select groceries from the shop page.</div>';
     }
 
-    if (checkoutPreview) {
-      checkoutPreview.innerHTML =
-        '<div class="emptyState">No item selected yet.</div>';
-    }
-
+    if (checkoutPreview) checkoutPreview.innerHTML = '<div class="emptyState">No item selected yet.</div>';
     if (cartTotal) cartTotal.textContent = formatNaira(0);
     if (checkoutTotal) checkoutTotal.textContent = formatNaira(0);
     if (deliveryFeePreview) deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
@@ -558,8 +596,7 @@ function renderCart() {
 
   if (cartItems) {
     cartItems.innerHTML = cart
-      .map(
-        item => `
+      .map(item => `
         <div class="cartItem">
           <div>
             <strong>${item.name}</strong><br>
@@ -574,15 +611,13 @@ function renderCart() {
             <button class="removeBtn" onclick="removeFromCart('${item.cartId}')" type="button">×</button>
           </div>
         </div>
-      `
-      )
+      `)
       .join("");
   }
 
   if (checkoutPreview) {
     checkoutPreview.innerHTML = cart
-      .map(
-        item => `
+      .map(item => `
         <div class="previewItem">
           <div>
             <strong>${item.name}</strong><br>
@@ -590,17 +625,13 @@ function renderCart() {
           </div>
           <strong>${formatNaira(item.price * item.quantity)}</strong>
         </div>
-      `
-      )
+      `)
       .join("");
   }
 
   if (cartTotal) cartTotal.textContent = formatNaira(getCartTotal());
   if (checkoutTotal) checkoutTotal.textContent = formatNaira(getCartTotal());
-
-  if (deliveryFeePreview) {
-    deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
-  }
+  if (deliveryFeePreview) deliveryFeePreview.textContent = formatNaira(selectedDeliveryFee);
 
   renderMiniCart();
 }
@@ -653,9 +684,7 @@ function ensureProductModal() {
         <span id="productModalCategory" class="categoryTag"></span>
         <h2 id="productModalName"></h2>
         <p id="productModalDescription"></p>
-
         <div id="productModalVariantBox"></div>
-
         <p id="productModalPrice" class="price"></p>
         <p id="productModalStock" class="stockText"></p>
 
@@ -665,9 +694,7 @@ function ensureProductModal() {
           <button class="qtyBtn" type="button" onclick="increaseProductQty(activeModalProductId)">+</button>
         </div>
 
-        <button id="productModalAddBtn" class="btn addBtn" type="button">
-          Add to Cart
-        </button>
+        <button id="productModalAddBtn" class="btn addBtn" type="button">Add to Cart</button>
       </div>
     </div>
   `;
@@ -690,25 +717,17 @@ function renderProductModalImage(product) {
 
   if (dotsEl) {
     dotsEl.innerHTML = images
-      .map(
-        (_, index) => `
-        <button
-          type="button"
-          class="${index === activeModalImageIndex ? "active" : ""}"
-          onclick="setProductModalImage(${index})">
-        </button>
-      `
-      )
+      .map((_, index) => `<button type="button" class="${index === activeModalImageIndex ? "active" : ""}" onclick="setProductModalImage(${index})"></button>`)
       .join("");
   }
 }
 
 window.openProductModal = function(productId) {
   ensureProductModal();
-
   activeModalProductId = productId;
   activeModalImageIndex = 0;
 
+  saveRecentlyViewed(productId);
   refreshProductModal();
 
   document.getElementById("productModalOverlay")?.classList.add("show");
@@ -723,9 +742,7 @@ window.changeProductModalImage = function(direction) {
   if (!product) return;
 
   const images = getProductGalleryImages(product);
-
-  activeModalImageIndex =
-    (activeModalImageIndex + direction + images.length) % images.length;
+  activeModalImageIndex = (activeModalImageIndex + direction + images.length) % images.length;
 
   renderProductModalImage(product);
 };
@@ -746,7 +763,7 @@ window.refreshProductModal = function() {
   const quantity = getSelectedQuantity(product.id);
   const price = variant ? Number(variant.price || 0) : Number(product.price || 0);
   const stock = variant ? Number(variant.stock || 0) : Number(product.stock || 0);
-  const optionLabel = product.variantLabel || "Variety";
+  const optionLabel = product.variantLabel || (product.optionType === "sizes" ? "Size" : "Variety");
 
   const categoryEl = document.getElementById("productModalCategory");
   const nameEl = document.getElementById("productModalName");
@@ -757,25 +774,9 @@ window.refreshProductModal = function() {
   const qtyEl = document.getElementById("productModalQty");
   const addBtn = document.getElementById("productModalAddBtn");
 
-  if (categoryEl) {
-    categoryEl.textContent = product.variantLabel
-      ? `${product.variantLabel}s`
-      : product.category || "Product";
-  }
-
-  if (nameEl) {
-    nameEl.textContent = variant
-      ? `${product.name} - ${variant.name}`
-      : product.name;
-  }
-
-  if (descEl) {
-    descEl.textContent =
-      product.productNote ||
-      product.description ||
-      "Fresh, affordable and reliable groceries from Biserry Groceries.";
-  }
-
+  if (categoryEl) categoryEl.textContent = product.variantLabel ? `${product.variantLabel}s` : product.category || "Product";
+  if (nameEl) nameEl.textContent = variant ? `${product.name} - ${variant.name}` : product.name;
+  if (descEl) descEl.textContent = product.productNote || product.description || "Fresh, affordable and reliable groceries from Biserry Groceries.";
   if (priceEl) priceEl.textContent = formatNaira(price);
   if (stockEl) stockEl.textContent = stock > 0 ? `Available Stock: ${stock}` : "Out of Stock";
   if (qtyEl) qtyEl.textContent = quantity;
@@ -786,16 +787,9 @@ window.refreshProductModal = function() {
         ? `
           <div class="variantBox">
             <label>Select ${optionLabel}</label>
-
             <select onchange="selectVariant('${product.id}', this.value)">
               ${product.variants
-                .map(
-                  item => `
-                  <option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>
-                    ${item.name} — ${formatNaira(Number(item.price || 0))}
-                  </option>
-                `
-                )
+                .map(item => `<option value="${item.id}" ${variant?.id === item.id ? "selected" : ""}>${item.name} — ${formatNaira(Number(item.price || 0))}</option>`)
                 .join("")}
             </select>
           </div>
@@ -806,7 +800,6 @@ window.refreshProductModal = function() {
   if (addBtn) {
     addBtn.disabled = stock <= 0;
     addBtn.textContent = stock <= 0 ? "Out of Stock" : `Add ${quantity} to Cart`;
-
     addBtn.onclick = () => {
       addToCart(product.id);
       refreshProductModal();
@@ -819,10 +812,8 @@ window.refreshProductModal = function() {
 document.querySelectorAll(".filter").forEach(button => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
-
     button.classList.add("active");
     currentCategory = button.dataset.category;
-
     renderProducts();
   });
 });
@@ -834,9 +825,7 @@ document.querySelectorAll("[data-category-jump]").forEach(button => {
 
     if (filterBtn) filterBtn.click();
 
-    document.getElementById("shop")?.scrollIntoView({
-      behavior: "smooth"
-    });
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
   });
 });
 
@@ -851,8 +840,17 @@ clearCartBtn?.addEventListener("click", () => {
 });
 
 floatingCartBtn?.addEventListener("click", openMiniCart);
+bottomCartBtn?.addEventListener("click", openMiniCart);
 closeMiniCartBtn?.addEventListener("click", closeMiniCart);
 miniCartOverlay?.addEventListener("click", closeMiniCart);
+
+mobileMenuBtn?.addEventListener("click", () => {
+  mainNav?.classList.toggle("open");
+});
+
+mainNav?.querySelectorAll("a").forEach(link => {
+  link.addEventListener("click", () => mainNav?.classList.remove("open"));
+});
 
 export function getCartForCheckout() {
   return cart;
@@ -880,6 +878,7 @@ export function clearCartAfterOrder() {
   renderCart();
 }
 
+startHeroCarousel();
 await loadDeliveryZones();
 await loadProducts();
 renderCart();
