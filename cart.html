@@ -1,5 +1,34 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Cart | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"></head><body>
-<header class="topbar"><div class="brand"><img src="assets/logo.png" class="logo-img"><div><h1>Biserry Groceries</h1><p>Review your cart</p></div></div><button class="mobileMenuBtn" id="mobileMenuBtn" type="button">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="farmers-market.html">Farmers Market</a><a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a><a href="checkout.html">Checkout</a></nav></header>
-<section class="pageHero compactHero"><span class="sectionLabel">Cart</span><h2>Your Cart</h2><p>Review products and proceed to checkout.</p></section>
-<section id="cart" class="cartSection"><div class="sectionHead"><div><h2>Order Summary</h2><p>Adjust quantity or remove products.</p></div><button class="btn outline" id="clearCartBtn" type="button">Clear Cart</button></div><div id="cartItems" class="cartItems"></div><div class="cartFooter"><div><span>Items</span><strong id="cartCount">0</strong></div><div><span>Total</span><strong id="cartTotal">₦0</strong></div><a href="checkout.html" class="btn">Proceed to Checkout</a></div></section>
-<div id="cartToast" class="cartToast">Updated</div><nav class="bottomNav"><a href="index.html">🏠<span>Home</span></a><a href="shop.html">🔍<span>Shop</span></a><button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button><a href="farmers-market.html">🌾<span>Market</span></a><a href="admin/login.html">👤<span>Admin</span></a></nav><footer><p><strong>Biserry Groceries</strong></p></footer><script type="module" src="js/store.js"></script></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Cart | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"></head><body><header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries">
+    <div><h1>Biserry Groceries</h1><p>Fresh foodstuff • Delivery & Pickup Available</p></div>
+  </div>
+  <button class="mobileMenuBtn" id="mobileMenuBtn" type="button">☰</button>
+  <nav id="mainNav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="farmers-market.html">Farmers Market</a>
+    <a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a>
+    <a href="checkout.html">Checkout</a>
+    <a href="admin/login.html">Admin</a>
+    <a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
+  </nav>
+</header><section class="pageHero compactHero"><span class="sectionLabel">Cart</span><h2>Your Cart</h2><p>Review products and proceed to checkout.</p></section><section id="cart" class="cartSection"><div class="sectionHead"><div><h2>Order Summary</h2><p>Adjust quantity or remove products.</p></div><button class="btn outline" id="clearCartBtn" type="button">Clear Cart</button></div><div id="cartItems" class="cartItems"></div><div class="cartFooter"><div><span>Items</span><strong id="cartCount">0</strong></div><div><span>Total</span><strong id="cartTotal">₦0</strong></div><a href="checkout.html" class="btn">Proceed to Checkout</a></div></section><div id="cartToast" class="cartToast">Added to cart</div>
+<button class="floatingCartBtn" id="floatingCartBtn" type="button">🛒<span id="floatingCartCount">0</span></button>
+<div class="miniCartOverlay" id="miniCartOverlay"></div>
+<aside class="miniCart" id="miniCart">
+  <div class="miniCartHeader"><div><h3>Your Cart</h3><p>Quick preview</p></div><button id="closeMiniCartBtn" type="button">×</button></div>
+  <div id="miniCartItems" class="miniCartItems"></div>
+  <div class="miniCartFooter"><div class="summaryLine"><span>Total</span><strong id="miniCartTotal">₦0</strong></div><a href="cart.html" class="btn">Review Cart</a></div>
+</aside>
+<nav class="bottomNav">
+  <a href="index.html">🏠<span>Home</span></a>
+  <a href="shop.html">🔍<span>Shop</span></a>
+  <button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button>
+  <a href="farmers-market.html">🌾<span>Market</span></a>
+  <a href="admin/login.html">👤<span>Admin</span></a>
+</nav><footer>
+  <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
+  <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
+  <p>Prices and availability may be confirmed before delivery.</p>
+</footer><script type="module" src="js/store.js"></script></body></html>
