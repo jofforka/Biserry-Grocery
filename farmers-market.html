@@ -1,4 +1,10 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Farmers Market | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"></head><body><header class="topbar">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Farmers Market | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f4f2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Biserry">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="assets/logo.png">
+</head><body><header class="topbar">
   <div class="brand">
     <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries">
     <div><h1>Biserry Groceries</h1><p>Fresh foodstuff • Delivery & Pickup Available</p></div>
@@ -31,4 +37,12 @@
   <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
   <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
   <p>Prices and availability may be confirmed before delivery.</p>
-</footer><script type="module" src="js/store.js"></script></body></html>
+</footer><script type="module" src="js/store.js"></script><script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(console.warn);
+    });
+  }
+</script>
+<script src="js/pwa-install.js" defer></script>
+</body></html>
