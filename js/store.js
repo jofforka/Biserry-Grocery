@@ -63,6 +63,35 @@ document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{
 document.querySelectorAll("[data-category-jump]").forEach(b=>b.addEventListener("click",()=>{document.querySelector(`.filter[data-category="${b.dataset.categoryJump}"]`)?.click();document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}));
 searchInput?.addEventListener("input",renderProducts);clearCartBtn?.addEventListener("click",()=>{cart=[];saveCart();renderCart()});floatingCartBtn?.addEventListener("click",openMiniCart);bottomCartBtn?.addEventListener("click",openMiniCart);closeMiniCartBtn?.addEventListener("click",closeMiniCart);miniCartOverlay?.addEventListener("click",closeMiniCart);mobileMenuBtn?.addEventListener("click",()=>mainNav?.classList.toggle("open"));mainNav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>mainNav?.classList.remove("open")));farmersMarketForm?.addEventListener("submit",submitFarmersMarket);
 
+
+/* ===== Full-screen hero slider ===== */
+function initHeroSlider(){
+  const slides = [...document.querySelectorAll(".heroSlide")];
+  const dotsWrap = document.getElementById("heroDots");
+  const prevBtn = document.querySelector(".heroPrev");
+  const nextBtn = document.querySelector(".heroNext");
+  if (!slides.length || !dotsWrap) return;
+  let current = 0;
+  let timer = null;
+  dotsWrap.innerHTML = slides.map((_, index) => `<button type="button" data-slide="${index}" aria-label="Go to slide ${index + 1}"></button>`).join("");
+  const dots = [...dotsWrap.querySelectorAll("button")];
+  function showSlide(index){
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+    dots.forEach((dot, i) => dot.classList.toggle("active", i === current));
+  }
+  function restartTimer(){
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => showSlide(current + 1), 5500);
+  }
+  prevBtn?.addEventListener("click", () => {showSlide(current - 1);restartTimer();});
+  nextBtn?.addEventListener("click", () => {showSlide(current + 1);restartTimer();});
+  dots.forEach(dot => dot.addEventListener("click", () => {showSlide(Number(dot.dataset.slide));restartTimer();}));
+  showSlide(0);
+  restartTimer();
+}
+
+
 export function getCartForCheckout(){return cart}
 export function getCartSubtotalForCheckout(){return subtotal()}
 export function getDeliveryFeeForCheckout(){return 0}
@@ -70,51 +99,6 @@ export function getDeliveryZoneForCheckout(){return ""}
 export function getCartTotalForCheckout(){return subtotal()}
 export function clearCartAfterOrder(){cart=[];saveCart();renderCart()}
 
+initHeroSlider();
 await loadProducts();
 renderCart();
-
-function initHeroSlider(){
-  const slides = [...document.querySelectorAll(".heroSlide")];
-  const dotsWrap = document.getElementById("heroDots");
-  const prevBtn = document.querySelector(".heroPrev");
-  const nextBtn = document.querySelector(".heroNext");
-
-  if (!slides.length || !dotsWrap) return;
-
-  let current = 0;
-
-  dotsWrap.innerHTML = slides
-    .map((_, index) => `<button type="button" data-slide="${index}"></button>`)
-    .join("");
-
-  const dots = [...dotsWrap.querySelectorAll("button")];
-
-  function showSlide(index){
-    current = (index + slides.length) % slides.length;
-
-    slides.forEach((slide, i) => {
-      slide.classList.toggle("active", i === current);
-    });
-
-    dots.forEach((dot, i) => {
-      dot.classList.toggle("active", i === current);
-    });
-  }
-
-  prevBtn?.addEventListener("click", () => showSlide(current - 1));
-  nextBtn?.addEventListener("click", () => showSlide(current + 1));
-
-  dots.forEach(dot => {
-    dot.addEventListener("click", () => {
-      showSlide(Number(dot.dataset.slide));
-    });
-  });
-
-  showSlide(0);
-
-  setInterval(() => {
-    showSlide(current + 1);
-  }, 5500);
-}
-
-initHeroSlider();
