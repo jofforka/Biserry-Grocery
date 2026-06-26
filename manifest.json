@@ -1,13 +1,13 @@
 {
   "name": "Biserry Groceries",
   "short_name": "Biserry",
-  "description": "Shop fresh groceries online and get them delivered to your doorstep.",
-  "start_url": "./index.html",
+  "description": "Shop groceries, foodstuff, household essentials and farmers market items from Biserry Groceries.",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#fff8e8",
   "theme_color": "#0f4f2b",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "assets/logo.png",
@@ -20,6 +20,30 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "food", "business"],
+  "shortcuts": [
+    {
+      "name": "Shop Groceries",
+      "short_name": "Shop",
+      "description": "Open product catalog",
+      "url": "shop.html",
+      "icons": [{ "src": "assets/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Farmers Market",
+      "short_name": "Market",
+      "description": "Submit a market shopping list",
+      "url": "farmers-market.html",
+      "icons": [{ "src": "assets/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cart",
+      "short_name": "Cart",
+      "description": "Review cart",
+      "url": "cart.html",
+      "icons": [{ "src": "assets/logo.png", "sizes": "192x192" }]
     }
   ]
 }
