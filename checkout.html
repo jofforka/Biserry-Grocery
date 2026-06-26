@@ -1,1 +1,34 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Checkout | Biserry Groceries</title><link rel="stylesheet" href="../css/styles.css"><script src="https://js.paystack.co/v1/inline.js"></script></head><body><header class="site-header"><div class="brand"><div class="logo">BG</div><div><h1>Checkout</h1><p>Delivery or pickup available</p></div></div><nav class="nav"><a href="shop.html">Shop</a><a href="cart.html">Cart</a></nav></header><section class="section"><div class="panel"><h2>Customer Details</h2><form id="checkoutForm"><div class="form-grid"><input id="name" required placeholder="Full Name"><input id="phone" required placeholder="Phone Number"></div><input id="email" type="email" placeholder="Email for online card payment"><textarea id="address" required placeholder="Delivery address or pickup note"></textarea><div class="form-grid"><select id="fulfillment"><option value="Delivery">Delivery</option><option value="Pickup">Pickup</option></select><select id="paymentMethod"><option value="Bank Transfer">Bank Transfer</option><option value="Card Payment">Card Payment</option><option value="USSD">USSD</option><option value="Cash on Delivery">Cash on Delivery</option><option value="Mobile Money">Mobile Money</option></select></div><button class="btn" type="submit">Submit Order & Send WhatsApp</button><button class="btn gold" type="button" id="payBtn">Pay Online with Paystack</button></form></div></section><script type="module" src="../js/checkout.js"></script></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Checkout | Biserry Groceries</title><link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css"></head><body><header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries">
+    <div><h1>Biserry Groceries</h1><p>Fresh foodstuff • Delivery & Pickup Available</p></div>
+  </div>
+  <button class="mobileMenuBtn" id="mobileMenuBtn" type="button">☰</button>
+  <nav id="mainNav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="farmers-market.html">Farmers Market</a>
+    <a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a>
+    <a href="checkout.html">Checkout</a>
+    <a href="admin/login.html">Admin</a>
+    <a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
+  </nav>
+</header><section class="pageHero compactHero"><span class="sectionLabel">Checkout</span><h2>Complete Your Order</h2><p>Enter your details. We will confirm availability and delivery on WhatsApp.</p></section><section class="checkout"><div class="checkoutGrid"><form id="checkoutForm" class="checkoutForm"><h2>Customer Details</h2><div class="grid2"><input id="customerName" required placeholder="Full name"><input id="customerPhone" required placeholder="Phone / WhatsApp"></div><select id="fulfillment"><option value="Delivery">Delivery</option><option value="Pickup">Pickup</option></select><input id="deliveryAddress" placeholder="Delivery address"><select id="paymentMethod"><option value="Transfer">Bank Transfer</option><option value="Cash">Cash</option><option value="POS">POS</option></select><textarea id="orderNote" placeholder="Order note or delivery instruction"></textarea><button class="btn" type="submit">Submit Order</button><p class="formNote">Prices and availability may be confirmed before delivery.</p></form><aside class="checkoutSummary"><h2>Order Summary</h2><div id="checkoutPreview" class="checkoutPreview"></div><div class="summaryLine"><span>Total</span><strong id="checkoutTotal">₦0</strong></div><a href="cart.html" class="btn outline" style="margin-top:12px">Back to Cart</a></aside></div></section><div id="cartToast" class="cartToast">Added to cart</div>
+<button class="floatingCartBtn" id="floatingCartBtn" type="button">🛒<span id="floatingCartCount">0</span></button>
+<div class="miniCartOverlay" id="miniCartOverlay"></div>
+<aside class="miniCart" id="miniCart">
+  <div class="miniCartHeader"><div><h3>Your Cart</h3><p>Quick preview</p></div><button id="closeMiniCartBtn" type="button">×</button></div>
+  <div id="miniCartItems" class="miniCartItems"></div>
+  <div class="miniCartFooter"><div class="summaryLine"><span>Total</span><strong id="miniCartTotal">₦0</strong></div><a href="cart.html" class="btn">Review Cart</a></div>
+</aside>
+<nav class="bottomNav">
+  <a href="index.html">🏠<span>Home</span></a>
+  <a href="shop.html">🔍<span>Shop</span></a>
+  <button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button>
+  <a href="farmers-market.html">🌾<span>Market</span></a>
+  <a href="admin/login.html">👤<span>Admin</span></a>
+</nav><footer>
+  <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
+  <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
+  <p>Prices and availability may be confirmed before delivery.</p>
+</footer><script type="module" src="js/store.js"></script><script type="module" src="js/checkout.js"></script></body></html>
