@@ -1,109 +1,47 @@
-import {
-  db,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "./firebase-service.js";
+import { db, collection, addDoc, serverTimestamp } from "./firebase-service.js";
+import { getCartForCheckout, getCartTotalForCheckout, clearCartAfterOrder } from "./store.js";
 
-import { BUSINESS } from "./firebase-config.js";
-import {
-  getCartForCheckout,
-  getCartSubtotalForCheckout,
-  getDeliveryFeeForCheckout,
-  getDeliveryZoneForCheckout,
-  getCartTotalForCheckout,
-  clearCartAfterOrder
-} from "./store.js";
+const form = document.getElementById("checkoutForm");
 
-const checkoutForm = document.getElementById("checkoutForm");
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0
-  }).format(amount || 0);
+function formatNaira(amount){
+  return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(amount||0);
 }
 
-if (checkoutForm) {
-  checkoutForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+form?.addEventListener("submit", async event => {
+  event.preventDefault();
 
-    const cart = getCartForCheckout();
+  const cart = getCartForCheckout();
+  if (!cart.length) {
+    alert("Your cart is empty.");
+    return;
+  }
 
-    if (!cart.length) {
-      alert("Please add at least one item to cart.");
-      window.location.href = "index.html#shop";
-      return;
-    }
+  const order = {
+    customerName: document.getElementById("customerName").value.trim(),
+    customerPhone: document.getElementById("customerPhone").value.trim(),
+    fulfillment: document.getElementById("fulfillment").value,
+    deliveryAddress: document.getElementById("deliveryAddress").value.trim(),
+    paymentMethod: document.getElementById("paymentMethod").value,
+    orderNote: document.getElementById("orderNote").value.trim(),
+    items: cart,
+    total: getCartTotalForCheckout(),
+    orderStatus: "Pending",
+    createdAt: serverTimestamp()
+  };
 
-    const fulfillment = document.getElementById("fulfillment").value;
-    const deliveryZone = getDeliveryZoneForCheckout();
+  try {
+    await addDoc(collection(db, "orders"), order);
 
-    if (fulfillment === "Delivery" && !deliveryZone) {
-      alert("Please select a delivery zone.");
-      return;
-    }
+    const itemLines = cart.map(item => `- ${item.name} x ${item.quantity} = ${formatNaira(item.price * item.quantity)}`).join("\\n");
+    const message = encodeURIComponent(
+      `New Biserry Order\\n\\nName: ${order.customerName}\\nPhone: ${order.customerPhone}\\nMethod: ${order.fulfillment}\\nAddress: ${order.deliveryAddress}\\nPayment: ${order.paymentMethod}\\n\\nItems:\\n${itemLines}\\n\\nTotal: ${formatNaira(order.total)}\\nNote: ${order.orderNote}`
+    );
 
-    const customer = {
-      name: document.getElementById("customerName").value.trim(),
-      phone: document.getElementById("customerPhone").value.trim(),
-      email: document.getElementById("customerEmail")?.value.trim() || "",
-      address: document.getElementById("customerAddress").value.trim(),
-      fulfillment,
-      deliveryZone,
-      paymentMethod: document.getElementById("paymentMethod").value
-    };
-
-    const order = {
-      customer,
-      items: cart,
-      subtotal: getCartSubtotalForCheckout(),
-      deliveryFee: getDeliveryFeeForCheckout(),
-      total: getCartTotalForCheckout(),
-      paymentStatus: customer.paymentMethod === "Cash on Delivery" ? "Pending" : "Awaiting Confirmation",
-      orderStatus: "New",
-      deliveryStatus: customer.fulfillment === "Pickup" ? "Pickup Requested" : "Awaiting Dispatch",
-      stockDeducted: false,
-      createdAt: serverTimestamp()
-    };
-
-    try {
-      const orderRef = await addDoc(collection(db, "orders"), order);
-
-      await addDoc(collection(db, "customers"), {
-        ...customer,
-        lastOrderId: orderRef.id,
-        lastOrderTotal: order.total,
-        createdAt: serverTimestamp()
-      });
-
-      const orderList = cart.map(item =>
-        `- ${item.name} x ${item.quantity} = ${formatNaira(Number(item.price) * Number(item.quantity))}`
-      ).join("%0A");
-
-      const message =
-        `Hello ${BUSINESS.name},%0A%0A` +
-        `I want to place an order.%0A%0A` +
-        `Order ID: ${orderRef.id}%0A` +
-        `Name: ${customer.name}%0A` +
-        `Phone: ${customer.phone}%0A` +
-        `Order Type: ${customer.fulfillment}%0A` +
-        `Delivery Zone: ${customer.deliveryZone || "Pickup"}%0A` +
-        `Payment Method: ${customer.paymentMethod}%0A` +
-        `Address/Note: ${customer.address}%0A%0A` +
-        `Items:%0A${orderList}%0A%0A` +
-        `Subtotal: ${formatNaira(order.subtotal)}%0A` +
-        `Delivery Fee: ${formatNaira(order.deliveryFee)}%0A` +
-        `Total: ${formatNaira(order.total)}`;
-
-      clearCartAfterOrder();
-
-      window.open(`https://wa.me/${BUSINESS.whatsapp}?text=${message}`, "_blank");
-      alert("Order submitted successfully.");
-      checkoutForm.reset();
-    } catch (error) {
-      alert("Order could not be submitted: " + error.message);
-    }
-  });
-}
+    clearCartAfterOrder();
+    alert("Your order has been submitted. We will confirm availability and delivery.");
+    window.open(`https://wa.me/2348100584211?text=${message}`, "_blank");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert("Order failed: " + error.message);
+  }
+});
