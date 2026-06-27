@@ -265,7 +265,14 @@ function renderProductsTable(products) {
 
     productsTable.innerHTML += `
       <tr>
-        <td><img src="${image}" alt="${product.name}"></td>
+        <td>
+  <img 
+    class="adminProductThumb"
+    src="${image}" 
+    alt="${product.name || "Product"}"
+    onerror="this.src='../assets/logo.png'"
+  >
+</td>
         <td>
           <strong>${product.name}</strong>
           ${skuText}
