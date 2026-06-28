@@ -271,6 +271,7 @@ function renderProductsTable(products) {
     src="${image}" 
     alt="${product.name || "Product"}"
     onerror="this.src='../assets/logo.png'"
+    style="width:64px;height:64px;max-width:64px;max-height:64px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"
   >
 </td>
         <td>
