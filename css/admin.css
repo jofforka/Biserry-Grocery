@@ -469,3 +469,14 @@ textarea{min-height:120px}
     max-height:54px!important;
   }
 }
+/* AI CATALOGUE MANAGER */
+.aiStats{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:14px}
+.aiStats>div{border:1px solid var(--border);border-radius:16px;padding:18px;background:var(--soft);display:flex;flex-direction:column;gap:6px}
+.aiStats strong{font-size:28px;color:var(--green)}
+.aiStats span{font-size:13px;color:var(--muted);font-weight:700}
+.aiBadge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+.aiBadge.auto{background:#e4f6e9;color:#176b3a}
+.aiBadge.review{background:#fff0c9;color:#7a5600}
+.aiBadge.blocked{background:#fbe1e1;color:#9f1d1d}
+.approvalCheck{width:20px;height:20px}
+@media(max-width:900px){.aiStats{grid-template-columns:1fr 1fr}}
