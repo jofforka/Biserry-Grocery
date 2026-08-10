@@ -32,7 +32,7 @@
       <div class="adminTop">
         <div>
           <h1>Bulk Upload & Inventory Updates</h1>
-          <p>Import new products, update existing prices, update stock count, and manage SKU/barcode.</p>
+          <p>Analyze supplier lists, match products intelligently, calculate margins, flag risky changes, and approve exceptions before Firestore updates.</p>
         </div>
       </div>
 
@@ -63,9 +63,9 @@
 
       <section class="adminPanel">
         <span class="sectionLabel">Sheet Format</span>
-        <h2>Required CSV Columns</h2>
+        <h2>Supplier & Master CSV Fields</h2>
 
-        <p>Your CSV should contain these exact column names. You may leave optional fields blank.</p>
+        <p>The manager accepts the original Biserry columns plus richer master fields. Common supplier headings such as Product, Item, Cost Price, Wholesale Price, Qty, Size and Vendor are automatically recognized.</p>
 
         <div class="tableWrap">
           <table>
@@ -94,24 +94,36 @@
         </div>
 
         <div class="bulkActions">
-          <button class="btn outline" id="downloadTemplateBtn" type="button">Download Full Template</button>
+          <button class="btn outline" id="downloadTemplateBtn" type="button">Download Basic Template</button>
+          <button class="btn" id="downloadMasterTemplateBtn" type="button">Download AI Master Template</button>
           <button class="btn outline" id="downloadPriceTemplateBtn" type="button">Download Price Update Template</button>
           <button class="btn outline" id="downloadStockTemplateBtn" type="button">Download Stock Count Template</button>
         </div>
       </section>
 
       <section class="adminPanel">
-        <span class="sectionLabel">Upload CSV</span>
-        <h2>Preview Before Import</h2>
+        <span class="sectionLabel">AI Catalogue Manager</span>
+        <h2>Analyze Before Import</h2>
 
         <input id="csvFile" type="file" accept=".csv,text/csv">
 
         <div class="bulkActions">
-          <button class="btn" id="previewBtn" type="button">Preview CSV</button>
+          <button class="btn" id="previewBtn" type="button">Analyze Supplier / Master CSV</button>
           <button class="btn outline" id="clearPreviewBtn" type="button">Clear Preview</button>
         </div>
 
         <div id="uploadStatus" class="storeNotice" style="display:none;"></div>
+      </section>
+
+      <section class="adminPanel">
+        <span class="sectionLabel">Analysis Summary</span>
+        <h2>Catalogue Safety Scorecard</h2>
+        <div class="aiStats">
+          <div><strong id="autoReadyCount">0</strong><span>Auto-ready</span></div>
+          <div><strong id="reviewCount">0</strong><span>Needs review</span></div>
+          <div><strong id="blockedCount">0</strong><span>Blocked</span></div>
+          <div><strong id="avgConfidence">0%</strong><span>Avg. confidence</span></div>
+        </div>
       </section>
 
       <section class="adminPanel">
@@ -121,7 +133,7 @@
             <h2>Rows Ready for Processing</h2>
           </div>
 
-          <button class="btn" id="importBtn" type="button" disabled>Process Sheet</button>
+          <button class="btn" id="importBtn" type="button" disabled>Process Approved Rows</button>
         </div>
 
         <div id="previewSummary" class="storeNotice" style="display:none;"></div>
@@ -131,15 +143,29 @@
             <thead>
               <tr>
                 <th>Product</th>
-                <th>SKU</th>
-                <th>Type</th>
+                <th>SKU / Barcode</th>
+                <th>Brand</th>
                 <th>Category</th>
-                <th>Price / Options</th>
-                <th>Stock</th>
-                <th>Action</th>
+                <th>Price Change</th>
+                <th>Matched To</th>
+                <th>Confidence</th>
+                <th>Status</th>
+                <th>Approve</th>
               </tr>
             </thead>
             <tbody id="previewTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="adminPanel" id="approvalPanel" style="display:none;">
+        <span class="sectionLabel">Exception / Approval Queue</span>
+        <h2>Rows Requiring Human Review</h2>
+        <div id="exceptionSummary" class="storeNotice" style="display:none;"></div>
+        <div class="tableWrap">
+          <table>
+            <thead><tr><th>Product</th><th>Status</th><th>Confidence</th><th>Reason</th><th>Possible Match</th><th>Decision</th></tr></thead>
+            <tbody id="exceptionTable"><tr><td colspan="6">No exceptions yet.</td></tr></tbody>
           </table>
         </div>
       </section>
