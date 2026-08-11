@@ -1,56 +1,42 @@
-# Biserry AI Catalogue Manager
+# Biserry AI Catalogue Manager v2
 
-## What this upgrade adds
+## What changed
+The catalogue now separates supplier cost from public retail references and removes generic category photos as if they were product photos. Missing product images are explicitly queued for enrichment.
 
-The Bulk Upload page is now an intelligent catalogue ingestion layer that preserves the existing Firestore `products` collection while accepting richer master data.
+### Data quality fields
+In addition to the original master fields, v2 accepts:
+`referenceRetailPrice, priceSourceUrl, productSourceUrl, imageSourcePageUrl, sourceRecency, priceConfidence, imageConfidence, enrichmentStatus, dataQuality`.
 
-### Supplier-list recognition
-Common supplier headings are normalized automatically, including Product/Item/Description → `name`, Cost Price/Wholesale Price/Supplier Price → `estimatedCost`, Qty/Quantity → `stock`, Vendor/Wholesaler → `supplier`, and Size/Pack → `packSize` / `variantName`.
+`estimatedCost` is reserved for supplier/wholesale cost. `referenceRetailPrice` is a market/retailer reference only.
 
-### Product matching
-Matching runs in this order:
-1. Exact SKU
-2. Exact barcode/GTIN
-3. Normalized name token similarity, with category/brand/pack-size bonuses
+## Autonomous enrichment
+Cloud Functions now perform three stages:
+1. If a verified product/detail page is already known, fetch its Open Graph product image.
+2. If key information is missing, use Gemini with Google Search grounding to find a current Nigerian product source, exact pack size and current retail reference price.
+3. Fetch the product page image, apply confidence rules and update Firestore. Weak results remain in `catalogueExceptions`/review instead of publishing silently.
 
-A confidence score is generated for every proposed action.
+The scheduled enrichment worker intentionally handles a small batch per hour to limit API cost.
 
-### Pricing
-If a selling price is blank but `estimatedCost` exists, Biserry calculates a price using `markupPct`. If markup is blank, category defaults are used:
-- grains 16%
-- oil 14%
-- spices 22%
-- fresh 24%
-- drinks 18%
-- household 22%
+## Setup
+1. Upgrade to the Firebase Blaze plan if required for Cloud Functions/Secret Manager usage.
+2. From the project root, set the server-side Gemini key:
+   `firebase functions:secrets:set GEMINI_API_KEY`
+3. Deploy functions:
+   `firebase deploy --only functions`
+4. Import `data/biserry-1200-master-catalogue-v2.csv` through the admin Bulk Upload page.
+5. Keep products with `pending-*` / `needs-review` status unpublished until image/data confidence is acceptable.
 
-Prices are rounded up to the nearest ₦50.
+## Image rights / source policy
+The system should use supplier, manufacturer or otherwise authorized product imagery. Retailer pages are excellent for matching/verification, but Biserry should confirm it has the right to reuse externally hosted images before long-term production use. The code therefore records the source page and confidence rather than pretending every image is owned by Biserry.
 
-### Safety rules
-- Selling price below cost: BLOCKED
-- Existing price changes over ±20%: REVIEW
-- Weak fuzzy product match: REVIEW
-- Missing/placeholder image: REVIEW
-- Price/stock-only row with no existing match: BLOCKED
-- Exact SKU/barcode match with normal values: usually AUTO-READY
+## Pricing policy
+Public online supermarket prices fluctuate and are not wholesale quotations. They are stored as `referenceRetailPrice`. Selling price should primarily be calculated from the verified supplier `estimatedCost` plus Biserry markup rules.
 
-### Approval queue
-Auto-ready rows begin approved. Review rows require explicit approval. Blocked rows cannot be approved until source data is corrected.
-
-The system attempts to log non-auto rows to a Firestore collection named `catalogueExceptions`. If Firestore rules do not permit that collection, import still continues and a warning is written to the browser console.
-
-## Rich master fields
-`name, brand, category, subcategory, sku, barcode, hasVariants, optionType, variantName, variantSku, packSize, unit, estimatedCost, markupPct, price, stock, lowStockThreshold, imageUrl, imageSearchQuery, imageStatus, priceStatus, supplier, country, lastPriceCheck, notes`
-
-## Important distinction: AI-ready vs autonomous external AI
-This implementation uses deterministic intelligent matching and confidence scoring in the browser. It deliberately does **not** embed a secret OpenAI/Gemini key in client-side JavaScript.
-
-For unattended operation, add a trusted backend (Firebase Cloud Functions is the natural fit) that can:
-- receive supplier files from a secure upload/email workflow;
-- call an AI model for irregular supplier spreadsheet interpretation;
-- call an approved product-image search/provider;
-- write results to Firestore with server-side credentials;
-- schedule recurring processing;
-- send alerts for review items.
-
-Never place private AI API keys in this static GitHub Pages frontend.
+## Production safeguards
+- exact SKU/barcode preferred;
+- fuzzy matches require confidence thresholds;
+- >20% price movement is reviewed;
+- selling below supplier cost is blocked;
+- missing/low-confidence images remain review items;
+- AI keys stay in Firebase Secret Manager, never browser JavaScript;
+- scheduled/event-driven functions should be idempotent.
