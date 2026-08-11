@@ -16,6 +16,11 @@ const csvFileInput = $("csvFile");
 const previewBtn = $("previewBtn");
 const clearPreviewBtn = $("clearPreviewBtn");
 const importBtn = $("importBtn");
+const queueAiBtn = $("queueAiBtn");
+const selectAllBtn = $("selectAllBtn");
+const clearSelectionBtn = $("clearSelectionBtn");
+const selectAllCheckbox = $("selectAllCheckbox");
+const approveAllReviewBtn = $("approveAllReviewBtn");
 const previewTable = $("previewTable");
 const uploadStatus = $("uploadStatus");
 const previewSummary = $("previewSummary");
@@ -65,6 +70,15 @@ const HEADER_ALIASES = {
   imageSearchQuery: ["imagesearchquery", "image_search_query"],
   imageStatus: ["imagestatus", "image_status"],
   priceStatus: ["pricestatus", "price_status"],
+  referenceRetailPrice: ["referenceretailprice", "reference_retail_price", "retailreference", "marketprice"],
+  priceSourceUrl: ["pricesourceurl", "price_source_url", "pricesource"],
+  productSourceUrl: ["productsourceurl", "product_source_url", "sourceurl", "source_url"],
+  imageSourcePageUrl: ["imagesourcepageurl", "image_source_page_url", "imagesource"],
+  sourceRecency: ["sourcerecency", "source_recency"],
+  priceConfidence: ["priceconfidence", "price_confidence"],
+  imageConfidence: ["imageconfidence", "image_confidence"],
+  enrichmentStatus: ["enrichmentstatus", "enrichment_status"],
+  dataQuality: ["dataquality", "data_quality"],
   supplier: ["supplier", "vendor", "wholesaler"],
   country: ["country", "origin", "countryoforigin", "country_of_origin"],
   lastPriceCheck: ["lastpricecheck", "last_price_check", "priceupdated", "price_updated"],
@@ -244,7 +258,7 @@ function groupRowsIntoProducts(rows) {
     const price = suppliedPrice || calculateRecommendedPrice(cost, markupPct);
     const stock = normalizeNumber(raw.stock);
     const lowStockThreshold = normalizeNumber(raw.lowStockThreshold || 5);
-    const imageUrl = String(raw.imageUrl || "").trim() || "assets/logo.png";
+    const imageUrl = String(raw.imageUrl || "").trim();
     const packSize = String(raw.packSize || variantName || extractPackSize(name)).trim();
 
     const richFields = {
@@ -258,10 +272,19 @@ function groupRowsIntoProducts(rows) {
       supplier: String(raw.supplier || "").trim(),
       priceStatus: String(raw.priceStatus || (cost ? "Estimated" : "Unverified")).trim(),
       imageSearchQuery: String(raw.imageSearchQuery || `${raw.brand || ""} ${name} Nigeria product pack`).trim(),
-      imageStatus: String(raw.imageStatus || (imageUrl === "assets/logo.png" ? "Missing" : "Provided")).trim(),
+      imageStatus: String(raw.imageStatus || (imageUrl ? "Provided" : "Pending automated enrichment")).trim(),
       country: String(raw.country || "").trim(),
       lastPriceCheck: String(raw.lastPriceCheck || "").trim(),
-      notes: String(raw.notes || "").trim()
+      notes: String(raw.notes || "").trim(),
+      referenceRetailPrice: normalizeNumber(raw.referenceRetailPrice),
+      priceSourceUrl: String(raw.priceSourceUrl || "").trim(),
+      productSourceUrl: String(raw.productSourceUrl || "").trim(),
+      imageSourcePageUrl: String(raw.imageSourcePageUrl || "").trim(),
+      sourceRecency: String(raw.sourceRecency || "").trim(),
+      priceConfidence: normalizeNumber(raw.priceConfidence),
+      imageConfidence: normalizeNumber(raw.imageConfidence),
+      enrichmentStatus: String(raw.enrichmentStatus || (!imageUrl ? "pending-image" : "complete")).trim(),
+      dataQuality: String(raw.dataQuality || "supplier-import").trim()
     };
 
     if (hasVariants) {
@@ -388,7 +411,8 @@ function renderStats() {
   avgConfidence.textContent = `${avg}%`;
 }
 
-function statusBadge(status) {
+function statusBadge(status, approved = false) {
+  if (status === "review" && approved) return `<span class="aiBadge approved">Approved</span>`;
   const label = status === "auto" ? "Auto-ready" : status === "review" ? "Review" : "Blocked";
   return `<span class="aiBadge ${status}">${label}</span>`;
 }
@@ -401,6 +425,10 @@ function renderPreview() {
     exceptionSummary.style.display = "none";
     approvalPanel.style.display = "none";
     importBtn.disabled = true;
+    if (selectAllBtn) selectAllBtn.disabled = true;
+    if (clearSelectionBtn) clearSelectionBtn.disabled = true;
+    if (selectAllCheckbox) { selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false; selectAllCheckbox.disabled = true; }
+    if (approveAllReviewBtn) approveAllReviewBtn.disabled = true;
     renderStats();
     return;
   }
@@ -421,21 +449,23 @@ function renderPreview() {
       <td>${oldPrice ? `₦${Number(oldPrice).toLocaleString()} → ` : ""}₦${Number(product.price || 0).toLocaleString()}</td>
       <td>${a.matchName ? `${escapeHtml(a.matchName)}<br><small>${a.matchConfidence}% via ${escapeHtml(a.matchBasis)}</small>` : "New product"}</td>
       <td>${a.confidence}%</td>
-      <td>${statusBadge(a.status)}</td>
+      <td>${statusBadge(a.status, a.approved)}</td>
       <td><input class="approvalCheck" data-index="${index}" type="checkbox" ${a.approved ? "checked" : ""} ${a.status === "blocked" ? "disabled" : ""}></td>
     </tr>`;
   }).join("");
 
-  const exceptions = parsedProducts.map((p,index) => ({p,index})).filter(({p}) => p._analysis.status !== "auto");
+  const exceptions = parsedProducts.map((p,index) => ({p,index})).filter(({p}) => p._analysis.status === "blocked" || (p._analysis.status === "review" && !p._analysis.approved));
   approvalPanel.style.display = exceptions.length ? "block" : "none";
   exceptionSummary.style.display = exceptions.length ? "block" : "none";
-  exceptionSummary.textContent = `${exceptions.length} exception(s) require attention. Blocked rows cannot be approved until the source data is corrected.`;
+  const pendingReview = exceptions.filter(({p}) => p._analysis.status === "review").length;
+  const blockedReview = exceptions.filter(({p}) => p._analysis.status === "blocked").length;
+  exceptionSummary.textContent = `${pendingReview} review item(s) still need approval. ${blockedReview} blocked row(s) require source-data correction.`;
   exceptionTable.innerHTML = exceptions.length ? exceptions.map(({p,index}) => {
     const a = p._analysis;
     const reason = [...a.issues, ...a.warnings].join(" ");
     return `<tr>
       <td>${escapeHtml(p.name)}</td>
-      <td>${statusBadge(a.status)}</td>
+      <td>${statusBadge(a.status, a.approved)}</td>
       <td>${a.confidence}%</td>
       <td>${escapeHtml(reason)}</td>
       <td>${a.matchName ? escapeHtml(a.matchName) : "—"}</td>
@@ -444,8 +474,37 @@ function renderPreview() {
   }).join("") : `<tr><td colspan="6">No exceptions. All rows are auto-ready.</td></tr>`;
 
   importBtn.disabled = approved === 0;
+  if (queueAiBtn) queueAiBtn.disabled = parsedProducts.length === 0;
+  const eligible = parsedProducts.filter(p => p._analysis?.status !== "blocked");
+  const selectedEligible = eligible.filter(p => p._analysis?.approved).length;
+  if (selectAllBtn) selectAllBtn.disabled = eligible.length === 0;
+  if (clearSelectionBtn) clearSelectionBtn.disabled = selectedEligible === 0;
+  if (selectAllCheckbox) {
+    selectAllCheckbox.disabled = eligible.length === 0;
+    selectAllCheckbox.checked = eligible.length > 0 && selectedEligible === eligible.length;
+    selectAllCheckbox.indeterminate = selectedEligible > 0 && selectedEligible < eligible.length;
+  }
+  if (approveAllReviewBtn) approveAllReviewBtn.disabled = !parsedProducts.some(p => p._analysis?.status === "review" && !p._analysis?.approved);
   renderStats();
   bindApprovalControls();
+}
+
+
+function setAllEligibleApproval(approved) {
+  parsedProducts.forEach(product => {
+    if (product._analysis && product._analysis.status !== "blocked") {
+      product._analysis.approved = approved;
+    }
+  });
+  renderPreview();
+}
+
+function approveAllReviewItems() {
+  parsedProducts.forEach(product => {
+    if (product._analysis?.status === "review") product._analysis.approved = true;
+  });
+  renderPreview();
+  showStatus("All reviewable products have been approved. Blocked products were left unchanged.", "success");
 }
 
 function bindApprovalControls() {
@@ -603,9 +662,45 @@ async function analyzeFile() {
   }
 }
 
+async function queueForBackendAI() {
+  if (!parsedProducts.length) return showStatus("Analyze a supplier/master CSV first.", "error");
+  queueAiBtn.disabled = true;
+  queueAiBtn.textContent = "Queueing...";
+  try {
+    const items = parsedProducts.map(p => cleanProductForFirestore(p));
+    const chunkSize = 60; // keep each Firestore document comfortably below the 1 MiB limit
+    let batches = 0;
+    for (let i = 0; i < items.length; i += chunkSize) {
+      const chunk = items.slice(i, i + chunkSize);
+      await addDoc(collection(db, "supplierImports"), {
+        status: "pending",
+        source: "admin-ai-catalogue-manager",
+        fileName: csvFileInput.files?.[0]?.name || "catalogue.csv",
+        batchNumber: batches + 1,
+        itemCount: chunk.length,
+        items: chunk,
+        createdAt: serverTimestamp()
+      });
+      batches++;
+    }
+    showStatus(`${items.length} products queued in ${batches} backend AI batch(es). Firebase Functions will enrich product identity, pack/price references and images, then auto-process safe matches and send uncertain results to the exception queue.`, "success");
+  } catch (error) {
+    console.error(error);
+    showStatus(`Could not queue AI enrichment: ${error.message}`, "error");
+  } finally {
+    queueAiBtn.disabled = false;
+    queueAiBtn.textContent = "Queue for Backend AI Enrichment";
+  }
+}
+
 previewBtn.addEventListener("click", analyzeFile);
-clearPreviewBtn.addEventListener("click", () => { parsedProducts = []; catalogueIndex = null; csvFileInput.value = ""; renderPreview(); hideStatus(); });
+clearPreviewBtn.addEventListener("click", () => { parsedProducts = []; catalogueIndex = null; csvFileInput.value = ""; renderPreview(); hideStatus(); if (queueAiBtn) queueAiBtn.disabled = true; });
 importBtn.addEventListener("click", processProducts);
+if (selectAllBtn) selectAllBtn.addEventListener("click", () => setAllEligibleApproval(true));
+if (clearSelectionBtn) clearSelectionBtn.addEventListener("click", () => setAllEligibleApproval(false));
+if (selectAllCheckbox) selectAllCheckbox.addEventListener("change", e => setAllEligibleApproval(e.target.checked));
+if (approveAllReviewBtn) approveAllReviewBtn.addEventListener("click", approveAllReviewItems);
+if (queueAiBtn) queueAiBtn.addEventListener("click", queueForBackendAI);
 document.querySelectorAll("input[name='uploadMode']").forEach(input => input.addEventListener("change", () => {
   if (parsedProducts.length) parsedProducts = parsedProducts.map(assessProduct);
   renderPreview();
@@ -623,7 +718,7 @@ function downloadCsv(filename, matrix) {
 }
 
 const basicHeaders = ["name","category","sku","hasVariants","optionType","variantName","variantSku","price","stock","lowStockThreshold","imageUrl"];
-const masterHeaders = ["name","brand","category","subcategory","sku","barcode","hasVariants","optionType","variantName","variantSku","packSize","unit","estimatedCost","markupPct","price","stock","lowStockThreshold","imageUrl","imageSearchQuery","imageStatus","priceStatus","supplier","country","lastPriceCheck","notes"];
+const masterHeaders = ["name","brand","category","subcategory","sku","barcode","hasVariants","optionType","variantName","variantSku","packSize","unit","estimatedCost","markupPct","price","referenceRetailPrice","stock","lowStockThreshold","imageUrl","imageSearchQuery","imageStatus","priceStatus","priceSourceUrl","productSourceUrl","imageSourcePageUrl","sourceRecency","priceConfidence","imageConfidence","enrichmentStatus","dataQuality","supplier","country","lastPriceCheck","notes"];
 
 downloadTemplateBtn.addEventListener("click", () => downloadCsv("biserry-full-product-template.csv", [basicHeaders,["Goldimo","grains","GLD","true","sizes","900g","GLD-900G","5000","20","5","assets/goldimo-900g.jpg"]]));
 downloadPriceTemplateBtn.addEventListener("click", () => downloadCsv("biserry-price-update-template.csv", [basicHeaders,["Goldimo","grains","GLD","true","sizes","900g","GLD-900G","5500","","",""]]));
