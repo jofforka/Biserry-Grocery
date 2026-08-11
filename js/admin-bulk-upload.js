@@ -20,6 +20,8 @@ const queueAiBtn = $("queueAiBtn");
 const selectAllBtn = $("selectAllBtn");
 const clearSelectionBtn = $("clearSelectionBtn");
 const selectAllCheckbox = $("selectAllCheckbox");
+const selectAllCheckboxTop = $("selectAllCheckboxTop");
+const selectionCountText = $("selectionCountText");
 const approveAllReviewBtn = $("approveAllReviewBtn");
 const previewTable = $("previewTable");
 const uploadStatus = $("uploadStatus");
@@ -428,6 +430,8 @@ function renderPreview() {
     if (selectAllBtn) selectAllBtn.disabled = true;
     if (clearSelectionBtn) clearSelectionBtn.disabled = true;
     if (selectAllCheckbox) { selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false; selectAllCheckbox.disabled = true; }
+    if (selectAllCheckboxTop) { selectAllCheckboxTop.checked = false; selectAllCheckboxTop.indeterminate = false; selectAllCheckboxTop.disabled = true; }
+    if (selectionCountText) selectionCountText.textContent = "0 of 0 selected";
     if (approveAllReviewBtn) approveAllReviewBtn.disabled = true;
     renderStats();
     return;
@@ -484,6 +488,12 @@ function renderPreview() {
     selectAllCheckbox.checked = eligible.length > 0 && selectedEligible === eligible.length;
     selectAllCheckbox.indeterminate = selectedEligible > 0 && selectedEligible < eligible.length;
   }
+  if (selectAllCheckboxTop) {
+    selectAllCheckboxTop.disabled = eligible.length === 0;
+    selectAllCheckboxTop.checked = eligible.length > 0 && selectedEligible === eligible.length;
+    selectAllCheckboxTop.indeterminate = selectedEligible > 0 && selectedEligible < eligible.length;
+  }
+  if (selectionCountText) selectionCountText.textContent = `${selectedEligible.toLocaleString()} of ${eligible.length.toLocaleString()} selected`;
   if (approveAllReviewBtn) approveAllReviewBtn.disabled = !parsedProducts.some(p => p._analysis?.status === "review" && !p._analysis?.approved);
   renderStats();
   bindApprovalControls();
@@ -491,12 +501,19 @@ function renderPreview() {
 
 
 function setAllEligibleApproval(approved) {
+  let changed = 0;
   parsedProducts.forEach(product => {
     if (product._analysis && product._analysis.status !== "blocked") {
       product._analysis.approved = approved;
+      changed++;
     }
   });
   renderPreview();
+  showStatus(approved
+    ? `${changed.toLocaleString()} eligible product(s) selected. Click “Process Approved Rows” to continue.`
+    : `Selection cleared for ${changed.toLocaleString()} eligible product(s).`,
+    approved ? "success" : "info"
+  );
 }
 
 function approveAllReviewItems() {
@@ -699,6 +716,7 @@ importBtn.addEventListener("click", processProducts);
 if (selectAllBtn) selectAllBtn.addEventListener("click", () => setAllEligibleApproval(true));
 if (clearSelectionBtn) clearSelectionBtn.addEventListener("click", () => setAllEligibleApproval(false));
 if (selectAllCheckbox) selectAllCheckbox.addEventListener("change", e => setAllEligibleApproval(e.target.checked));
+if (selectAllCheckboxTop) selectAllCheckboxTop.addEventListener("change", e => setAllEligibleApproval(e.target.checked));
 if (approveAllReviewBtn) approveAllReviewBtn.addEventListener("click", approveAllReviewItems);
 if (queueAiBtn) queueAiBtn.addEventListener("click", queueForBackendAI);
 document.querySelectorAll("input[name='uploadMode']").forEach(input => input.addEventListener("change", () => {
