@@ -7,6 +7,17 @@
 
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/admin.css">
+
+  <style>
+    .approveColumnHead { min-width: 130px; text-align:center; }
+    .approveHeadTitle { margin-bottom:6px; font-weight:800; }
+    .selectAllApproveLabel { display:inline-flex; align-items:center; gap:7px; cursor:pointer; white-space:nowrap; }
+    .selectAllApproveLabel input, .approveAllStrip input { width:18px; height:18px; cursor:pointer; accent-color:#173A2B; }
+    .approveAllStrip { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:12px 0; padding:12px 14px; border:2px solid #173A2B; border-radius:12px; background:#f5fbf7; }
+    .approveAllStripLabel { display:flex; align-items:center; gap:9px; cursor:pointer; }
+    #selectionCountText { font-weight:700; white-space:nowrap; }
+    @media (max-width: 720px) { .approveAllStrip { align-items:flex-start; flex-direction:column; } }
+  </style>
 </head>
 
 <body>
@@ -66,6 +77,14 @@
         <h2>Supplier & Master CSV Fields</h2>
 
         <p>The manager accepts the original Biserry columns plus richer master fields. Common supplier headings such as Product, Item, Cost Price, Wholesale Price, Qty, Size and Vendor are automatically recognized.</p>
+
+        <div class="approveAllStrip" id="approveAllStrip">
+          <label class="approveAllStripLabel">
+            <input id="selectAllCheckboxTop" type="checkbox">
+            <strong>Select all products for approval</strong>
+          </label>
+          <span id="selectionCountText">0 of 0 selected</span>
+        </div>
 
         <div class="tableWrap">
           <table>
@@ -155,7 +174,13 @@
                 <th>Matched To</th>
                 <th>Confidence</th>
                 <th>Status</th>
-                <th><label class="tableCheckLabel"><input id="selectAllCheckbox" type="checkbox"> Select</label></th>
+                <th class="approveColumnHead">
+                  <div class="approveHeadTitle">Approve</div>
+                  <label class="tableCheckLabel selectAllApproveLabel" title="Select or clear every eligible product">
+                    <input id="selectAllCheckbox" type="checkbox">
+                    <strong>Select All</strong>
+                  </label>
+                </th>
               </tr>
             </thead>
             <tbody id="previewTable"></tbody>
