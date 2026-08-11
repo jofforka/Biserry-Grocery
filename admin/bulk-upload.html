@@ -133,7 +133,12 @@
             <h2>Rows Ready for Processing</h2>
           </div>
 
-          <button class="btn" id="importBtn" type="button" disabled>Process Approved Rows</button>
+          <div class="bulkActions">
+            <button class="btn outline" id="selectAllBtn" type="button" disabled>Select All Eligible</button>
+            <button class="btn outline" id="clearSelectionBtn" type="button" disabled>Clear Selection</button>
+            <button class="btn outline" id="queueAiBtn" type="button" disabled>Queue for Backend AI Enrichment</button>
+            <button class="btn" id="importBtn" type="button" disabled>Process Approved Rows</button>
+          </div>
         </div>
 
         <div id="previewSummary" class="storeNotice" style="display:none;"></div>
@@ -150,7 +155,7 @@
                 <th>Matched To</th>
                 <th>Confidence</th>
                 <th>Status</th>
-                <th>Approve</th>
+                <th><label class="tableCheckLabel"><input id="selectAllCheckbox" type="checkbox"> Select</label></th>
               </tr>
             </thead>
             <tbody id="previewTable"></tbody>
@@ -161,6 +166,9 @@
       <section class="adminPanel" id="approvalPanel" style="display:none;">
         <span class="sectionLabel">Exception / Approval Queue</span>
         <h2>Rows Requiring Human Review</h2>
+        <div class="bulkActions" style="margin-bottom:14px;">
+          <button class="btn" id="approveAllReviewBtn" type="button">Approve All Review Items</button>
+        </div>
         <div id="exceptionSummary" class="storeNotice" style="display:none;"></div>
         <div class="tableWrap">
           <table>
