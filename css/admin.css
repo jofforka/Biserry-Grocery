@@ -480,3 +480,8 @@ textarea{min-height:120px}
 .aiBadge.blocked{background:#fbe1e1;color:#9f1d1d}
 .approvalCheck{width:20px;height:20px}
 @media(max-width:900px){.aiStats{grid-template-columns:1fr 1fr}}
+
+/* AI Catalogue bulk approval controls */
+.tableCheckLabel{display:inline-flex;align-items:center;gap:7px;margin:0;color:inherit;font-weight:800;white-space:nowrap}
+.tableCheckLabel input,.approvalCheck{width:18px!important;height:18px;margin:0;accent-color:var(--green);cursor:pointer}
+.aiBadge.approved{background:#e8f6ed;color:#116530;border:1px solid #b7e0c4}
