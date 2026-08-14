@@ -28,6 +28,7 @@ const priceInput = document.getElementById("price");
 const stockInput = document.getElementById("stock");
 const lowStockInput = document.getElementById("lowStockThreshold");
 const isFeaturedInput = document.getElementById("isFeatured");
+const isActiveInput = document.getElementById("isActive");
 const productNoteInput = document.getElementById("productNote");
 const imageFileInput = document.getElementById("imageFile");
 const imageUrlInput = document.getElementById("imageUrl");
@@ -42,6 +43,15 @@ const variantRows = document.getElementById("variantRows");
 const addVariantBtn = document.getElementById("addVariantBtn");
 const variantSectionTitle = document.getElementById("variantSectionTitle");
 const variantSectionHelp = document.getElementById("variantSectionHelp");
+const selectAllProductsBtn = document.getElementById("selectAllProductsBtn");
+const clearProductSelectionBtn = document.getElementById("clearProductSelectionBtn");
+const activateSelectedBtn = document.getElementById("activateSelectedBtn");
+const deactivateSelectedBtn = document.getElementById("deactivateSelectedBtn");
+const activateAllProductsBtn = document.getElementById("activateAllProductsBtn");
+const deactivateAllProductsBtn = document.getElementById("deactivateAllProductsBtn");
+const productSelectAllCheckbox = document.getElementById("productSelectAllCheckbox");
+const productVisibilitySummary = document.getElementById("productVisibilitySummary");
+let selectedProductIds = new Set();
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -231,6 +241,7 @@ function resetForm() {
   productTypeInput.value = "single";
   lowStockInput.value = 5;
   if (isFeaturedInput) isFeaturedInput.value = "false";
+  if (isActiveInput) isActiveInput.value = "false";
 
   toggleProductType();
 }
@@ -265,6 +276,9 @@ function renderProductsTable(products) {
 
     productsTable.innerHTML += `
       <tr>
+        <td style="text-align:center;">
+          <input class="productSelectionCheck" type="checkbox" data-product-id="${id}" ${selectedProductIds.has(id) ? "checked" : ""} aria-label="Select ${product.name || "product"}">
+        </td>
         <td>
   <img 
     class="adminProductThumb"
@@ -284,7 +298,13 @@ function renderProductsTable(products) {
         <td>${priceDisplay}</td>
         <td>${totalStock}</td>
         <td>
+          <span class="statusBadge" style="background:${product.isActive !== false ? "#e6f5ea" : "#f4e7e7"};color:${product.isActive !== false ? "#176b37" : "#8b2d2d"};">
+            ${product.isActive !== false ? "Active" : "Inactive"}
+          </span>
+        </td>
+        <td>
           <div class="actionBtns">
+            <button class="${product.isActive !== false ? "duplicateBtn" : "editBtn"}" onclick="setProductActive('${id}', ${product.isActive === false ? "true" : "false"})">${product.isActive !== false ? "Deactivate" : "Activate"}</button>
             <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
             <button class="duplicateBtn" onclick="duplicateProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Duplicate</button>
             <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
@@ -293,7 +313,60 @@ function renderProductsTable(products) {
       </tr>
     `;
   });
+
+  document.querySelectorAll(".productSelectionCheck").forEach(input => {
+    input.addEventListener("change", event => {
+      const id = event.target.dataset.productId;
+      if (event.target.checked) selectedProductIds.add(id);
+      else selectedProductIds.delete(id);
+      updateVisibilitySummary();
+    });
+  });
+  updateVisibilitySummary();
 }
+
+function updateVisibilitySummary() {
+  const active = allProducts.filter(({product}) => product.isActive !== false).length;
+  const inactive = allProducts.length - active;
+  if (productVisibilitySummary) {
+    productVisibilitySummary.textContent = `${allProducts.length.toLocaleString()} total • ${active.toLocaleString()} active • ${inactive.toLocaleString()} inactive • ${selectedProductIds.size.toLocaleString()} selected`;
+  }
+  if (productSelectAllCheckbox) {
+    productSelectAllCheckbox.checked = allProducts.length > 0 && selectedProductIds.size === allProducts.length;
+    productSelectAllCheckbox.indeterminate = selectedProductIds.size > 0 && selectedProductIds.size < allProducts.length;
+  }
+}
+
+async function setManyProductsActive(ids, isActive, label) {
+  if (!ids.length) { alert("Please select at least one product."); return; }
+  const action = isActive ? "activate" : "deactivate";
+  if (!confirm(`${label}: ${action} ${ids.length.toLocaleString()} product(s)?`)) return;
+
+  const controls = [activateSelectedBtn, deactivateSelectedBtn, activateAllProductsBtn, deactivateAllProductsBtn].filter(Boolean);
+  controls.forEach(btn => btn.disabled = true);
+  try {
+    const chunkSize = 40;
+    for (let i = 0; i < ids.length; i += chunkSize) {
+      const chunk = ids.slice(i, i + chunkSize);
+      await Promise.all(chunk.map(id => updateDoc(doc(db, "products", id), {
+        isActive,
+        visibilityUpdatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })));
+    }
+    selectedProductIds.clear();
+    await loadProducts();
+    alert(`${ids.length.toLocaleString()} product(s) ${isActive ? "activated" : "deactivated"}.`);
+  } catch (error) {
+    alert(`Could not ${action} products: ${error.message}`);
+  } finally {
+    controls.forEach(btn => btn.disabled = false);
+  }
+}
+
+window.setProductActive = async function(id, isActive) {
+  await setManyProductsActive([id], isActive, "Product visibility");
+};
 
 function productMatchesSearch(product, term) {
   const variantsText = (product.variants || [])
@@ -356,6 +429,7 @@ form.addEventListener("submit", async (event) => {
     hasVariants: hasOptions,
     lowStockThreshold: Number(lowStockInput.value || 5),
     isFeatured: isFeaturedInput ? isFeaturedInput.value === "true" : false,
+    isActive: isActiveInput ? isActiveInput.value === "true" : false,
     productNote: productNoteInput ? productNoteInput.value.trim() : "",
     updatedAt: serverTimestamp()
   };
@@ -424,6 +498,7 @@ window.editProduct = function(id, encodedProduct) {
   lowStockInput.value = product.lowStockThreshold || 5;
 
   if (isFeaturedInput) isFeaturedInput.value = product.isFeatured ? "true" : "false";
+  if (isActiveInput) isActiveInput.value = product.isActive !== false ? "true" : "false";
   if (productNoteInput) productNoteInput.value = product.productNote || "";
 
   if (productType === "single") {
@@ -461,6 +536,7 @@ window.duplicateProduct = async function(id, encodedProduct) {
     sku: product.sku ? `${product.sku}-COPY` : "",
     variants: duplicatedVariants,
     isFeatured: false,
+    isActive: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
@@ -488,6 +564,24 @@ window.deleteProduct = async function(id) {
     alert("Delete failed: " + error.message);
   }
 };
+
+selectAllProductsBtn?.addEventListener("click", () => {
+  selectedProductIds = new Set(allProducts.map(item => item.id));
+  renderProductsTable(allProducts);
+});
+clearProductSelectionBtn?.addEventListener("click", () => {
+  selectedProductIds.clear();
+  renderProductsTable(allProducts);
+});
+productSelectAllCheckbox?.addEventListener("change", event => {
+  if (event.target.checked) selectedProductIds = new Set(allProducts.map(item => item.id));
+  else selectedProductIds.clear();
+  renderProductsTable(allProducts);
+});
+activateSelectedBtn?.addEventListener("click", () => setManyProductsActive([...selectedProductIds], true, "Selected products"));
+deactivateSelectedBtn?.addEventListener("click", () => setManyProductsActive([...selectedProductIds], false, "Selected products"));
+activateAllProductsBtn?.addEventListener("click", () => setManyProductsActive(allProducts.map(item => item.id), true, "ALL products"));
+deactivateAllProductsBtn?.addEventListener("click", () => setManyProductsActive(allProducts.map(item => item.id), false, "ALL products"));
 
 cancelBtn.addEventListener("click", resetForm);
 toggleProductType();
