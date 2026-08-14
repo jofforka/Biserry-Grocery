@@ -745,4 +745,3 @@ downloadStockTemplateBtn.addEventListener("click", () => downloadCsv("biserry-st
 downloadMasterTemplateBtn.addEventListener("click", () => downloadCsv("biserry-ai-master-template.csv", [masterHeaders,["Golden Penny Spaghetti 500g","Golden Penny","grains","Pasta","GP-SPAG-500","","false","","","","500g","item","900","18","","30","5","assets/spaghetti.jpg","Golden Penny Spaghetti 500g Nigeria product pack","Verified","Supplier verified","Example Supplier","Nigeria","2026-08-10",""]]));
 
 renderPreview();
-
