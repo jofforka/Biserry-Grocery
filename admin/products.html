@@ -85,6 +85,14 @@
           </div>
 
           <div>
+            <label>Storefront Status</label>
+            <select id="isActive">
+              <option value="false">Inactive (hidden from customers)</option>
+              <option value="true">Active (visible to customers)</option>
+            </select>
+          </div>
+
+          <div>
             <label>Homepage Display</label>
             <select id="isFeatured">
               <option value="false">Normal Product</option>
@@ -159,16 +167,37 @@
 
       <input id="adminProductSearch" class="adminSearchInput" placeholder="Search by product name, SKU, barcode, category, size or variety...">
 
+      <div class="adminPanel" style="margin:16px 0;padding:16px;border:1px solid #e8dcc3;background:#fffaf0;">
+        <div class="adminListHead" style="gap:12px;align-items:center;">
+          <div>
+            <span class="sectionLabel">Storefront Visibility</span>
+            <h3 style="margin:4px 0;">Activate / Deactivate Products</h3>
+            <p id="productVisibilitySummary" style="margin:0;">Loading product status...</p>
+          </div>
+          <div class="adminActions" style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button class="btn outline" type="button" id="selectAllProductsBtn">Select All</button>
+            <button class="btn outline" type="button" id="clearProductSelectionBtn">Clear Selection</button>
+            <button class="btn" type="button" id="activateSelectedBtn">Activate Selected</button>
+            <button class="btn outline" type="button" id="deactivateSelectedBtn">Deactivate Selected</button>
+            <button class="btn outline" type="button" id="activateAllProductsBtn">Activate All</button>
+            <button class="btn" type="button" id="deactivateAllProductsBtn" style="background:#8b2d2d;">Deactivate All</button>
+          </div>
+        </div>
+        <p style="margin:12px 0 0;font-size:.9rem;"><strong>Inactive products remain in Biserry OS but are hidden from customers.</strong> Use Deactivate All now, then activate only the products you have finalized.</p>
+      </div>
+
       <div class="tableWrap">
         <table>
           <thead>
             <tr>
+              <th style="text-align:center;"><input id="productSelectAllCheckbox" type="checkbox" title="Select all products"></th>
               <th>Image</th>
               <th>Name / SKU</th>
               <th>Type</th>
               <th>Category</th>
               <th>Price / Options</th>
               <th>Stock</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
