@@ -610,6 +610,7 @@ async function processProducts() {
         if (mode === "upsert") {
           await addDoc(collection(db, "products"), {
             ...cleanProductForFirestore(product),
+            isActive: false,
             catalogueConfidence: product._analysis.confidence,
             matchMethod: "new-product",
             createdAt: serverTimestamp(), updatedAt: serverTimestamp()
