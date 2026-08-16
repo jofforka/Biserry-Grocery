@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function admin() { return signedIn() && request.auth.token.email == 'admin@biserry.com'; }
+    function ownCustomer(uid) { return signedIn() && request.auth.uid == uid; }
+    function assignedDispatcher(requestId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/dispatchRequests/$(requestId))
+        && get(/databases/$(database)/documents/dispatchers/$(get(/databases/$(database)/documents/dispatchRequests/$(requestId)).data.dispatcherId)).data.authUid == request.auth.uid;
+    }
+    function dispatcherForOrder(orderId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/orderTracking/$(orderId))
+        && get(/databases/$(database)/documents/orderTracking/$(orderId)).data.dispatchRequestId != null
+        && assignedDispatcher(get(/databases/$(database)/documents/orderTracking/$(orderId)).data.dispatchRequestId);
+    }
+
+    match /products/{productId} {
+      allow get, list: if admin() || resource.data.isActive == true;
+      allow create, update, delete: if admin();
+    }
+
+    match /customers/{uid} {
+      allow read, create, update: if admin() || ownCustomer(uid);
+      allow delete: if admin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if request.resource.data.customerUid == null
+                    || (signedIn() && request.resource.data.customerUid == request.auth.uid);
+      allow read: if admin()
+                  || (signedIn() && resource.data.customerUid == request.auth.uid)
+                  || dispatcherForOrder(orderId);
+      allow update: if admin()
+                    || dispatcherForOrder(orderId);
+      allow delete: if admin();
+    }
+
+    // Public tracking intentionally contains no customer name, phone, email or address.
+    match /orderTracking/{orderId} {
+      allow read: if true;
+      allow create: if exists(/databases/$(database)/documents/orders/$(orderId))
+                    && request.resource.data.keys().hasOnly([
+                      'orderStatus','paymentStatus','dispatchStatus','fulfillment','total','createdAt','updatedAt'
+                    ]);
+      allow update: if admin()
+                    || (signedIn()
+                        && exists(/databases/$(database)/documents/orders/$(orderId))
+                        && get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dispatchRequestId','dispatchStatus','updatedAt']))
+                    || (resource.data.dispatchRequestId != null && assignedDispatcher(resource.data.dispatchRequestId));
+      allow delete: if admin();
+    }
+
+    match /dispatchers/{dispatcherId} {
+      allow read: if admin()
+                  || resource.data.isPublic == true
+                  || (signedIn() && resource.data.authUid == request.auth.uid);
+      allow create: if signedIn()
+                    && request.resource.data.authUid == request.auth.uid
+                    && request.resource.data.isApproved == false
+                    && request.resource.data.isPublic == false;
+      allow update: if admin()
+                    || (signedIn()
+                        && resource.data.authUid == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isAvailable','isPublic','lastAvailabilityAt','updatedAt'])
+                        && request.resource.data.isApproved == resource.data.isApproved
+                        && request.resource.data.isActive == resource.data.isActive
+                        && request.resource.data.isPublic == (request.resource.data.isAvailable == true && resource.data.isApproved == true && resource.data.isActive == true));
+      allow delete: if admin();
+    }
+
+    match /dispatchRequests/{requestId} {
+      allow create: if signedIn()
+                    && request.resource.data.customerUid == request.auth.uid
+                    && exists(/databases/$(database)/documents/dispatchers/$(request.resource.data.dispatcherId))
+                    && get(/databases/$(database)/documents/dispatchers/$(request.resource.data.dispatcherId)).data.isPublic == true;
+      allow read: if admin()
+                  || (signedIn() && resource.data.customerUid == request.auth.uid)
+                  || assignedDispatcher(requestId);
+      allow update: if admin()
+                    || (assignedDispatcher(requestId)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','acceptedAt','deliveredAt','updatedAt']));
+      allow delete: if admin();
+    }
+
+    match /farmers_market_requests/{id} {
+      allow create: if true;
+      allow read, update, delete: if admin();
+    }
+
+    match /inventory_logs/{id} { allow read, write: if admin(); }
+    match /supplierImports/{id} { allow read, write: if admin(); }
+    match /catalogueExceptions/{id} { allow read, write: if admin(); }
+    match /delivery_zones/{id} { allow read: if true; allow write: if admin(); }
+  }
+}

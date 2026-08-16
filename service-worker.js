@@ -1,68 +1,7 @@
-const CACHE_NAME = "biserry-groceries-v3-pwa-1";
-
-const CORE_ASSETS = [
-  "./",
-  "./index.html",
-  "./shop.html",
-  "./farmers-market.html",
-  "./cart.html",
-  "./checkout.html",
-  "./css/styles.css",
-  "./js/store.js",
-  "./js/checkout.js",
-  "./manifest.json",
-  "./assets/logo.png"
-];
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener("fetch", event => {
-  const request = event.request;
-  if (request.method !== "GET") return;
-
-  const url = new URL(request.url);
-
-  if (
-    url.hostname.includes("firestore.googleapis.com") ||
-    url.hostname.includes("firebase") ||
-    url.hostname.includes("googleapis.com")
-  ) {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(request)
-        .then(response => {
-          const responseClone = response.clone();
-
-          if (response.status === 200 && response.type === "basic") {
-            caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
-          }
-
-          return response;
-        })
-        .catch(() => caches.match("./index.html"));
-    })
-  );
-});
+const CACHE_NAME = "biserry-groceries-v7-1-spark";
+const CORE_ASSETS = ["./","./index.html","./shop.html","./farmers-market.html","./cart.html","./checkout.html","./order-success.html","./dispatch.html","./track-order.html","./account.html","./offline.html","./css/styles.css","./css/premium-v7.css","./js/store.js","./js/checkout.js","./js/dispatch.js","./js/order-tracking.js","./js/customer-account.js","./manifest.json","./assets/logo.png"];
+self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE_ASSETS)));self.skipWaiting();});
+self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
+async function networkFirst(request){try{const response=await fetch(request);if(response?.ok){const cache=await caches.open(CACHE_NAME);cache.put(request,response.clone());}return response;}catch{return (await caches.match(request))||(await caches.match("./offline.html"));}}
+async function cacheFirst(request){const cached=await caches.match(request);if(cached)return cached;try{const response=await fetch(request);if(response?.ok){const cache=await caches.open(CACHE_NAME);cache.put(request,response.clone());}return response;}catch{return caches.match("./offline.html");}}
+self.addEventListener("fetch",event=>{const req=event.request;if(req.method!=="GET")return;const url=new URL(req.url);if(url.hostname.includes("firestore.googleapis.com")||url.hostname.includes("firebase")||url.hostname.includes("googleapis.com"))return;const isHtml=req.mode==="navigate"||req.destination==="document";const isStatic=["image","font"].includes(req.destination);event.respondWith(isHtml?networkFirst(req):isStatic?cacheFirst(req):networkFirst(req));});

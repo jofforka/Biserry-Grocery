@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.email == 'admin@biserry.com'; }
+
+    match /products/{productId} {
+      allow read: if isAdmin() || resource.data.isActive == true;
+      allow write: if isAdmin();
+    }
+
+    match /dispatchers/{dispatcherId} {
+      allow read: if isAdmin()
+                  || resource.data.isPublic == true
+                  || (signedIn() && resource.data.authUid == request.auth.uid);
+
+      allow create: if isAdmin() || (
+        signedIn()
+        && request.resource.data.authUid == request.auth.uid
+        && request.resource.data.isApproved == false
+        && request.resource.data.isAvailable == false
+        && request.resource.data.isPublic == false
+      );
+
+      allow update: if isAdmin() || (
+        signedIn()
+        && resource.data.authUid == request.auth.uid
+        && request.resource.data.authUid == resource.data.authUid
+        && request.resource.data.isApproved == resource.data.isApproved
+        && request.resource.data.isActive == resource.data.isActive
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.phone == resource.data.phone
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.vehicleType == resource.data.vehicleType
+        && request.resource.data.serviceArea == resource.data.serviceArea
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'isAvailable', 'isPublic', 'lastAvailabilityAt', 'updatedAt'
+        ])
+        && request.resource.data.isPublic == (
+          request.resource.data.isAvailable == true
+          && resource.data.isApproved == true
+          && resource.data.isActive == true
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /farmers_market_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Keep your existing rules for all other Biserry collections.
+  }
+}

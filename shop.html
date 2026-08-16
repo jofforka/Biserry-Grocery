@@ -4,6 +4,7 @@
 <meta name="apple-mobile-web-app-title" content="Biserry">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/premium-v7.css?v=7.0">
 </head><body><header class="topbar">
   <div class="brand">
     <img src="assets/logo.png" class="logo-img" alt="Biserry Groceries">
@@ -16,10 +17,10 @@
     <a href="farmers-market.html">Farmers Market</a>
     <a href="cart.html" class="cartNavLink">Cart <span id="navCartCount" class="cartBadge">0</span></a>
     <a href="checkout.html">Checkout</a>
-    <a href="admin/login.html">Admin</a>
-    <a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
+    
+    <a href="track-order.html">Track Order</a><a class="btn small" href="https://wa.me/2348100584211" target="_blank">WhatsApp</a>
   </nav>
-</header><section class="pageHero compactHero"><span class="sectionLabel">Online Store</span><h2>Shop Groceries</h2><p>Search, filter, select quantity and add products to your cart.</p></section><section id="shop" class="shopSection"><div class="stickyShopTools"><div class="sectionHead shopHead"><div><h2>Product Catalog</h2><p>Compact view for faster browsing.</p></div><input id="searchInput" type="search" placeholder="Search product, category, size or SKU..."></div><div class="filters"><button class="filter active" data-category="all" type="button">All</button><button class="filter" data-category="grains" type="button">Grains</button><button class="filter" data-category="oil" type="button">Oil</button><button class="filter" data-category="spices" type="button">Spices</button><button class="filter" data-category="fresh" type="button">Fresh</button><button class="filter" data-category="drinks" type="button">Drinks</button><button class="filter" data-category="household" type="button">Household</button></div></div><div id="productGrid" class="productGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div></section><div id="cartToast" class="cartToast">Added to cart</div>
+</header><section class="pageHero compactHero"><span class="sectionLabel">Online Store</span><h2>Shop Groceries</h2><p>Search, filter, select quantity and add products to your cart.</p></section><section id="shop" class="shopSection"><div class="stickyShopTools"><div class="sectionHead shopHead"><div><h2>Product Catalog</h2><p>Compact view for faster browsing.</p></div><input id="searchInput" type="search" placeholder="Search product, category, size or SKU..."></div><div class="filters"><button class="filter active" data-category="all" type="button">All</button><button class="filter" data-category="grains" type="button">Grains</button><button class="filter" data-category="oil" type="button">Oil</button><button class="filter" data-category="spices" type="button">Spices</button><button class="filter" data-category="fresh" type="button">Fresh</button><button class="filter" data-category="drinks" type="button">Drinks</button><button class="filter" data-category="household" type="button">Household</button></div></div><div id="productGrid" class="productGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div><div class="catalogueLoadMore"><button class="btn outline" id="loadMoreProductsBtn" type="button" onclick="loadMoreProducts()">Load more products</button><p>Biserry loads the catalogue in small batches for faster browsing and lower Firestore usage.</p></div></section><div id="cartToast" class="cartToast">Added to cart</div>
 <button class="floatingCartBtn" id="floatingCartBtn" type="button">🛒<span id="floatingCartCount">0</span></button>
 <div class="miniCartOverlay" id="miniCartOverlay"></div>
 <aside class="miniCart" id="miniCart">
@@ -32,7 +33,7 @@
   <a href="shop.html">🔍<span>Shop</span></a>
   <button id="bottomCartBtn" type="button">🛒<span>Cart</span><b id="bottomCartCount">0</b></button>
   <a href="farmers-market.html">🌾<span>Market</span></a>
-  <a href="admin/login.html">👤<span>Admin</span></a>
+  <a href="dispatch.html">🚚<span>Dispatch</span></a>
 </nav><footer>
   <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
   <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
