@@ -1,0 +1,214 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.email != null && request.auth.token.email == 'admin@biserry.com'; }
+    function ownCustomer(uid) { return signedIn() && request.auth.uid == uid; }
+    function dispatcherOwns(dispatcherId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/dispatchers/$(dispatcherId))
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.authUid == request.auth.uid;
+    }
+    function dispatcherIsPublic(dispatcherId) {
+      return exists(/databases/$(database)/documents/dispatchers/$(dispatcherId))
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isPublic == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isApproved == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isActive == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isAvailable == true;
+    }
+    function validOrderRequester(orderId) {
+      return exists(/databases/$(database)/documents/orders/$(orderId))
+        && ((signedIn() && get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == request.auth.uid)
+            || get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == null);
+    }
+    function isAssignedDispatcherForRequest() {
+      return signedIn() && resource.data.dispatcherId != null && dispatcherOwns(resource.data.dispatcherId);
+    }
+    function isDispatcherForOrder(orderId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/dispatchRequests/$(orderId))
+        && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.status != 'Offered'
+        && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.status != 'Declined'
+        && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.status != 'Cancelled'
+        && dispatcherOwns(get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.dispatcherId);
+    }
+    function validDeliveryZoneForNewOrder() {
+      return request.resource.data.fulfillment != 'Delivery'
+        || (
+          request.resource.data.deliveryZoneId != null
+          && exists(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId))
+          && get(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId)).data.isActive == true
+          && request.resource.data.deliveryFee == get(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId)).data.fee
+          && request.resource.data.commissionPercent == get(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId)).data.commissionPercent
+          && request.resource.data.biserryCommission == get(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId)).data.biserryCommission
+          && request.resource.data.riderEarning == get(/databases/$(database)/documents/delivery_zones/$(request.resource.data.deliveryZoneId)).data.riderEarning
+        );
+    }
+
+    match /products/{productId} {
+      allow get, list: if isAdmin() || resource.data.isActive == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /customers/{uid} {
+      allow read, create, update: if isAdmin() || ownCustomer(uid);
+      allow delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if (
+          !request.resource.data.keys().hasAny(['customerUid'])
+          || request.resource.data.customerUid == null
+          || (signedIn() && request.resource.data.customerUid == request.auth.uid)
+        )
+        && request.resource.data.paymentMethod == 'Bank Transfer'
+        && request.resource.data.paymentStatus == 'Unpaid'
+        && request.resource.data.deliveryReleaseStatus == 'Locked'
+        && validDeliveryZoneForNewOrder();
+
+      allow read: if isAdmin()
+                  || (signedIn() && resource.data.customerUid == request.auth.uid)
+                  || isDispatcherForOrder(orderId);
+
+      allow update: if isAdmin()
+                    || (isDispatcherForOrder(orderId)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                          'orderStatus','dispatchStatus','assignedDispatcherId','assignedDispatcherName','updatedAt'
+                        ])
+                        && (request.resource.data.orderStatus != 'Delivered'
+                            || (resource.data.paymentStatus == 'Paid' && resource.data.deliveryReleaseStatus == 'Authorized')));
+      allow delete: if isAdmin();
+    }
+
+    match /orderTracking/{orderId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if exists(/databases/$(database)/documents/orders/$(orderId))
+                    && request.resource.data.keys().hasOnly([
+                      'orderStatus','paymentStatus','deliveryReleaseStatus','dispatchStatus','fulfillment','total',
+                      'deliveryZoneId','deliveryZone','deliveryFee','commissionPercent','biserryCommission','riderEarning',
+                      'createdAt','updatedAt'
+                    ])
+                    && request.resource.data.paymentStatus == 'Unpaid'
+                    && request.resource.data.deliveryReleaseStatus == 'Locked';
+      allow update: if isAdmin()
+                    || (
+                      validOrderRequester(orderId)
+                      && exists(/databases/$(database)/documents/paymentProofs/$(orderId))
+                      && get(/databases/$(database)/documents/paymentProofs/$(orderId)).data.status == 'Awaiting Verification'
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paymentStatus','deliveryReleaseStatus','updatedAt'])
+                      && request.resource.data.paymentStatus == 'Awaiting Verification'
+                      && request.resource.data.deliveryReleaseStatus == 'Locked'
+                    )
+                    || (
+                      exists(/databases/$(database)/documents/dispatchRequests/$(orderId))
+                      && validOrderRequester(orderId)
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dispatchRequestId','dispatchStatus','updatedAt'])
+                    )
+                    || (
+                      isDispatcherForOrder(orderId)
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['orderStatus','dispatchStatus','dispatcherName','updatedAt'])
+                      && (request.resource.data.orderStatus != 'Delivered'
+                          || (resource.data.paymentStatus == 'Paid' && resource.data.deliveryReleaseStatus == 'Authorized'))
+                    );
+      allow delete: if isAdmin();
+    }
+
+    match /paymentProofs/{orderId} {
+      allow get: if isAdmin() || validOrderRequester(orderId);
+      allow list: if isAdmin();
+      allow create: if validOrderRequester(orderId)
+                    && request.resource.data.orderId == orderId
+                    && request.resource.data.amount == get(/databases/$(database)/documents/orders/$(orderId)).data.total
+                    && request.resource.data.status == 'Awaiting Verification'
+                    && request.resource.data.keys().hasOnly([
+                      'orderId','amount','paymentReference','receiptUrl','status','submittedAt','updatedAt'
+                    ]);
+      allow update: if isAdmin()
+                    || (validOrderRequester(orderId)
+                        && resource.data.status != 'Approved'
+                        && request.resource.data.status == 'Awaiting Verification'
+                        && request.resource.data.orderId == resource.data.orderId
+                        && request.resource.data.amount == resource.data.amount
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                          'paymentReference','receiptUrl','status','submittedAt','updatedAt'
+                        ]));
+      allow delete: if isAdmin();
+    }
+
+    match /dispatchers/{dispatcherId} {
+      allow read: if isAdmin() || resource.data.isPublic == true || (signedIn() && resource.data.authUid == request.auth.uid);
+      allow create: if isAdmin() || (signedIn()
+        && request.resource.data.authUid == request.auth.uid
+        && request.resource.data.isApproved == false
+        && request.resource.data.isAvailable == false
+        && request.resource.data.isPublic == false);
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.authUid == request.auth.uid
+        && request.resource.data.authUid == resource.data.authUid
+        && request.resource.data.isApproved == resource.data.isApproved
+        && request.resource.data.isActive == resource.data.isActive
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isAvailable','isPublic','lastAvailabilityAt','updatedAt'])
+        && request.resource.data.isPublic == (request.resource.data.isAvailable == true && resource.data.isApproved == true && resource.data.isActive == true));
+      allow delete: if isAdmin();
+    }
+
+    match /dispatchRequests/{orderId} {
+      allow create: if request.resource.data.orderId == orderId
+                    && validOrderRequester(orderId)
+                    && dispatcherIsPublic(request.resource.data.dispatcherId)
+                    && request.resource.data.status == 'Offered'
+                    && request.resource.data.zoneId == get(/databases/$(database)/documents/orders/$(orderId)).data.deliveryZoneId
+                    && request.resource.data.deliveryFee == get(/databases/$(database)/documents/orders/$(orderId)).data.deliveryFee
+                    && request.resource.data.commissionPercent == get(/databases/$(database)/documents/orders/$(orderId)).data.commissionPercent
+                    && request.resource.data.biserryCommission == get(/databases/$(database)/documents/orders/$(orderId)).data.biserryCommission
+                    && request.resource.data.riderEarning == get(/databases/$(database)/documents/orders/$(orderId)).data.riderEarning
+                    && request.resource.data.paymentStatus == get(/databases/$(database)/documents/orders/$(orderId)).data.paymentStatus
+                    && request.resource.data.deliveryReleaseStatus == get(/databases/$(database)/documents/orders/$(orderId)).data.deliveryReleaseStatus
+                    && request.resource.data.earningStatus == 'Pending'
+                    && request.resource.data.settlementStatus == 'Pending'
+                    && request.resource.data.keys().hasOnly([
+                      'orderId','customerUid','dispatcherId','dispatcherName','status','zoneId','zoneName','deliveryFee',
+                      'commissionPercent','biserryCommission','riderEarning','paymentStatus','deliveryReleaseStatus',
+                      'earningStatus','settlementStatus','createdAt','updatedAt'
+                    ]);
+      allow read: if isAdmin() || validOrderRequester(orderId) || isAssignedDispatcherForRequest();
+      allow update: if isAdmin()
+                    || (validOrderRequester(orderId)
+                        && (resource.data.status == 'Declined' || resource.data.status == 'Cancelled')
+                        && request.resource.data.status == 'Offered'
+                        && dispatcherIsPublic(request.resource.data.dispatcherId)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['customerUid','dispatcherId','dispatcherName','status','updatedAt']))
+                    || (isAssignedDispatcherForRequest()
+                        && request.resource.data.orderId == resource.data.orderId
+                        && request.resource.data.dispatcherId == resource.data.dispatcherId
+                        && request.resource.data.customerUid == resource.data.customerUid
+                        && request.resource.data.deliveryFee == resource.data.deliveryFee
+                        && request.resource.data.riderEarning == resource.data.riderEarning
+                        && request.resource.data.biserryCommission == resource.data.biserryCommission
+                        && request.resource.data.paymentStatus == resource.data.paymentStatus
+                        && request.resource.data.deliveryReleaseStatus == resource.data.deliveryReleaseStatus
+                        && request.resource.data.settlementStatus == resource.data.settlementStatus
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                          'status','acceptedAt','pickedUpAt','onTheWayAt','arrivedAt','deliveredAt','earningStatus','updatedAt'
+                        ])
+                        && (request.resource.data.status != 'Delivered'
+                            || (resource.data.paymentStatus == 'Paid'
+                                && resource.data.deliveryReleaseStatus == 'Authorized'
+                                && request.resource.data.earningStatus == 'Earned')));
+      allow delete: if isAdmin();
+    }
+
+    match /delivery_zones/{zoneId} { allow read: if true; allow create, update, delete: if isAdmin(); }
+    match /farmers_market_requests/{requestId} { allow create: if true; allow read, update, delete: if isAdmin(); }
+    match /inventory_logs/{id} { allow read, create, update, delete: if isAdmin(); }
+    match /supplierImports/{id} { allow read, create, update, delete: if isAdmin(); }
+    match /catalogueExceptions/{id} { allow read, create, update, delete: if isAdmin(); }
+    match /catalogueJobs/{id} { allow read, create, update, delete: if isAdmin(); }
+    match /catalogueEnrichment/{id} { allow read, create, update, delete: if isAdmin(); }
+    match /settings/{id} { allow read: if true; allow create, update, delete: if isAdmin(); }
+    match /app_config/{id} { allow read: if true; allow create, update, delete: if isAdmin(); }
+    match /audit_logs/{id} { allow read, create: if isAdmin(); allow update, delete: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
