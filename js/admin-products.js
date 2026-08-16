@@ -4,9 +4,16 @@ import {
   collection,
   addDoc,
   getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  getCountFromServer,
   doc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   serverTimestamp
 } from "./firebase-service.js";
 
@@ -52,6 +59,18 @@ const deactivateAllProductsBtn = document.getElementById("deactivateAllProductsB
 const productSelectAllCheckbox = document.getElementById("productSelectAllCheckbox");
 const productVisibilitySummary = document.getElementById("productVisibilitySummary");
 let selectedProductIds = new Set();
+const PRODUCT_PAGE_SIZE = 50;
+let currentProductPage = 1;
+let currentProductView = [];
+let totalProductCount = 0;
+let activeProductCount = 0;
+let inactiveProductCount = 0;
+const pageEndCursors = new Map();
+let adminSearchTimer = null;
+const productPager = document.getElementById("productPager");
+const previousProductPageBtn = document.getElementById("previousProductPageBtn");
+const nextProductPageBtn = document.getElementById("nextProductPageBtn");
+const productPageSummary = document.getElementById("productPageSummary");
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -255,85 +274,104 @@ function productTypeFromProduct(product) {
   return "single";
 }
 
-function renderProductsTable(products) {
-  productsTable.innerHTML = "";
+function isProductActive(product) {
+  return product?.isActive === true;
+}
 
-  products.forEach(({ id, product }) => {
+function getCurrentFilteredProducts() {
+  const term = adminProductSearch?.value.trim().toLowerCase() || "";
+  return term
+    ? allProducts.filter(item => productMatchesSearch(item.product, term))
+    : allProducts;
+}
+
+function renderProductPager() {
+  const pageCount = Math.max(1, Math.ceil(totalProductCount / PRODUCT_PAGE_SIZE));
+  if (productPager) productPager.style.display = totalProductCount > PRODUCT_PAGE_SIZE ? "flex" : "none";
+  if (productPageSummary) {
+    const start = totalProductCount ? ((currentProductPage - 1) * PRODUCT_PAGE_SIZE) + 1 : 0;
+    const finish = Math.min(totalProductCount, start + Math.max(0, currentProductView.length - 1));
+    productPageSummary.textContent = `${start.toLocaleString()}–${finish.toLocaleString()} of ${totalProductCount.toLocaleString()} products`;
+  }
+  if (previousProductPageBtn) previousProductPageBtn.disabled = currentProductPage <= 1;
+  if (nextProductPageBtn) nextProductPageBtn.disabled = currentProductPage >= pageCount || currentProductView.length < PRODUCT_PAGE_SIZE;
+}
+
+function renderProductsTable(products) {
+  currentProductView = products;
+  if (!products.length) {
+    productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">No products found on this page.</div></td></tr>`;
+    renderProductPager();
+    updateVisibilitySummary();
+    return;
+  }
+
+  productsTable.innerHTML = products.map(({ id, product }) => {
     const productType = productTypeFromProduct(product);
     const isOptionProduct = productType === "sizes" || productType === "varieties";
     const optionLabel = productType === "sizes" ? "Sizes" : productType === "varieties" ? "Varieties" : "Single";
-
     const totalStock = isOptionProduct
       ? (product.variants || []).reduce((sum, item) => sum + Number(item.stock || 0), 0)
       : Number(product.stock || 0);
-
     const priceDisplay = isOptionProduct
       ? `${(product.variants || []).length} ${optionLabel.toLowerCase()}`
       : formatNaira(Number(product.price || 0));
-
     const image = product.imageUrl || product.variants?.[0]?.imageUrl || "../assets/logo.png";
     const skuText = product.sku ? `<br><small>SKU: ${product.sku}</small>` : "";
+    const active = isProductActive(product);
 
-    productsTable.innerHTML += `
+    return `
       <tr>
-        <td style="text-align:center;">
-          <input class="productSelectionCheck" type="checkbox" data-product-id="${id}" ${selectedProductIds.has(id) ? "checked" : ""} aria-label="Select ${product.name || "product"}">
-        </td>
-        <td>
-  <img 
-    class="adminProductThumb"
-    src="${image}" 
-    alt="${product.name || "Product"}"
-    onerror="this.src='../assets/logo.png'"
-    style="width:64px;height:64px;max-width:64px;max-height:64px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"
-  >
-</td>
-        <td>
-          <strong>${product.name}</strong>
-          ${skuText}
-          ${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}
-        </td>
-        <td>${optionLabel}</td>
-        <td>${product.category || ""}</td>
-        <td>${priceDisplay}</td>
-        <td>${totalStock}</td>
-        <td>
-          <span class="statusBadge" style="background:${product.isActive !== false ? "#e6f5ea" : "#f4e7e7"};color:${product.isActive !== false ? "#176b37" : "#8b2d2d"};">
-            ${product.isActive !== false ? "Active" : "Inactive"}
-          </span>
-        </td>
-        <td>
-          <div class="actionBtns">
-            <button class="${product.isActive !== false ? "duplicateBtn" : "editBtn"}" onclick="setProductActive('${id}', ${product.isActive === false ? "true" : "false"})">${product.isActive !== false ? "Deactivate" : "Activate"}</button>
-            <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
-            <button class="duplicateBtn" onclick="duplicateProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Duplicate</button>
-            <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  });
+        <td style="text-align:center;"><input class="productSelectionCheck" type="checkbox" data-product-id="${id}" ${selectedProductIds.has(id) ? "checked" : ""}></td>
+        <td><img class="adminProductThumb" loading="lazy" decoding="async" src="${image}" alt="${product.name || "Product"}" onerror="this.src='../assets/logo.png'" style="width:56px;height:56px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"></td>
+        <td><strong>${product.name || "Unnamed product"}</strong>${skuText}${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}</td>
+        <td>${optionLabel}</td><td>${product.category || ""}</td><td>${priceDisplay}</td><td>${totalStock}</td>
+        <td><span class="statusBadge" style="background:${active ? "#e6f5ea" : "#f4e7e7"};color:${active ? "#176b37" : "#8b2d2d"};">${active ? "Active" : "Inactive"}</span></td>
+        <td><div class="actionBtns">
+          <button class="${active ? "duplicateBtn" : "editBtn"}" onclick="setProductActive('${id}', ${active ? "false" : "true"})">${active ? "Deactivate" : "Activate"}</button>
+          <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
+          <button class="duplicateBtn" onclick="duplicateProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Duplicate</button>
+          <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
+        </div></td>
+      </tr>`;
+  }).join("");
 
-  document.querySelectorAll(".productSelectionCheck").forEach(input => {
-    input.addEventListener("change", event => {
-      const id = event.target.dataset.productId;
-      if (event.target.checked) selectedProductIds.add(id);
-      else selectedProductIds.delete(id);
-      updateVisibilitySummary();
-    });
-  });
+  document.querySelectorAll(".productSelectionCheck").forEach(input => input.addEventListener("change", event => {
+    const id = event.target.dataset.productId;
+    if (event.target.checked) selectedProductIds.add(id); else selectedProductIds.delete(id);
+    updateVisibilitySummary();
+  }));
+  renderProductPager();
   updateVisibilitySummary();
 }
 
+function renderCurrentProducts() {
+  const term = adminProductSearch?.value.trim().toLowerCase() || "";
+  renderProductsTable(term ? allProducts.filter(item => productMatchesSearch(item.product, term)) : allProducts);
+}
+
+async function refreshCounts() {
+  try {
+    const base = collection(db, "products");
+    const [totalSnap, activeSnap] = await Promise.all([
+      getCountFromServer(base),
+      getCountFromServer(query(base, where("isActive", "==", true)))
+    ]);
+    totalProductCount = totalSnap.data().count;
+    activeProductCount = activeSnap.data().count;
+    inactiveProductCount = Math.max(0, totalProductCount - activeProductCount);
+  } catch (e) {
+    console.warn("Count refresh failed", e);
+  }
+}
+
 function updateVisibilitySummary() {
-  const active = allProducts.filter(({product}) => product.isActive !== false).length;
-  const inactive = allProducts.length - active;
   if (productVisibilitySummary) {
-    productVisibilitySummary.textContent = `${allProducts.length.toLocaleString()} total • ${active.toLocaleString()} active • ${inactive.toLocaleString()} inactive • ${selectedProductIds.size.toLocaleString()} selected`;
+    productVisibilitySummary.textContent = `${totalProductCount.toLocaleString()} total • ${activeProductCount.toLocaleString()} active • ${inactiveProductCount.toLocaleString()} inactive • ${selectedProductIds.size.toLocaleString()} selected • only ${PRODUCT_PAGE_SIZE} products are downloaded per page`;
   }
   if (productSelectAllCheckbox) {
-    productSelectAllCheckbox.checked = allProducts.length > 0 && selectedProductIds.size === allProducts.length;
-    productSelectAllCheckbox.indeterminate = selectedProductIds.size > 0 && selectedProductIds.size < allProducts.length;
+    productSelectAllCheckbox.checked = allProducts.length > 0 && allProducts.every(item => selectedProductIds.has(item.id));
+    productSelectAllCheckbox.indeterminate = allProducts.some(item => selectedProductIds.has(item.id)) && !productSelectAllCheckbox.checked;
   }
 }
 
@@ -341,71 +379,67 @@ async function setManyProductsActive(ids, isActive, label) {
   if (!ids.length) { alert("Please select at least one product."); return; }
   const action = isActive ? "activate" : "deactivate";
   if (!confirm(`${label}: ${action} ${ids.length.toLocaleString()} product(s)?`)) return;
-
   const controls = [activateSelectedBtn, deactivateSelectedBtn, activateAllProductsBtn, deactivateAllProductsBtn].filter(Boolean);
   controls.forEach(btn => btn.disabled = true);
   try {
-    const chunkSize = 40;
+    const chunkSize = 400;
     for (let i = 0; i < ids.length; i += chunkSize) {
-      const chunk = ids.slice(i, i + chunkSize);
-      await Promise.all(chunk.map(id => updateDoc(doc(db, "products", id), {
-        isActive,
-        visibilityUpdatedAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      })));
+      const batch = writeBatch(db);
+      ids.slice(i, i + chunkSize).forEach(id => batch.update(doc(db, "products", id), { isActive, visibilityUpdatedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
+      await batch.commit();
     }
     selectedProductIds.clear();
-    await loadProducts();
+    await refreshCounts();
+    await loadProducts(currentProductPage);
     alert(`${ids.length.toLocaleString()} product(s) ${isActive ? "activated" : "deactivated"}.`);
   } catch (error) {
     alert(`Could not ${action} products: ${error.message}`);
-  } finally {
-    controls.forEach(btn => btn.disabled = false);
-  }
+  } finally { controls.forEach(btn => btn.disabled = false); }
 }
 
-window.setProductActive = async function(id, isActive) {
-  await setManyProductsActive([id], isActive, "Product visibility");
-};
+async function setAllProductsActive(isActive) {
+  const action = isActive ? "activate" : "deactivate";
+  const expected = totalProductCount || 0;
+  if (!confirm(`${action === "activate" ? "Activate" : "Deactivate"} ALL ${expected.toLocaleString()} products? This operation reads the catalogue once and writes each product once.`)) return;
+  try {
+    if (productVisibilitySummary) productVisibilitySummary.textContent = `Preparing to ${action} all products…`;
+    const snap = await getDocs(collection(db, "products"));
+    await setManyProductsActive(snap.docs.map(d => d.id), isActive, "ALL products");
+  } catch (e) { alert(`Could not ${action} all products: ${e.message}`); }
+}
+
+window.setProductActive = async function(id, isActive) { await setManyProductsActive([id], isActive, "Product visibility"); };
 
 function productMatchesSearch(product, term) {
-  const variantsText = (product.variants || [])
-    .map(v => `${v.name || ""} ${v.sku || ""}`)
-    .join(" ");
-
-  const haystack = `
-    ${product.name || ""}
-    ${product.sku || ""}
-    ${product.category || ""}
-    ${product.productNote || ""}
-    ${variantsText}
-  `.toLowerCase();
-
-  return haystack.includes(term);
+  const variantsText = (product.variants || []).map(v => `${v.name || ""} ${v.sku || ""}`).join(" ");
+  return `${product.name || ""} ${product.sku || ""} ${product.barcode || ""} ${product.brand || ""} ${product.category || ""} ${product.productNote || ""} ${variantsText}`.toLowerCase().includes(term);
 }
 
-async function loadProducts() {
-  const snap = await getDocs(collection(db, "products"));
-
-  allProducts = snap.docs.map(docSnap => ({
-    id: docSnap.id,
-    product: docSnap.data()
-  }));
-
-  renderProductsTable(allProducts);
+async function loadProducts(page = 1) {
+  productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">Loading up to ${PRODUCT_PAGE_SIZE} products…</div></td></tr>`;
+  if (!totalProductCount) await refreshCounts();
+  const base = collection(db, "products");
+  let q;
+  if (page <= 1) {
+    q = query(base, orderBy("name"), limit(PRODUCT_PAGE_SIZE));
+  } else {
+    const previousCursor = pageEndCursors.get(page - 1);
+    if (!previousCursor) return;
+    q = query(base, orderBy("name"), startAfter(previousCursor), limit(PRODUCT_PAGE_SIZE));
+  }
+  const snap = await getDocs(q);
+  allProducts = snap.docs.map(docSnap => ({ id: docSnap.id, product: docSnap.data() }));
+  currentProductPage = page;
+  if (snap.docs.length) pageEndCursors.set(page, snap.docs[snap.docs.length - 1]);
+  renderCurrentProducts();
 }
 
 adminProductSearch?.addEventListener("input", () => {
-  const term = adminProductSearch.value.trim().toLowerCase();
-
-  if (!term) {
-    renderProductsTable(allProducts);
-    return;
-  }
-
-  renderProductsTable(allProducts.filter(item => productMatchesSearch(item.product, term)));
+  clearTimeout(adminSearchTimer);
+  adminSearchTimer = setTimeout(renderCurrentProducts, 150);
 });
-
+previousProductPageBtn?.addEventListener("click", async () => { if (currentProductPage > 1) await loadProducts(currentProductPage - 1); });
+nextProductPageBtn?.addEventListener("click", async () => { await loadProducts(currentProductPage + 1); });
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -498,7 +532,7 @@ window.editProduct = function(id, encodedProduct) {
   lowStockInput.value = product.lowStockThreshold || 5;
 
   if (isFeaturedInput) isFeaturedInput.value = product.isFeatured ? "true" : "false";
-  if (isActiveInput) isActiveInput.value = product.isActive !== false ? "true" : "false";
+  if (isActiveInput) isActiveInput.value = product.isActive === true ? "true" : "false";
   if (productNoteInput) productNoteInput.value = product.productNote || "";
 
   if (productType === "single") {
@@ -567,21 +601,21 @@ window.deleteProduct = async function(id) {
 
 selectAllProductsBtn?.addEventListener("click", () => {
   selectedProductIds = new Set(allProducts.map(item => item.id));
-  renderProductsTable(allProducts);
+  renderCurrentProducts();
 });
 clearProductSelectionBtn?.addEventListener("click", () => {
   selectedProductIds.clear();
-  renderProductsTable(allProducts);
+  renderCurrentProducts();
 });
 productSelectAllCheckbox?.addEventListener("change", event => {
-  if (event.target.checked) selectedProductIds = new Set(allProducts.map(item => item.id));
-  else selectedProductIds.clear();
-  renderProductsTable(allProducts);
+  if (event.target.checked) allProducts.forEach(item => selectedProductIds.add(item.id));
+  else allProducts.forEach(item => selectedProductIds.delete(item.id));
+  renderCurrentProducts();
 });
 activateSelectedBtn?.addEventListener("click", () => setManyProductsActive([...selectedProductIds], true, "Selected products"));
 deactivateSelectedBtn?.addEventListener("click", () => setManyProductsActive([...selectedProductIds], false, "Selected products"));
-activateAllProductsBtn?.addEventListener("click", () => setManyProductsActive(allProducts.map(item => item.id), true, "ALL products"));
-deactivateAllProductsBtn?.addEventListener("click", () => setManyProductsActive(allProducts.map(item => item.id), false, "ALL products"));
+activateAllProductsBtn?.addEventListener("click", () => setAllProductsActive(true));
+deactivateAllProductsBtn?.addEventListener("click", () => setAllProductsActive(false));
 
 cancelBtn.addEventListener("click", resetForm);
 toggleProductType();

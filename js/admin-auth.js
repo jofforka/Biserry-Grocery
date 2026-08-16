@@ -10,6 +10,19 @@ import { ADMIN_EMAILS } from "./firebase-config.js";
 const loginForm = document.getElementById("loginForm");
 const logoutBtn = document.getElementById("logoutBtn");
 
+function ensureDispatchersNavLink() {
+  document.querySelectorAll(".sidebar").forEach(sidebar => {
+    if (sidebar.querySelector('a[href="dispatchers.html"]')) return;
+    const link = document.createElement("a");
+    link.href = "dispatchers.html";
+    link.textContent = "Dispatchers";
+    const inventory = sidebar.querySelector('a[href="inventory-logs.html"]');
+    if (inventory) sidebar.insertBefore(link, inventory);
+    else sidebar.appendChild(link);
+  });
+}
+ensureDispatchersNavLink();
+
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();

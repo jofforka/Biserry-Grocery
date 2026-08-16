@@ -1,4 +1,4 @@
-import { db, collection, getDocs, addDoc, serverTimestamp, query, orderBy } from "./firebase-service.js";
+import { db, collection, getDocs, addDoc, serverTimestamp, query, where, limit, startAfter } from "./firebase-service.js";
 
 const CART_STORAGE_KEY = "biserryCart";
 const WISHLIST_STORAGE_KEY = "biserryWishlist";
@@ -10,6 +10,7 @@ const fallbackProducts = [
 ];
 
 let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;
+const PRODUCT_BATCH_SIZE=24; let productCursor=null, productCatalogueExhausted=false, productLoading=false;
 
 const productGrid=document.getElementById("productGrid"), featuredGrid=document.getElementById("featuredGrid"), searchInput=document.getElementById("searchInput");
 const cartItems=document.getElementById("cartItems"), cartTotal=document.getElementById("cartTotal"), cartCount=document.getElementById("cartCount"), navCartCount=document.getElementById("navCartCount"), floatingCartCount=document.getElementById("floatingCartCount"), bottomCartCount=document.getElementById("bottomCartCount");
@@ -27,7 +28,19 @@ function toast(msg){const el=document.getElementById("cartToast");if(!el)return;
 
 function initHeroSlider(){const slides=[...document.querySelectorAll(".heroSlide")],dotsWrap=document.getElementById("heroDots"),prevBtn=document.querySelector(".heroPrev"),nextBtn=document.querySelector(".heroNext");if(!slides.length||!dotsWrap)return;let current=0,timer=null;dotsWrap.innerHTML=slides.map((_,i)=>`<button type="button" data-slide="${i}"></button>`).join("");const dots=[...dotsWrap.querySelectorAll("button")];function show(i){current=(i+slides.length)%slides.length;slides.forEach((s,x)=>s.classList.toggle("active",x===current));dots.forEach((d,x)=>d.classList.toggle("active",x===current))}function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>show(current+1),5500)}prevBtn?.addEventListener("click",()=>{show(current-1);restart()});nextBtn?.addEventListener("click",()=>{show(current+1);restart()});dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.slide));restart()}));show(0);restart()}
 
-async function loadProducts(){try{const q=query(collection(db,"products"),orderBy("createdAt","desc"));const snap=await getDocs(q);products=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.isActive!==false);if(!products.length&&snap.empty)products=fallbackProducts}catch(e){console.warn(e.message);products=fallbackProducts}applyUrlCategory();renderProducts();renderFeatured();renderCart()}
+async function loadProducts({append=false}={}){
+  if(productLoading||productCatalogueExhausted&&append)return; productLoading=true;
+  const moreBtn=document.getElementById("loadMoreProductsBtn"); if(moreBtn){moreBtn.disabled=true;moreBtn.textContent="Loading…";}
+  try{
+    const base=query(collection(db,"products"),where("isActive","==",true),...(append&&productCursor?[startAfter(productCursor)]:[]),limit(PRODUCT_BATCH_SIZE));
+    const snap=await getDocs(base); const incoming=snap.docs.map(d=>({id:d.id,...d.data()}));
+    products=append?[...products,...incoming]:incoming; productCursor=snap.docs[snap.docs.length-1]||productCursor; productCatalogueExhausted=snap.size<PRODUCT_BATCH_SIZE;
+  }catch(e){console.warn("Product load failed:",e.message);if(!append)products=[];}
+  finally{productLoading=false;}
+  applyUrlCategory();renderProducts();renderFeatured();renderCart(); updateLoadMoreButton();
+}
+function updateLoadMoreButton(){const btn=document.getElementById("loadMoreProductsBtn");if(!btn)return;btn.style.display=productCatalogueExhausted?"none":"inline-flex";btn.disabled=false;btn.textContent="Load more products";}
+window.loadMoreProducts=()=>loadProducts({append:true});
 function applyUrlCategory(){const params=new URLSearchParams(location.search);const cat=params.get("category");if(cat){currentCategory=cat;document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b.dataset.category===cat));}}
 function getSelectedQuantity(id){return selectedQuantities[id]||1}
 function getSelectedVariant(product){if(!product?.hasVariants)return null;const vid=selectedVariants[product.id]||product.variants?.[0]?.id;return product.variants?.find(v=>String(v.id)===String(vid))||product.variants?.[0]}
@@ -61,4 +74,6 @@ async function submitFarmersMarket(e){e.preventDefault();const data={customerNam
 document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentCategory=b.dataset.category;renderProducts()}));searchInput?.addEventListener("input",renderProducts);clearCartBtn?.addEventListener("click",()=>{cart=[];saveCart();renderCart()});floatingCartBtn?.addEventListener("click",openMiniCart);bottomCartBtn?.addEventListener("click",openMiniCart);closeMiniCartBtn?.addEventListener("click",closeMiniCart);miniCartOverlay?.addEventListener("click",closeMiniCart);mobileMenuBtn?.addEventListener("click",()=>mainNav?.classList.toggle("open"));mainNav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>mainNav?.classList.remove("open")));farmersMarketForm?.addEventListener("submit",submitFarmersMarket);
 
 export function getCartForCheckout(){return cart}export function getCartSubtotalForCheckout(){return subtotal()}export function getCartTotalForCheckout(){return subtotal()}export function clearCartAfterOrder(){cart=[];saveCart();renderCart()}
+function ensureCustomerNavigation(){const mainNav=document.getElementById("mainNav");if(!mainNav)return;if(!mainNav.querySelector('a[href="dispatch.html"]')){const link=document.createElement("a");link.href="dispatch.html";link.textContent="Dispatch";mainNav.appendChild(link)}if(!mainNav.querySelector('a[href="account.html"]')){const link=document.createElement("a");link.href="account.html";link.textContent="Account";mainNav.appendChild(link)}}
+ensureCustomerNavigation();
 initHeroSlider();await loadProducts();renderCart();

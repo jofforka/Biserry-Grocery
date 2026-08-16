@@ -1,47 +1,16 @@
-import { db, collection, addDoc, serverTimestamp } from "./firebase-service.js";
+import { auth, db, collection, addDoc, serverTimestamp, onAuthStateChanged, doc, getDoc, setDoc } from "./firebase-service.js";
 import { getCartForCheckout, getCartTotalForCheckout, clearCartAfterOrder } from "./store.js";
 
-const form = document.getElementById("checkoutForm");
+const form=document.getElementById("checkoutForm");
+const customerName=document.getElementById("customerName"),customerPhone=document.getElementById("customerPhone"),fulfillment=document.getElementById("fulfillment"),deliveryAddress=document.getElementById("deliveryAddress"),paymentMethod=document.getElementById("paymentMethod"),orderNote=document.getElementById("orderNote");
+let signedInUser=null;
+function money(amount){return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(amount||0)}
+function hydrateLocalCustomer(){try{const d=JSON.parse(localStorage.getItem("biserryCustomerDetails")||"null");if(!d)return;customerName.value=d.name||"";customerPhone.value=d.phone||"";deliveryAddress.value=d.address||"";}catch{}}
+async function hydrateAccount(user){if(!user)return;try{const snap=await getDoc(doc(db,"customers",user.uid));if(!snap.exists())return;const d=snap.data();customerName.value=d.name||customerName.value||"";customerPhone.value=d.phone||customerPhone.value||"";deliveryAddress.value=d.defaultAddress||deliveryAddress.value||"";const note=document.getElementById("checkoutAccountNote");if(note)note.textContent=`Signed in as ${user.email}. This order will appear in My Biserry.`;}catch(e){console.warn(e)}}
+function syncFulfillment(){const delivery=fulfillment.value==="Delivery";deliveryAddress.required=delivery;deliveryAddress.style.display=delivery?"block":"none";if(!delivery)deliveryAddress.value="";}
+hydrateLocalCustomer();syncFulfillment();fulfillment?.addEventListener("change",syncFulfillment);onAuthStateChanged(auth,user=>{signedInUser=user||null;if(user)hydrateAccount(user)});
 
-function formatNaira(amount){
-  return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(amount||0);
-}
-
-form?.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  const cart = getCartForCheckout();
-  if (!cart.length) {
-    alert("Your cart is empty.");
-    return;
-  }
-
-  const order = {
-    customerName: document.getElementById("customerName").value.trim(),
-    customerPhone: document.getElementById("customerPhone").value.trim(),
-    fulfillment: document.getElementById("fulfillment").value,
-    deliveryAddress: document.getElementById("deliveryAddress").value.trim(),
-    paymentMethod: document.getElementById("paymentMethod").value,
-    orderNote: document.getElementById("orderNote").value.trim(),
-    items: cart,
-    total: getCartTotalForCheckout(),
-    orderStatus: "Pending",
-    createdAt: serverTimestamp()
-  };
-
-  try {
-    await addDoc(collection(db, "orders"), order);
-
-    const itemLines = cart.map(item => `- ${item.name} x ${item.quantity} = ${formatNaira(item.price * item.quantity)}`).join("\\n");
-    const message = encodeURIComponent(
-      `New Biserry Order\\n\\nName: ${order.customerName}\\nPhone: ${order.customerPhone}\\nMethod: ${order.fulfillment}\\nAddress: ${order.deliveryAddress}\\nPayment: ${order.paymentMethod}\\n\\nItems:\\n${itemLines}\\n\\nTotal: ${formatNaira(order.total)}\\nNote: ${order.orderNote}`
-    );
-
-    clearCartAfterOrder();
-    alert("Your order has been submitted. We will confirm availability and delivery.");
-    window.open(`https://wa.me/2348100584211?text=${message}`, "_blank");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Order failed: " + error.message);
-  }
+form?.addEventListener("submit",async event=>{event.preventDefault();const cart=getCartForCheckout();if(!cart.length){alert("Your cart is empty.");return;}const submit=form.querySelector('button[type="submit"]');submit.disabled=true;submit.textContent="Placing order…";
+  const order={customerUid:signedInUser?.uid||null,customerEmail:signedInUser?.email||"",customerName:customerName.value.trim(),customerPhone:customerPhone.value.trim(),fulfillment:fulfillment.value,deliveryAddress:deliveryAddress.value.trim(),paymentMethod:paymentMethod.value,orderNote:orderNote.value.trim(),items:cart,total:getCartTotalForCheckout(),orderStatus:"Pending",paymentStatus:"Unconfirmed",dispatchStatus:fulfillment.value==="Delivery"?"Not Requested":"Not Required",createdAt:serverTimestamp(),updatedAt:serverTimestamp()};
+  try{const orderRef=await addDoc(collection(db,"orders"),order);await setDoc(doc(db,"orderTracking",orderRef.id),{orderStatus:order.orderStatus,paymentStatus:order.paymentStatus,dispatchStatus:order.dispatchStatus,fulfillment:order.fulfillment,total:order.total,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});localStorage.setItem("biserryCustomerDetails",JSON.stringify({name:order.customerName,phone:order.customerPhone,address:order.deliveryAddress}));const itemLines=cart.map(i=>`- ${i.name} x ${i.quantity} = ${money(i.price*i.quantity)}`).join("\n");const whatsapp=`New Biserry Order\n\nOrder: ${orderRef.id}\nName: ${order.customerName}\nPhone: ${order.customerPhone}\nMethod: ${order.fulfillment}\nAddress: ${order.deliveryAddress||"Pickup"}\nPayment: ${order.paymentMethod}\n\nItems:\n${itemLines}\n\nTotal: ${money(order.total)}\nNote: ${order.orderNote}`;localStorage.setItem("biserryLastOrder",JSON.stringify({orderId:orderRef.id,customerUid:order.customerUid,customerName:order.customerName,customerPhone:order.customerPhone,deliveryAddress:order.deliveryAddress,fulfillment:order.fulfillment,total:order.total,items:cart,whatsappMessage:whatsapp}));clearCartAfterOrder();location.href=`order-success.html?order=${encodeURIComponent(orderRef.id)}`;}catch(error){alert("Order failed: "+error.message);submit.disabled=false;submit.textContent="Place Order";}
 });

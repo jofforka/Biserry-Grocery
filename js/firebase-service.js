@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/fireba
 import {
   getAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
@@ -17,19 +18,16 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   query,
   orderBy,
   where,
-  serverTimestamp
+  onSnapshot,
+  serverTimestamp,
+  limit,
+  startAfter,
+  getCountFromServer
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-storage.js";
 
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -37,10 +35,10 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 
 export {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   collection,
@@ -51,12 +49,13 @@ export {
   setDoc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   query,
   orderBy,
   where,
+  onSnapshot,
   serverTimestamp,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
+  limit,
+  startAfter,
+  getCountFromServer
 };
