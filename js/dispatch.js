@@ -54,7 +54,8 @@ async function useOrderId() {
       if (orderState) orderState.textContent = "That Biserry order ID was not found. Check the ID and try again.";
       return;
     }
-    saveSelectedOrder({ orderId: id });
+    const td = tracking.data();
+    saveSelectedOrder({ orderId: id, total: td.total || 0, deliveryZoneId: td.deliveryZoneId || null, deliveryZone: td.deliveryZone || "", deliveryFee: Number(td.deliveryFee || 0), biserryCommission: Number(td.biserryCommission || 0), riderEarning: Number(td.riderEarning || 0), commissionPercent: Number(td.commissionPercent || 0), paymentStatus: td.paymentStatus || "Unpaid", deliveryReleaseStatus: td.deliveryReleaseStatus || "Locked" });
   } catch (e) {
     console.warn(e);
     if (orderState) orderState.textContent = "We could not verify that order right now. Please try again.";
@@ -109,6 +110,16 @@ window.requestBiserryDispatcher = async dispatcherId => {
       dispatcherId: dispatcher.id,
       dispatcherName: dispatcher.name || "Dispatcher",
       status: "Offered",
+      zoneId: order.deliveryZoneId || null,
+      zoneName: order.deliveryZone || "",
+      deliveryFee: Number(order.deliveryFee || 0),
+      commissionPercent: Number(order.commissionPercent || 0),
+      biserryCommission: Number(order.biserryCommission || 0),
+      riderEarning: Number(order.riderEarning || 0),
+      paymentStatus: order.paymentStatus || "Unpaid",
+      deliveryReleaseStatus: order.deliveryReleaseStatus || "Locked",
+      earningStatus: "Pending",
+      settlementStatus: "Pending",
       createdAt: existing.exists() ? (existing.data().createdAt || serverTimestamp()) : serverTimestamp(),
       updatedAt: serverTimestamp()
     };
@@ -146,6 +157,7 @@ function render(items) {
       <div class="dispatchMeta">
         <div><strong>Area:</strong> ${escapeHtml(d.serviceArea || "Contact dispatcher")}</div>
         <div><strong>Vehicle:</strong> ${escapeHtml(d.vehicleType || "Not specified")}</div>
+        ${selectedOrder?.deliveryZone ? `<div><strong>Your zone:</strong> ${escapeHtml(selectedOrder.deliveryZone)} • ${new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(selectedOrder.deliveryFee||0))}</div>` : ""}
       </div>
       <div class="dispatchActions">
         <button class="btn" type="button" onclick="requestBiserryDispatcher('${d.id}')">Request Dispatcher</button>
