@@ -1,0 +1,264 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email == 'admin@biserry.com';
+    }
+
+    function ownCustomer(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function dispatcherOwns(dispatcherId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/dispatchers/$(dispatcherId))
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.authUid == request.auth.uid;
+    }
+
+    function dispatcherIsPublic(dispatcherId) {
+      return exists(/databases/$(database)/documents/dispatchers/$(dispatcherId))
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isPublic == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isApproved == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isActive == true
+        && get(/databases/$(database)/documents/dispatchers/$(dispatcherId)).data.isAvailable == true;
+    }
+
+    function isAssignedDispatcherForRequest() {
+      return signedIn()
+        && resource.data.dispatcherId != null
+        && dispatcherOwns(resource.data.dispatcherId);
+    }
+
+    function isCustomerForOrder(orderId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/orders/$(orderId))
+        && get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == request.auth.uid;
+    }
+
+    function isDispatcherForOrder(orderId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/dispatchRequests/$(orderId))
+        && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.status != 'Offered'
+        && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.status != 'Declined'
+        && dispatcherOwns(get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.dispatcherId);
+    }
+
+    function validDispatchRequester(orderId) {
+      return exists(/databases/$(database)/documents/orders/$(orderId))
+        && (
+          // Signed-in customer owns the order.
+          (signedIn()
+            && get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == request.auth.uid)
+          // Legacy/current guest checkout: the random Firestore order ID acts as the
+          // capability. orderTracking cannot be listed, so IDs are not publicly enumerable.
+          || get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == null
+        );
+    }
+
+    // ============================================================
+    // PRODUCTS
+    // ============================================================
+    match /products/{productId} {
+      allow get, list: if isAdmin() || resource.data.isActive == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================
+    // CUSTOMERS
+    // ============================================================
+    match /customers/{uid} {
+      allow read, create, update: if isAdmin() || ownCustomer(uid);
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // PRIVATE ORDERS
+    // ============================================================
+    match /orders/{orderId} {
+      // Guest or authenticated customer checkout.
+      allow create: if !request.resource.data.keys().hasAny(['customerUid'])
+                    || request.resource.data.customerUid == null
+                    || (signedIn() && request.resource.data.customerUid == request.auth.uid);
+
+      allow read: if isAdmin()
+                  || isCustomerForOrder(orderId)
+                  || isDispatcherForOrder(orderId);
+
+      // Dispatchers may only advance dispatch/fulfilment fields on an order already assigned to them.
+      allow update: if isAdmin()
+                    || (isDispatcherForOrder(orderId)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                          'orderStatus','dispatchStatus','assignedDispatcherId','assignedDispatcherName','updatedAt'
+                        ]));
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // SANITIZED PUBLIC ORDER TRACKING
+    // Exact-document reads only. Collection listing is denied.
+    // ============================================================
+    match /orderTracking/{orderId} {
+      allow get: if true;
+      allow list: if false;
+
+      allow create: if exists(/databases/$(database)/documents/orders/$(orderId))
+                    && request.resource.data.keys().hasOnly([
+                      'orderStatus','paymentStatus','dispatchStatus','fulfillment','total','createdAt','updatedAt'
+                    ]);
+
+      // Customer/guest may only attach the validated dispatch request for the same order.
+      allow update: if isAdmin()
+                    || (
+                      exists(/databases/$(database)/documents/dispatchRequests/$(orderId))
+                      && get(/databases/$(database)/documents/dispatchRequests/$(orderId)).data.orderId == orderId
+                      && validDispatchRequester(orderId)
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'dispatchRequestId','dispatchStatus','updatedAt'
+                      ])
+                    )
+                    || (
+                      isDispatcherForOrder(orderId)
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'orderStatus','dispatchStatus','dispatcherName','updatedAt'
+                      ])
+                    );
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DISPATCHERS
+    // ============================================================
+    match /dispatchers/{dispatcherId} {
+      allow read: if isAdmin()
+                  || resource.data.isPublic == true
+                  || (signedIn() && resource.data.authUid == request.auth.uid);
+
+      allow create: if isAdmin()
+                    || (signedIn()
+                        && request.resource.data.authUid == request.auth.uid
+                        && request.resource.data.isApproved == false
+                        && request.resource.data.isAvailable == false
+                        && request.resource.data.isPublic == false);
+
+      allow update: if isAdmin()
+                    || (signedIn()
+                        && resource.data.authUid == request.auth.uid
+                        && request.resource.data.authUid == resource.data.authUid
+                        && request.resource.data.isApproved == resource.data.isApproved
+                        && request.resource.data.isActive == resource.data.isActive
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                          'isAvailable','isPublic','lastAvailabilityAt','updatedAt'
+                        ])
+                        && request.resource.data.isPublic == (
+                          request.resource.data.isAvailable == true
+                          && resource.data.isApproved == true
+                          && resource.data.isActive == true
+                        ));
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DISPATCH REQUESTS
+    // Document ID == order ID. This limits each order to one live request.
+    // A declined request can be reassigned to another available dispatcher.
+    // ============================================================
+    match /dispatchRequests/{orderId} {
+      allow create: if request.resource.data.orderId == orderId
+                    && validDispatchRequester(orderId)
+                    && dispatcherIsPublic(request.resource.data.dispatcherId)
+                    && request.resource.data.status == 'Offered'
+                    && request.resource.data.keys().hasOnly([
+                      'orderId','customerUid','dispatcherId','dispatcherName','status','createdAt','updatedAt'
+                    ]);
+
+      allow read: if isAdmin()
+                  || validDispatchRequester(orderId)
+                  || (signedIn() && resource.data.customerUid == request.auth.uid)
+                  || isAssignedDispatcherForRequest();
+
+      // Customer or legacy guest may re-offer only after a decline/cancellation.
+      allow update: if isAdmin()
+                    || (
+                      validDispatchRequester(orderId)
+                      && (resource.data.status == 'Declined' || resource.data.status == 'Cancelled')
+                      && request.resource.data.status == 'Offered'
+                      && dispatcherIsPublic(request.resource.data.dispatcherId)
+                      && request.resource.data.orderId == resource.data.orderId
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'customerUid','dispatcherId','dispatcherName','status','updatedAt'
+                      ])
+                    )
+                    || (
+                      isAssignedDispatcherForRequest()
+                      && request.resource.data.orderId == resource.data.orderId
+                      && request.resource.data.dispatcherId == resource.data.dispatcherId
+                      && request.resource.data.customerUid == resource.data.customerUid
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'status','acceptedAt','pickedUpAt','onTheWayAt','deliveredAt','updatedAt'
+                      ])
+                    );
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // OTHER BISERRY COLLECTIONS
+    // ============================================================
+    match /farmers_market_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /delivery_zones/{zoneId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /inventory_logs/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /supplierImports/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /catalogueExceptions/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /catalogueJobs/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /catalogueEnrichment/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /settings/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /app_config/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /audit_logs/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Default deny.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

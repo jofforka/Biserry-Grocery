@@ -1,4 +1,4 @@
-const CACHE_NAME = "biserry-groceries-v7-1-spark";
+const CACHE_NAME = "biserry-groceries-v7-2-dispatch";
 const CORE_ASSETS = ["./","./index.html","./shop.html","./farmers-market.html","./cart.html","./checkout.html","./order-success.html","./dispatch.html","./track-order.html","./account.html","./offline.html","./css/styles.css","./css/premium-v7.css","./js/store.js","./js/checkout.js","./js/dispatch.js","./js/order-tracking.js","./js/customer-account.js","./manifest.json","./assets/logo.png"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE_ASSETS)));self.skipWaiting();});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
