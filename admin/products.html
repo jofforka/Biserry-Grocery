@@ -175,7 +175,7 @@
             <p id="productVisibilitySummary" style="margin:0;">Loading product status...</p>
           </div>
           <div class="adminActions" style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button class="btn outline" type="button" id="selectAllProductsBtn">Select All</button>
+            <button class="btn outline" type="button" id="selectAllProductsBtn">Select Current Page</button>
             <button class="btn outline" type="button" id="clearProductSelectionBtn">Clear Selection</button>
             <button class="btn" type="button" id="activateSelectedBtn">Activate Selected</button>
             <button class="btn outline" type="button" id="deactivateSelectedBtn">Deactivate Selected</button>
@@ -183,7 +183,13 @@
             <button class="btn" type="button" id="deactivateAllProductsBtn" style="background:#8b2d2d;">Deactivate All</button>
           </div>
         </div>
-        <p style="margin:12px 0 0;font-size:.9rem;"><strong>Inactive products remain in Biserry OS but are hidden from customers.</strong> Use Deactivate All now, then activate only the products you have finalized.</p>
+        <p style="margin:12px 0 0;font-size:.9rem;"><strong>Inactive products remain in Biserry OS but are hidden from customers.</strong> Use Deactivate All when needed, then activate only the products you have finalized. Normal browsing loads only 50 products at a time to reduce Firestore reads.</p>
+      </div>
+
+      <div id="productPager" style="display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0;">
+        <button class="btn outline" id="previousProductPageBtn" type="button">← Previous</button>
+        <strong id="productPageSummary">0 products</strong>
+        <button class="btn outline" id="nextProductPageBtn" type="button">Next →</button>
       </div>
 
       <div class="tableWrap">

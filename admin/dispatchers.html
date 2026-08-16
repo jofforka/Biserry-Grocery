@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispatchers | Biserry OS</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="adminShell">
+  <aside class="sidebar">
+    <img src="../assets/logo.png" alt="Biserry Logo">
+    <h2>Biserry OS</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="bulk-upload.html">Bulk Upload</a>
+    <a href="orders.html">Orders</a>
+    <a href="customers.html">Customers</a>
+    <a href="reports.html">Reports</a>
+    <a href="delivery-zones.html">Delivery Zones</a>
+    <a href="dispatchers.html" class="active">Dispatchers</a>
+    <a href="inventory-logs.html">Inventory Logs</a>
+    <a href="../index.html">View Store</a>
+    <button id="logoutBtn" type="button">Logout</button>
+  </aside>
+
+  <main class="adminMain">
+    <div class="adminTop">
+      <div>
+        <h1>Dispatch Management</h1>
+        <p>Approve dispatchers, control visibility and see who is currently available.</p>
+      </div>
+    </div>
+
+    <section class="adminPanel">
+      <div class="adminListHead">
+        <div>
+          <span class="sectionLabel">Dispatcher Network</span>
+          <h2 id="dispatcherFormTitle">Add Dispatcher</h2>
+          <p>Dispatchers can also self-register from the mobile mini app and wait for admin approval.</p>
+        </div>
+        <a href="../dispatcher/" target="_blank" class="btn outline">Open Dispatcher App</a>
+      </div>
+
+      <form id="dispatcherForm" class="adminForm">
+        <div class="grid2">
+          <div><label>Name</label><input id="dispatcherName" required placeholder="Full name"></div>
+          <div><label>Phone / WhatsApp</label><input id="dispatcherPhone" required placeholder="e.g. +2348012345678"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Email</label><input id="dispatcherEmail" type="email" placeholder="Optional"></div>
+          <div><label>Vehicle Type</label><input id="dispatcherVehicle" placeholder="Bike, car, van, tricycle"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Service Area</label><input id="dispatcherArea" placeholder="e.g. Gwarinpa, Wuse, Abuja"></div>
+          <div><label>Profile Status</label>
+            <select id="dispatcherActive"><option value="true">Active profile</option><option value="false">Inactive profile</option></select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div><label>Approval</label>
+            <select id="dispatcherApproved"><option value="false">Pending approval</option><option value="true">Approved</option></select>
+          </div>
+          <div><label>Availability</label>
+            <select id="dispatcherAvailable"><option value="false">Unavailable</option><option value="true">Available</option></select>
+          </div>
+        </div>
+        <div class="formActions">
+          <button class="btn" id="saveDispatcherBtn" type="submit">Save Dispatcher</button>
+          <button class="btn outline" id="cancelDispatcherEditBtn" type="button">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="adminPanel">
+      <div class="adminListHead">
+        <div><span class="sectionLabel">Live Status</span><h2>Dispatchers</h2><p id="dispatcherSummary">Loading...</p></div>
+      </div>
+      <input id="dispatcherSearch" class="adminSearchInput" placeholder="Search dispatcher, phone, area or vehicle...">
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>Name</th><th>Contact</th><th>Area</th><th>Vehicle</th><th>Approval</th><th>Availability</th><th>Actions</th></tr></thead>
+          <tbody id="dispatchersTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+<script type="module" src="../js/admin-auth.js"></script>
+<script type="module" src="../js/admin-dispatchers.js"></script>
+</body>
+</html>
