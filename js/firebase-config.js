@@ -19,3 +19,11 @@ export const BUSINESS = {
   instagram: "@biserry_groceries",
   currency: "NGN"
 };
+
+
+// v8 Free-Max optional no-cost platform services.
+// Leave blank until configured in Firebase Console. Never place private secrets here.
+export const FREE_MAX = {
+  appCheckSiteKey: "", // reCAPTCHA v3 public site key
+  analyticsMeasurementId: "" // e.g. G-XXXXXXXXXX
+};

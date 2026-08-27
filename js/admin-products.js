@@ -30,6 +30,7 @@ const form = document.getElementById("productForm");
 const nameInput = document.getElementById("name");
 const categoryInput = document.getElementById("category");
 const skuInput = document.getElementById("sku");
+const brandInput=document.getElementById("brand"), packSizeInput=document.getElementById("packSize"), costPriceInput=document.getElementById("costPrice"), searchAliasesInput=document.getElementById("searchAliases");
 const productTypeInput = document.getElementById("productType");
 const priceInput = document.getElementById("price");
 const stockInput = document.getElementById("stock");
@@ -42,6 +43,11 @@ const imageUrlInput = document.getElementById("imageUrl");
 const productsTable = document.getElementById("productsTable");
 const adminProductSearch = document.getElementById("adminProductSearch");
 const productStatusFilter = document.getElementById("productStatusFilter");
+const productImageFilter = document.getElementById("productImageFilter");
+const productQualityFilter = document.getElementById("productQualityFilter");
+const productStockFilter = document.getElementById("productStockFilter");
+const productCategoryFilter = document.getElementById("productCategoryFilter");
+const productPriceFilter=document.getElementById("productPriceFilter");
 const productFilterBanner = document.getElementById("productFilterBanner");
 const productFilterLabel = document.getElementById("productFilterLabel");
 const clearProductFilterBtn = document.getElementById("clearProductFilterBtn");
@@ -60,6 +66,8 @@ const activateSelectedBtn = document.getElementById("activateSelectedBtn");
 const deactivateSelectedBtn = document.getElementById("deactivateSelectedBtn");
 const activateAllProductsBtn = document.getElementById("activateAllProductsBtn");
 const deactivateAllProductsBtn = document.getElementById("deactivateAllProductsBtn");
+const activateReadyProductsBtn = document.getElementById("activateReadyProductsBtn");
+const analyseCatalogueBtn = document.getElementById("analyseCatalogueBtn");
 const productSelectAllCheckbox = document.getElementById("productSelectAllCheckbox");
 const productVisibilitySummary = document.getElementById("productVisibilitySummary");
 let selectedProductIds = new Set();
@@ -70,6 +78,12 @@ let totalProductCount = 0;
 let activeProductCount = 0;
 let inactiveProductCount = 0;
 let currentStatusFilter = "all";
+let currentImageFilter = "all";
+let currentQualityFilter = "all";
+let currentStockFilter = "all";
+let currentCategoryFilter = "all";
+let currentPriceFilter = "all";
+let currentCombinedFilterCount = null;
 const pageEndCursors = new Map();
 let adminSearchTimer = null;
 const productPager = document.getElementById("productPager");
@@ -77,6 +91,45 @@ const previousProductPageBtn = document.getElementById("previousProductPageBtn")
 const nextProductPageBtn = document.getElementById("nextProductPageBtn");
 const productPageSummary = document.getElementById("productPageSummary");
 
+
+const PLACEHOLDER_IMAGE_PATTERNS = [
+  "assets/logo.png","../assets/logo.png","assets/rice.jpg","assets/vegetable-oil.jpg",
+  "assets/tomato-paste.jpg","assets/fresh-vegetables.jpg","assets/beverages.jpg","assets/household.jpg"
+];
+function imageQuality(product){
+  const image=String(product?.imageUrl || product?.variants?.[0]?.imageUrl || "").trim().toLowerCase();
+  if(!image) return "missing";
+  if(PLACEHOLDER_IMAGE_PATTERNS.some(x=>image.includes(x.replace("../","")))) return "placeholder";
+  if(image.includes("logo.png") || image.includes("placeholder")) return "placeholder";
+  return "real";
+}
+function stockQuality(product){
+  const stock=product?.hasVariants ? (product.variants||[]).reduce((s,v)=>s+Number(v.stock||0),0) : Number(product?.stock||0);
+  const low=Number(product?.lowStockThreshold||5);
+  if(stock<=0) return "out";
+  if(stock<=low) return "low";
+  return "in";
+}
+function priceQuality(product){
+  const prices=product?.hasVariants ? (product.variants||[]).map(v=>Number(v.price||0)) : [Number(product?.price||0)];
+  return prices.length && prices.every(v=>v>0) ? "priced" : "missing";
+}
+function catalogueQuality(product){
+  const imageStatus=imageQuality(product), stockStatus=stockQuality(product), priceStatus=priceQuality(product);
+  let score=0;
+  if(String(product?.name||"").trim()) score+=20;
+  if(String(product?.category||"").trim()) score+=10;
+  if(priceStatus==="priced") score+=20;
+  if(stockStatus!=="out") score+=15;
+  if(imageStatus==="real") score+=25; else if(imageStatus==="placeholder") score+=5;
+  if(String(product?.sku||product?.barcode||"").trim()) score+=5;
+  if(String(product?.description||product?.productNote||"").trim()) score+=5;
+  const ready=Boolean(String(product?.name||"").trim() && String(product?.category||"").trim() && priceStatus==="priced" && stockStatus!=="out" && imageStatus==="real");
+  return {imageStatus,stockStatus,priceStatus,qualityScore:score,qualityStatus:ready?"ready":"review",readyToActivate:ready};
+}
+async function audit(action,details={}){
+  try{await addDoc(collection(db,"audit_logs"),{action,details,createdAt:serverTimestamp()});}catch(e){console.warn("Audit log skipped",e.message)}
+}
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -290,16 +343,23 @@ function getCurrentFilteredProducts() {
     : allProducts;
 }
 
+function hasCombinedFilters(){ return currentImageFilter!=="all" || currentQualityFilter!=="all" || currentStockFilter!=="all" || currentCategoryFilter!=="all" || currentPriceFilter!=="all"; }
 function getFilteredProductCount() {
+  if(currentCombinedFilterCount!==null) return currentCombinedFilterCount;
   if (currentStatusFilter === "active") return activeProductCount;
   if (currentStatusFilter === "inactive") return inactiveProductCount;
   return totalProductCount;
 }
 
 function getFilterDisplayName() {
-  if (currentStatusFilter === "active") return "active products";
-  if (currentStatusFilter === "inactive") return "inactive products";
-  return "all products";
+  const labels=[];
+  if(currentStatusFilter!=="all") labels.push(currentStatusFilter);
+  if(currentImageFilter!=="all") labels.push(`${currentImageFilter} image`);
+  if(currentQualityFilter!=="all") labels.push(currentQualityFilter==="ready"?"ready to activate":"needs review");
+  if(currentStockFilter!=="all") labels.push(`${currentStockFilter} stock`);
+  if(currentCategoryFilter!=="all") labels.push(currentCategoryFilter);
+  if(currentPriceFilter!=="all") labels.push(currentPriceFilter==="priced"?"has price":"missing price");
+  return labels.length?labels.join(" • "):"all products";
 }
 
 function updateFilterBanner() {
@@ -308,7 +368,7 @@ function updateFilterBanner() {
     productFilterLabel.textContent = `Showing ${count.toLocaleString()} ${getFilterDisplayName()}`;
   }
   if (clearProductFilterBtn) {
-    clearProductFilterBtn.style.display = currentStatusFilter === "all" ? "none" : "inline-flex";
+    clearProductFilterBtn.style.display = (currentStatusFilter === "all" && !hasCombinedFilters()) ? "none" : "inline-flex";
   }
 }
 
@@ -329,7 +389,7 @@ function renderProductPager() {
 function renderProductsTable(products) {
   currentProductView = products;
   if (!products.length) {
-    productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">No products found on this page.</div></td></tr>`;
+    productsTable.innerHTML = `<tr><td colspan="11"><div class="emptyState">No products match these filters on this page.</div></td></tr>`;
     renderProductPager();
     updateVisibilitySummary();
     return;
@@ -353,8 +413,10 @@ function renderProductsTable(products) {
       <tr>
         <td style="text-align:center;"><input class="productSelectionCheck" type="checkbox" data-product-id="${id}" ${selectedProductIds.has(id) ? "checked" : ""}></td>
         <td><img class="adminProductThumb" loading="lazy" decoding="async" src="${image}" alt="${product.name || "Product"}" onerror="this.src='../assets/logo.png'" style="width:56px;height:56px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"></td>
-        <td><strong>${product.name || "Unnamed product"}</strong>${skuText}${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}</td>
+        <td><strong>${product.name || "Unnamed product"}</strong>${product.brand?`<br><small>${product.brand}${product.packSize?` • ${product.packSize}`:""}</small>`:""}${Number(product.costPrice||0)>0&&!isOptionProduct?`<br><small>Margin: ${Math.round(((Number(product.price||0)-Number(product.costPrice||0))/Math.max(1,Number(product.price||0)))*100)}%</small>`:""}${skuText}${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}</td>
         <td>${optionLabel}</td><td>${product.category || ""}</td><td>${priceDisplay}</td><td>${totalStock}</td>
+        <td><span class="qualityPill image-${(product.imageStatus||imageQuality(product))}">${(product.imageStatus||imageQuality(product)) === "real" ? "Real image" : (product.imageStatus||imageQuality(product)) === "missing" ? "No image" : "Placeholder"}</span></td>
+        <td><span class="qualityPill ${(product.qualityStatus||catalogueQuality(product).qualityStatus)}">${product.qualityScore ?? catalogueQuality(product).qualityScore}% • ${(product.qualityStatus||catalogueQuality(product).qualityStatus)==="ready"?"Ready":"Review"}</span></td>
         <td><span class="statusBadge" style="background:${active ? "#e6f5ea" : "#f4e7e7"};color:${active ? "#176b37" : "#8b2d2d"};">${active ? "Active" : "Inactive"}</span></td>
         <td><div class="actionBtns">
           <button class="${active ? "duplicateBtn" : "editBtn"}" onclick="setProductActive('${id}', ${active ? "false" : "true"})">${active ? "Deactivate" : "Activate"}</button>
@@ -419,6 +481,7 @@ async function setManyProductsActive(ids, isActive, label) {
       await batch.commit();
     }
     selectedProductIds.clear();
+    await audit(isActive?"products_activated":"products_deactivated",{count:ids.length});
     await refreshCounts();
     const filteredCount = getFilteredProductCount();
     const maxPage = Math.max(1, Math.ceil(filteredCount / PRODUCT_PAGE_SIZE));
@@ -449,18 +512,49 @@ function productMatchesSearch(product, term) {
   return `${product.name || ""} ${product.sku || ""} ${product.barcode || ""} ${product.brand || ""} ${product.category || ""} ${product.productNote || ""} ${variantsText}`.toLowerCase().includes(term);
 }
 
+function buildCatalogueConstraints(){
+  const c=[];
+  if(currentStatusFilter==="active") c.push(where("isActive","==",true));
+  if(currentStatusFilter==="inactive") c.push(where("isActive","==",false));
+  if(currentImageFilter!=="all") c.push(where("imageStatus","==",currentImageFilter));
+  if(currentQualityFilter!=="all") c.push(where("qualityStatus","==",currentQualityFilter));
+  if(currentStockFilter!=="all") c.push(where("stockStatus","==",currentStockFilter));
+  if(currentCategoryFilter!=="all") c.push(where("category","==",currentCategoryFilter));
+  if(currentPriceFilter!=="all") c.push(where("priceStatus","==",currentPriceFilter));
+  return c;
+}
+async function refreshCombinedFilterCount(){
+  if(!hasCombinedFilters()){currentCombinedFilterCount=null;return;}
+  try{currentCombinedFilterCount=(await getCountFromServer(query(collection(db,"products"),...buildCatalogueConstraints()))).data().count;}catch(e){console.warn("Combined count failed",e);currentCombinedFilterCount=null;}
+}
+async function analyseCatalogue(){
+  if(!confirm("Analyze the full catalogue now? This reads each product once and writes lightweight quality metadata once. With ~1,300 products this is normally within the Spark daily quota, but do not run it repeatedly.")) return;
+  analyseCatalogueBtn.disabled=true; analyseCatalogueBtn.textContent="Analyzing…";
+  try{
+    const snap=await getDocs(collection(db,"products")); const docs=snap.docs;
+    for(let i=0;i<docs.length;i+=400){
+      const batch=writeBatch(db);
+      docs.slice(i,i+400).forEach(d=>{const q=catalogueQuality(d.data());batch.update(d.ref,{...q,qualityAnalyzedAt:serverTimestamp(),updatedAt:serverTimestamp()});});
+      await batch.commit();
+    }
+    await audit("catalogue_quality_analysis",{products:docs.length});
+    pageEndCursors.clear(); await refreshCounts(); await refreshCombinedFilterCount(); await loadProducts(1);
+    alert(`Catalogue analysis complete for ${docs.length.toLocaleString()} products.`);
+  }catch(e){alert("Catalogue analysis failed: "+e.message)}finally{analyseCatalogueBtn.disabled=false;analyseCatalogueBtn.textContent="Analyze / Refresh Quality";}
+}
+async function activateReadyProducts(){
+  if(!confirm("Activate every product currently marked Ready to Activate? Products still needing review will remain inactive.")) return;
+  try{const snap=await getDocs(query(collection(db,"products"),where("readyToActivate","==",true)));const ids=snap.docs.filter(d=>d.data().isActive!==true).map(d=>d.id);if(!ids.length)return alert("No inactive Ready products found. Run Analyze / Refresh Quality if needed.");await setManyProductsActive(ids,true,"Ready catalogue");await audit("activate_ready_products",{count:ids.length});}catch(e){alert("Could not activate ready products: "+e.message)}
+}
 async function loadProducts(page = 1) {
-  productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">Loading up to ${PRODUCT_PAGE_SIZE} ${getFilterDisplayName()}…</div></td></tr>`;
+  productsTable.innerHTML = `<tr><td colspan="11"><div class="emptyState">Loading up to ${PRODUCT_PAGE_SIZE} ${getFilterDisplayName()}…</div></td></tr>`;
   if (!totalProductCount) await refreshCounts();
 
   const base = collection(db, "products");
-  const constraints = [];
-  if (currentStatusFilter === "active") constraints.push(where("isActive", "==", true));
-  if (currentStatusFilter === "inactive") constraints.push(where("isActive", "==", false));
+  const constraints = buildCatalogueConstraints();
 
-  // Keep alphabetical ordering for the unfiltered catalogue. Filtered queries avoid
-  // requiring an additional composite Firestore index on the free-plan setup.
-  if (currentStatusFilter === "all") constraints.push(orderBy("name"));
+  // Only use name ordering when no filters are active, avoiding unnecessary composite indexes.
+  if (currentStatusFilter === "all" && !hasCombinedFilters()) constraints.push(orderBy("name"));
 
   if (page > 1) {
     const previousCursor = pageEndCursors.get(page - 1);
@@ -474,7 +568,7 @@ async function loadProducts(page = 1) {
 
   // Filtered Firestore pages are sorted client-side to keep the UI tidy without
   // requiring a paid service or a new composite index.
-  if (currentStatusFilter !== "all") {
+  if (currentStatusFilter !== "all" || hasCombinedFilters()) {
     allProducts.sort((a, b) => (a.product.name || "").localeCompare(b.product.name || ""));
   }
 
@@ -483,27 +577,29 @@ async function loadProducts(page = 1) {
   renderCurrentProducts();
 }
 
-async function applyStatusFilter(value) {
-  currentStatusFilter = value || "all";
-  currentProductPage = 1;
-  pageEndCursors.clear();
-  selectedProductIds.clear();
-  if (adminProductSearch) adminProductSearch.value = "";
-  updateFilterBanner();
-  await loadProducts(1);
+async function applyCatalogueFilters() {
+  currentStatusFilter = productStatusFilter?.value || "all";
+  currentImageFilter = productImageFilter?.value || "all";
+  currentQualityFilter = productQualityFilter?.value || "all";
+  currentStockFilter = productStockFilter?.value || "all";
+  currentCategoryFilter = productCategoryFilter?.value || "all";
+  currentPriceFilter = productPriceFilter?.value || "all";
+  currentProductPage=1; pageEndCursors.clear(); selectedProductIds.clear(); currentCombinedFilterCount=null;
+  if(adminProductSearch) adminProductSearch.value="";
+  await refreshCombinedFilterCount(); updateFilterBanner(); await loadProducts(1);
 }
 
 adminProductSearch?.addEventListener("input", () => {
   clearTimeout(adminSearchTimer);
   adminSearchTimer = setTimeout(renderCurrentProducts, 150);
 });
-productStatusFilter?.addEventListener("change", event => {
-  applyStatusFilter(event.target.value).catch(error => alert(`Could not filter products: ${error.message}`));
+[productStatusFilter,productImageFilter,productQualityFilter,productStockFilter,productCategoryFilter,productPriceFilter].forEach(el=>el?.addEventListener("change",()=>{applyCatalogueFilters().catch(error=>alert(`Could not filter products: ${error.message}`));}));
+clearProductFilterBtn?.addEventListener("click",()=>{
+  [productStatusFilter,productImageFilter,productQualityFilter,productStockFilter,productCategoryFilter,productPriceFilter].forEach(el=>{if(el)el.value="all";});
+  applyCatalogueFilters().catch(error=>alert(`Could not clear product filters: ${error.message}`));
 });
-clearProductFilterBtn?.addEventListener("click", () => {
-  if (productStatusFilter) productStatusFilter.value = "all";
-  applyStatusFilter("all").catch(error => alert(`Could not clear product filter: ${error.message}`));
-});
+analyseCatalogueBtn?.addEventListener("click",analyseCatalogue);
+activateReadyProductsBtn?.addEventListener("click",activateReadyProducts);
 previousProductPageBtn?.addEventListener("click", async () => { if (currentProductPage > 1) await loadProducts(currentProductPage - 1); });
 nextProductPageBtn?.addEventListener("click", async () => { await loadProducts(currentProductPage + 1); });
 form.addEventListener("submit", async (event) => {
@@ -523,6 +619,7 @@ form.addEventListener("submit", async (event) => {
     name: nameInput.value.trim(),
     category: categoryInput.value,
     sku: skuInput ? skuInput.value.trim() : "",
+    brand: brandInput?.value.trim()||"", packSize: packSizeInput?.value.trim()||"", costPrice:Number(costPriceInput?.value||0), searchAliases:(searchAliasesInput?.value||"").split(",").map(x=>x.trim()).filter(Boolean),
     productType,
     optionType: hasOptions ? productType : "",
     variantLabel,
@@ -565,15 +662,18 @@ form.addEventListener("submit", async (event) => {
     };
   }
 
+  productData = {...productData, ...catalogueQuality(productData)};
   try {
     if (editingId) {
       await updateDoc(doc(db, "products", editingId), productData);
+      await audit("product_updated",{productId:editingId,name:productData.name});
       alert("Product updated.");
     } else {
       await addDoc(collection(db, "products"), {
         ...productData,
         createdAt: serverTimestamp()
       });
+      await audit("product_created",{name:productData.name});
       alert("Product added.");
     }
 
@@ -594,6 +694,7 @@ window.editProduct = function(id, encodedProduct) {
   nameInput.value = product.name || "";
   categoryInput.value = product.category || "grains";
   if (skuInput) skuInput.value = product.sku || "";
+  if(brandInput)brandInput.value=product.brand||"";if(packSizeInput)packSizeInput.value=product.packSize||"";if(costPriceInput)costPriceInput.value=product.costPrice||0;if(searchAliasesInput)searchAliasesInput.value=(product.searchAliases||[]).join(", ");
   productTypeInput.value = productType;
   lowStockInput.value = product.lowStockThreshold || 5;
 
