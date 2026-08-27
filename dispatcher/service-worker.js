@@ -1,4 +1,4 @@
-const CACHE="biserry-dispatcher-v4";
+const CACHE="biserry-dispatcher-v8-free-max";
 const CORE=["./","./index.html","./app.js","../css/styles.css","../assets/logo.png"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));self.skipWaiting();});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith("biserry-dispatcher-")&&k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
