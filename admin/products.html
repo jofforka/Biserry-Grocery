@@ -165,7 +165,25 @@
         </div>
       </div>
 
-      <input id="adminProductSearch" class="adminSearchInput" placeholder="Search by product name, SKU, barcode, category, size or variety...">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:end;margin:14px 0;">
+        <div>
+          <label for="adminProductSearch" style="display:block;font-weight:700;margin-bottom:6px;">Search current filtered page</label>
+          <input id="adminProductSearch" class="adminSearchInput" style="margin:0;width:100%;" placeholder="Search by product name, SKU, barcode, category, size or variety...">
+        </div>
+        <div>
+          <label for="productStatusFilter" style="display:block;font-weight:700;margin-bottom:6px;">Filter by storefront status</label>
+          <select id="productStatusFilter" class="adminSearchInput" style="margin:0;width:100%;background:#fff;">
+            <option value="all">All Products</option>
+            <option value="active">Active / Visible to Customers</option>
+            <option value="inactive">Inactive / Hidden from Customers</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="productFilterBanner" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#f6f2e8;border:1px solid #e8dcc3;">
+        <strong id="productFilterLabel">Showing all products</strong>
+        <button class="btn outline" type="button" id="clearProductFilterBtn" style="display:none;">Show All Products</button>
+      </div>
 
       <div class="adminPanel" style="margin:16px 0;padding:16px;border:1px solid #e8dcc3;background:#fffaf0;">
         <div class="adminListHead" style="gap:12px;align-items:center;">
