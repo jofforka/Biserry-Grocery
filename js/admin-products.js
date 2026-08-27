@@ -41,6 +41,10 @@ const imageFileInput = document.getElementById("imageFile");
 const imageUrlInput = document.getElementById("imageUrl");
 const productsTable = document.getElementById("productsTable");
 const adminProductSearch = document.getElementById("adminProductSearch");
+const productStatusFilter = document.getElementById("productStatusFilter");
+const productFilterBanner = document.getElementById("productFilterBanner");
+const productFilterLabel = document.getElementById("productFilterLabel");
+const clearProductFilterBtn = document.getElementById("clearProductFilterBtn");
 const formTitle = document.getElementById("formTitle");
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
@@ -65,6 +69,7 @@ let currentProductView = [];
 let totalProductCount = 0;
 let activeProductCount = 0;
 let inactiveProductCount = 0;
+let currentStatusFilter = "all";
 const pageEndCursors = new Map();
 let adminSearchTimer = null;
 const productPager = document.getElementById("productPager");
@@ -285,16 +290,40 @@ function getCurrentFilteredProducts() {
     : allProducts;
 }
 
+function getFilteredProductCount() {
+  if (currentStatusFilter === "active") return activeProductCount;
+  if (currentStatusFilter === "inactive") return inactiveProductCount;
+  return totalProductCount;
+}
+
+function getFilterDisplayName() {
+  if (currentStatusFilter === "active") return "active products";
+  if (currentStatusFilter === "inactive") return "inactive products";
+  return "all products";
+}
+
+function updateFilterBanner() {
+  const count = getFilteredProductCount();
+  if (productFilterLabel) {
+    productFilterLabel.textContent = `Showing ${count.toLocaleString()} ${getFilterDisplayName()}`;
+  }
+  if (clearProductFilterBtn) {
+    clearProductFilterBtn.style.display = currentStatusFilter === "all" ? "none" : "inline-flex";
+  }
+}
+
 function renderProductPager() {
-  const pageCount = Math.max(1, Math.ceil(totalProductCount / PRODUCT_PAGE_SIZE));
-  if (productPager) productPager.style.display = totalProductCount > PRODUCT_PAGE_SIZE ? "flex" : "none";
+  const filteredCount = getFilteredProductCount();
+  const pageCount = Math.max(1, Math.ceil(filteredCount / PRODUCT_PAGE_SIZE));
+  if (productPager) productPager.style.display = filteredCount > PRODUCT_PAGE_SIZE ? "flex" : "none";
   if (productPageSummary) {
-    const start = totalProductCount ? ((currentProductPage - 1) * PRODUCT_PAGE_SIZE) + 1 : 0;
-    const finish = Math.min(totalProductCount, start + Math.max(0, currentProductView.length - 1));
-    productPageSummary.textContent = `${start.toLocaleString()}–${finish.toLocaleString()} of ${totalProductCount.toLocaleString()} products`;
+    const start = filteredCount ? ((currentProductPage - 1) * PRODUCT_PAGE_SIZE) + 1 : 0;
+    const finish = Math.min(filteredCount, start + Math.max(0, currentProductView.length - 1));
+    productPageSummary.textContent = `${start.toLocaleString()}–${finish.toLocaleString()} of ${filteredCount.toLocaleString()} ${getFilterDisplayName()}`;
   }
   if (previousProductPageBtn) previousProductPageBtn.disabled = currentProductPage <= 1;
   if (nextProductPageBtn) nextProductPageBtn.disabled = currentProductPage >= pageCount || currentProductView.length < PRODUCT_PAGE_SIZE;
+  updateFilterBanner();
 }
 
 function renderProductsTable(products) {
@@ -353,13 +382,14 @@ function renderCurrentProducts() {
 async function refreshCounts() {
   try {
     const base = collection(db, "products");
-    const [totalSnap, activeSnap] = await Promise.all([
+    const [totalSnap, activeSnap, inactiveSnap] = await Promise.all([
       getCountFromServer(base),
-      getCountFromServer(query(base, where("isActive", "==", true)))
+      getCountFromServer(query(base, where("isActive", "==", true))),
+      getCountFromServer(query(base, where("isActive", "==", false)))
     ]);
     totalProductCount = totalSnap.data().count;
     activeProductCount = activeSnap.data().count;
-    inactiveProductCount = Math.max(0, totalProductCount - activeProductCount);
+    inactiveProductCount = inactiveSnap.data().count;
   } catch (e) {
     console.warn("Count refresh failed", e);
   }
@@ -367,7 +397,7 @@ async function refreshCounts() {
 
 function updateVisibilitySummary() {
   if (productVisibilitySummary) {
-    productVisibilitySummary.textContent = `${totalProductCount.toLocaleString()} total • ${activeProductCount.toLocaleString()} active • ${inactiveProductCount.toLocaleString()} inactive • ${selectedProductIds.size.toLocaleString()} selected • only ${PRODUCT_PAGE_SIZE} products are downloaded per page`;
+    productVisibilitySummary.textContent = `${totalProductCount.toLocaleString()} total • ${activeProductCount.toLocaleString()} active • ${inactiveProductCount.toLocaleString()} inactive • ${selectedProductIds.size.toLocaleString()} selected • filter: ${getFilterDisplayName()} • only ${PRODUCT_PAGE_SIZE} products are downloaded per page`;
   }
   if (productSelectAllCheckbox) {
     productSelectAllCheckbox.checked = allProducts.length > 0 && allProducts.every(item => selectedProductIds.has(item.id));
@@ -390,7 +420,11 @@ async function setManyProductsActive(ids, isActive, label) {
     }
     selectedProductIds.clear();
     await refreshCounts();
-    await loadProducts(currentProductPage);
+    const filteredCount = getFilteredProductCount();
+    const maxPage = Math.max(1, Math.ceil(filteredCount / PRODUCT_PAGE_SIZE));
+    if (currentProductPage > maxPage) currentProductPage = maxPage;
+    pageEndCursors.clear();
+    await loadProducts(1);
     alert(`${ids.length.toLocaleString()} product(s) ${isActive ? "activated" : "deactivated"}.`);
   } catch (error) {
     alert(`Could not ${action} products: ${error.message}`);
@@ -416,27 +450,59 @@ function productMatchesSearch(product, term) {
 }
 
 async function loadProducts(page = 1) {
-  productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">Loading up to ${PRODUCT_PAGE_SIZE} products…</div></td></tr>`;
+  productsTable.innerHTML = `<tr><td colspan="9"><div class="emptyState">Loading up to ${PRODUCT_PAGE_SIZE} ${getFilterDisplayName()}…</div></td></tr>`;
   if (!totalProductCount) await refreshCounts();
+
   const base = collection(db, "products");
-  let q;
-  if (page <= 1) {
-    q = query(base, orderBy("name"), limit(PRODUCT_PAGE_SIZE));
-  } else {
+  const constraints = [];
+  if (currentStatusFilter === "active") constraints.push(where("isActive", "==", true));
+  if (currentStatusFilter === "inactive") constraints.push(where("isActive", "==", false));
+
+  // Keep alphabetical ordering for the unfiltered catalogue. Filtered queries avoid
+  // requiring an additional composite Firestore index on the free-plan setup.
+  if (currentStatusFilter === "all") constraints.push(orderBy("name"));
+
+  if (page > 1) {
     const previousCursor = pageEndCursors.get(page - 1);
     if (!previousCursor) return;
-    q = query(base, orderBy("name"), startAfter(previousCursor), limit(PRODUCT_PAGE_SIZE));
+    constraints.push(startAfter(previousCursor));
   }
-  const snap = await getDocs(q);
+  constraints.push(limit(PRODUCT_PAGE_SIZE));
+
+  const snap = await getDocs(query(base, ...constraints));
   allProducts = snap.docs.map(docSnap => ({ id: docSnap.id, product: docSnap.data() }));
+
+  // Filtered Firestore pages are sorted client-side to keep the UI tidy without
+  // requiring a paid service or a new composite index.
+  if (currentStatusFilter !== "all") {
+    allProducts.sort((a, b) => (a.product.name || "").localeCompare(b.product.name || ""));
+  }
+
   currentProductPage = page;
   if (snap.docs.length) pageEndCursors.set(page, snap.docs[snap.docs.length - 1]);
   renderCurrentProducts();
 }
 
+async function applyStatusFilter(value) {
+  currentStatusFilter = value || "all";
+  currentProductPage = 1;
+  pageEndCursors.clear();
+  selectedProductIds.clear();
+  if (adminProductSearch) adminProductSearch.value = "";
+  updateFilterBanner();
+  await loadProducts(1);
+}
+
 adminProductSearch?.addEventListener("input", () => {
   clearTimeout(adminSearchTimer);
   adminSearchTimer = setTimeout(renderCurrentProducts, 150);
+});
+productStatusFilter?.addEventListener("change", event => {
+  applyStatusFilter(event.target.value).catch(error => alert(`Could not filter products: ${error.message}`));
+});
+clearProductFilterBtn?.addEventListener("click", () => {
+  if (productStatusFilter) productStatusFilter.value = "all";
+  applyStatusFilter("all").catch(error => alert(`Could not clear product filter: ${error.message}`));
 });
 previousProductPageBtn?.addEventListener("click", async () => { if (currentProductPage > 1) await loadProducts(currentProductPage - 1); });
 nextProductPageBtn?.addEventListener("click", async () => { await loadProducts(currentProductPage + 1); });
