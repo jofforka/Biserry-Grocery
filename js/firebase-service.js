@@ -42,8 +42,16 @@ try {
 
 if (FREE_MAX?.appCheckSiteKey) {
   try {
-    const { initializeAppCheck, ReCaptchaV3Provider } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app-check.js");
-    initializeAppCheck(app, { provider: new ReCaptchaV3Provider(FREE_MAX.appCheckSiteKey), isTokenAutoRefreshEnabled: true });
+    const { initializeAppCheck, ReCaptchaEnterpriseProvider, getToken } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app-check.js");
+    const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(FREE_MAX.appCheckSiteKey),
+      isTokenAutoRefreshEnabled: true
+    });
+    // Request one token in monitoring mode so Firebase App Check metrics can
+    // confirm that the deployed Biserry web app is attesting successfully.
+    getToken(appCheck, false)
+      .then(() => console.info("Biserry App Check: reCAPTCHA Enterprise token ready"))
+      .catch((e) => console.warn("Biserry App Check token not ready", e?.message || e));
   } catch (e) { console.warn("App Check initialization skipped", e?.message || e); }
 }
 
