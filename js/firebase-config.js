@@ -24,6 +24,6 @@ export const BUSINESS = {
 // v8 Free-Max optional no-cost platform services.
 // Leave blank until configured in Firebase Console. Never place private secrets here.
 export const FREE_MAX = {
-  appCheckSiteKey: "", // reCAPTCHA v3 public site key
+  appCheckSiteKey: "6LcPHJwtAAAAAO1KRS-Qz75IjK-hg29CVeZUjNgA", // reCAPTCHA Enterprise public site key
   analyticsMeasurementId: "" // e.g. G-XXXXXXXXXX
 };
