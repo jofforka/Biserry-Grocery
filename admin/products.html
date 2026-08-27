@@ -63,6 +63,14 @@
         </div>
 
         <div class="grid2">
+          <div><label>Brand</label><input id="brand" placeholder="e.g. Golden Penny, Peak"></div>
+          <div><label>Pack Size</label><input id="packSize" placeholder="e.g. 500g, 1L, carton of 12"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Supplier Cost (₦)</label><input id="costPrice" type="number" min="0" placeholder="Optional cost price"></div>
+          <div><label>Search Aliases</label><input id="searchAliases" placeholder="Comma separated: indomi, instant noodles"></div>
+        </div>
+<div class="grid2">
           <div>
             <label>SKU / Barcode</label>
             <input id="sku" placeholder="Optional SKU or barcode">
@@ -165,19 +173,54 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:end;margin:14px 0;">
+      <div class="catalogueFilterGrid">
         <div>
-          <label for="adminProductSearch" style="display:block;font-weight:700;margin-bottom:6px;">Search current filtered page</label>
-          <input id="adminProductSearch" class="adminSearchInput" style="margin:0;width:100%;" placeholder="Search by product name, SKU, barcode, category, size or variety...">
+          <label for="adminProductSearch">Search current filtered page</label>
+          <input id="adminProductSearch" class="adminSearchInput" placeholder="Search name, SKU, barcode, brand, size or variety...">
         </div>
         <div>
-          <label for="productStatusFilter" style="display:block;font-weight:700;margin-bottom:6px;">Filter by storefront status</label>
-          <select id="productStatusFilter" class="adminSearchInput" style="margin:0;width:100%;background:#fff;">
+          <label for="productStatusFilter">Storefront status</label>
+          <select id="productStatusFilter" class="adminSearchInput">
             <option value="all">All Products</option>
-            <option value="active">Active / Visible to Customers</option>
-            <option value="inactive">Inactive / Hidden from Customers</option>
+            <option value="active">Active / Visible</option>
+            <option value="inactive">Inactive / Hidden</option>
           </select>
         </div>
+        <div>
+          <label for="productImageFilter">Image status</label>
+          <select id="productImageFilter" class="adminSearchInput">
+            <option value="all">All Images</option>
+            <option value="real">Real Product Image</option>
+            <option value="placeholder">Default / Placeholder</option>
+            <option value="missing">No Image</option>
+          </select>
+        </div>
+        <div>
+          <label for="productQualityFilter">Catalogue quality</label>
+          <select id="productQualityFilter" class="adminSearchInput">
+            <option value="all">All Quality Levels</option>
+            <option value="ready">Ready to Activate</option>
+            <option value="review">Needs Review</option>
+          </select>
+        </div>
+        <div>
+          <label for="productStockFilter">Stock status</label>
+          <select id="productStockFilter" class="adminSearchInput">
+            <option value="all">All Stock</option>
+            <option value="in">In Stock</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+        <div>
+          <label for="productCategoryFilter">Category</label>
+          <select id="productCategoryFilter" class="adminSearchInput">
+            <option value="all">All Categories</option>
+            <option value="grains">Grains</option><option value="oil">Oil</option><option value="spices">Spices</option>
+            <option value="fresh">Fresh Produce</option><option value="drinks">Drinks</option><option value="household">Household</option>
+          </select>
+        </div>
+        <div><label for="productPriceFilter">Price quality</label><select id="productPriceFilter" class="adminSearchInput"><option value="all">All Prices</option><option value="priced">Has Price</option><option value="missing">Missing Price</option></select></div>
       </div>
 
       <div id="productFilterBanner" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#f6f2e8;border:1px solid #e8dcc3;">
@@ -197,11 +240,13 @@
             <button class="btn outline" type="button" id="clearProductSelectionBtn">Clear Selection</button>
             <button class="btn" type="button" id="activateSelectedBtn">Activate Selected</button>
             <button class="btn outline" type="button" id="deactivateSelectedBtn">Deactivate Selected</button>
+            <button class="btn" type="button" id="activateReadyProductsBtn">Activate All Ready</button>
+            <button class="btn outline" type="button" id="analyseCatalogueBtn">Analyze / Refresh Quality</button>
             <button class="btn outline" type="button" id="activateAllProductsBtn">Activate All</button>
             <button class="btn" type="button" id="deactivateAllProductsBtn" style="background:#8b2d2d;">Deactivate All</button>
           </div>
         </div>
-        <p style="margin:12px 0 0;font-size:.9rem;"><strong>Inactive products remain in Biserry OS but are hidden from customers.</strong> Use Deactivate All when needed, then activate only the products you have finalized. Normal browsing loads only 50 products at a time to reduce Firestore reads.</p>
+        <p style="margin:12px 0 0;font-size:.9rem;"><strong>Inactive products remain in Biserry OS but are hidden from customers.</strong> “Analyze / Refresh Quality” creates lightweight image/stock/price/quality metadata so filters work across the full catalogue. With ~1,300 products, one analysis uses roughly one read + one write per product and should be run only when needed.</p>
       </div>
 
       <div id="productPager" style="display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0;">
@@ -221,6 +266,8 @@
               <th>Category</th>
               <th>Price / Options</th>
               <th>Stock</th>
+              <th>Image Quality</th>
+              <th>Readiness</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
