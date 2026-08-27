@@ -7,7 +7,6 @@ import {
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-
 import {
   getFirestore,
   collection,
@@ -33,13 +32,8 @@ import { firebaseConfig, FREE_MAX } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 
-// v8 Free-Max observability/security. Performance Monitoring is no-cost.
-// App Check and Analytics initialize only after their public console values are configured.
-try {
-  const { getPerformance } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-performance.js");
-  getPerformance(app);
-} catch (e) { console.warn("Performance Monitoring unavailable", e?.message || e); }
-
+// v8.1 App Check must initialize immediately after the Firebase app and
+// before Performance Monitoring, Analytics, Auth, or Firestore are accessed.
 if (FREE_MAX?.appCheckSiteKey) {
   try {
     const { initializeAppCheck, ReCaptchaEnterpriseProvider, getToken } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app-check.js");
@@ -55,6 +49,12 @@ if (FREE_MAX?.appCheckSiteKey) {
   } catch (e) { console.warn("App Check initialization skipped", e?.message || e); }
 }
 
+// v8 Free-Max observability. Performance Monitoring is no-cost.
+try {
+  const { getPerformance } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-performance.js");
+  getPerformance(app);
+} catch (e) { console.warn("Performance Monitoring unavailable", e?.message || e); }
+
 if (FREE_MAX?.analyticsMeasurementId) {
   try {
     const { getAnalytics } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js");
@@ -64,7 +64,6 @@ if (FREE_MAX?.analyticsMeasurementId) {
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
 export {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
