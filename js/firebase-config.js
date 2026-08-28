@@ -10,7 +10,6 @@ export const firebaseConfig = {
 export const ADMIN_EMAILS = [
   "admin@biserry.com"
 ];
-
 export const BUSINESS = {
   name: "Biserry Groceries",
   phone: "+234 810 058 4211",
@@ -20,10 +19,9 @@ export const BUSINESS = {
   currency: "NGN"
 };
 
-
 // v8 Free-Max optional no-cost platform services.
 // Leave blank until configured in Firebase Console. Never place private secrets here.
 export const FREE_MAX = {
-  appCheckSiteKey: "6LcPHJwtAAAAAO1KRS-Qz75IjK-hg29CVeZUjNgA", // reCAPTCHA Enterprise public site key
+  appCheckSiteKey: "6LcG5ZwtAAAAAIKo7dgchM2eN_u9qxTdzj151100", // reCAPTCHA Enterprise public site key
   analyticsMeasurementId: "" // e.g. G-XXXXXXXXXX
 };
