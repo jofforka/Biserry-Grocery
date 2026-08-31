@@ -1,157 +1,18 @@
-import {
-  auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
-  onAuthStateChanged, collection, addDoc, getDocs, getDoc, query, where, onSnapshot,
-  doc, updateDoc, serverTimestamp
-} from "../js/firebase-service.js";
-
-const $ = id => document.getElementById(id);
-const authCard=$("authCard"), profileCard=$("profileCard"), jobsCard=$("dispatcherJobsCard"), earningsCard=$("dispatcherEarningsCard");
-const loginForm=$("loginForm"), registerForm=$("registerForm"), profileName=$("profileName"), profileArea=$("profileArea"), approvalStatus=$("approvalStatus");
-const availabilityBtn=$("availabilityBtn"), availabilityHelp=$("availabilityHelp"), riderOutstanding=$("riderOutstanding"), riderSettled=$("riderSettled"), riderCompleted=$("riderCompleted");
-const loginEmail=$("loginEmail"), loginPassword=$("loginPassword"), registerEmail=$("registerEmail"), registerPassword=$("registerPassword"), registerName=$("registerName"), registerPhone=$("registerPhone"), registerArea=$("registerArea"), registerVehicle=$("registerVehicle");
-const logoutDispatcherBtn=$("logoutDispatcherBtn"), showLoginBtn=$("showLoginBtn"), showRegisterBtn=$("showRegisterBtn"), enableJobNotifications=$("enableJobNotifications");
-let profile=null, unsubscribeJobs=null, seenOffers=new Set(), orderCache=new Map();
-
-const esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
-const money=v=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(v||0));
-const friendlyOrder=id=>`BS-${String(id||"").slice(-6).toUpperCase()}`;
-const activeStatuses=["Offered","Accepted","Picked Up","On the Way","Arrived"];
-
-function toggleForms(register=false){loginForm.classList.toggle("hidden",register);registerForm.classList.toggle("hidden",!register)}
-async function findProfile(uid){const q=query(collection(db,"dispatchers"),where("authUid","==",uid));const snap=await getDocs(q);return snap.empty?null:{id:snap.docs[0].id,...snap.docs[0].data()}}
-
-function renderProfile(){
-  if(!profile)return;
-  profileName.textContent=profile.name||"Dispatcher";
-  profileArea.textContent=[profile.serviceArea,profile.vehicleType].filter(Boolean).join(" • ");
-  const approved=profile.isApproved===true&&profile.isActive===true;
-  approvalStatus.textContent=profile.isApproved===true?(profile.isActive===true?"Approved":"Profile inactive"):"Awaiting admin approval";
-  availabilityBtn.disabled=!approved;
-  availabilityBtn.textContent=profile.isAvailable===true?"I am AVAILABLE — tap to go offline":"I am unavailable — tap to go AVAILABLE";
-  availabilityBtn.className=`btn availabilityButton ${profile.isAvailable===true?'available':'unavailable'}`;
-  availabilityHelp.textContent=approved?"You can receive Biserry delivery requests while online.":"Biserry admin must approve your account before you can go live.";
-  jobsCard.classList.toggle("hidden",!approved); earningsCard.classList.toggle("hidden",!approved);
-}
-
-function renderEarnings(list){
-  const completed=list.filter(x=>x.status==="Delivered");
-  const outstanding=completed.filter(x=>x.settlementStatus!=="Paid").reduce((s,x)=>s+Number(x.riderEarning||0),0);
-  const settled=completed.filter(x=>x.settlementStatus==="Paid").reduce((s,x)=>s+Number(x.riderEarning||0),0);
-  riderOutstanding.textContent=money(outstanding); riderSettled.textContent=money(settled); riderCompleted.textContent=String(completed.length);
-}
-
-async function loadAcceptedOrderDetails(list){
-  const ids=list.filter(j=>j.status!=="Offered" && j.status!=="Declined" && j.status!=="Cancelled").map(j=>j.orderId).filter(Boolean);
-  await Promise.all(ids.map(async id=>{
-    if(orderCache.has(id)) return;
-    try{const s=await getDoc(doc(db,"orders",id)); if(s.exists()) orderCache.set(id,s.data());}catch(e){console.warn("Order details unavailable",id,e.code||e.message)}
-  }));
-}
-
-function deliveryDetails(j){
-  if(j.status==="Offered") return `<p class="formNote">Delivery address and customer contact become available after you accept this job.</p>`;
-  const o=orderCache.get(j.orderId)||{};
-  const name=o.customerName||o.customer?.name||"Customer";
-  const phone=o.customerPhone||o.customer?.phone||"";
-  const address=o.deliveryAddress||o.customer?.address||o.address||"Address not supplied";
-  return `<div class="deliveryDetailBox"><p><strong>Customer:</strong> ${esc(name)}</p><p><strong>Address:</strong> ${esc(address)}</p>${phone?`<p><strong>Phone:</strong> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>`:""}</div>`;
-}
-
-function stageButtons(j,paid){
-  if(j.status==="Offered") return `<button class="btn" onclick="acceptDispatchJob('${j.id}')">Accept Job</button><button class="btn outline" onclick="declineDispatchJob('${j.id}')">Decline</button>`;
-  if(j.status==="Accepted") return `<button class="btn" onclick="updateDispatchJob('${j.id}','Picked Up')">Picked Up</button>`;
-  if(j.status==="Picked Up") return `<button class="btn" onclick="updateDispatchJob('${j.id}','On the Way')">On the Way</button>`;
-  if(j.status==="On the Way") return `<button class="btn" onclick="updateDispatchJob('${j.id}','Arrived')">Arrived</button>`;
-  if(j.status==="Arrived") return `<button class="btn" ${paid?'':"disabled"} onclick="updateDispatchJob('${j.id}','Delivered')">${paid?'Delivered & Released to Customer':'Waiting for Payment Confirmation'}</button>`;
-  return "";
-}
-
-async function renderJobs(list){
-  renderEarnings(list);
-  const active=list.filter(x=>activeStatuses.includes(x.status));
-  await loadAcceptedOrderDetails(active);
-  $("dispatcherJobCount").textContent=String(active.length);
-  for(const j of active.filter(x=>x.status==="Offered")){
-    if(!seenOffers.has(j.id)){
-      if("Notification" in window && Notification.permission==="granted") new Notification("New Biserry delivery job",{body:`${j.zoneName||"Delivery"} • You earn ${money(j.riderEarning)}`,icon:"../assets/logo.png"});
-      seenOffers.add(j.id);
-    }
-  }
-  $("dispatcherJobs").innerHTML=active.length?active.map(j=>{
-    const paid=j.paymentStatus==="Paid"&&j.deliveryReleaseStatus==="Authorized";
-    return `<div class="jobCard">
-      <strong>Delivery ${esc(friendlyOrder(j.orderId))}</strong>
-      <p>${esc(j.zoneName||"Delivery zone")} • <strong>You earn ${money(j.riderEarning)}</strong></p>
-      <span class="statusPill">${esc(j.status)}</span>
-      ${deliveryDetails(j)}
-      <div class="paymentLock ${paid?'ok':''}"><strong>${paid?'✓ PAYMENT CONFIRMED — RELEASE AUTHORIZED':'🔒 PAYMENT NOT CONFIRMED'}</strong><br>${paid?'You may release the groceries after handover.':'Do not release the order until Biserry confirms payment.'}</div>
-      <div class="jobActions">${stageButtons(j,paid)}</div>
-    </div>`;
-  }).join(""):'<p class="formNote">No active delivery request.</p>';
-}
-
-function watchJobs(){
-  unsubscribeJobs?.(); if(!profile?.id)return;
-  const q=query(collection(db,"dispatchRequests"),where("dispatcherId","==",profile.id));
-  unsubscribeJobs=onSnapshot(q,s=>renderJobs(s.docs.map(d=>({id:d.id,...d.data()}))),e=>{console.warn("Dispatch request listener:",e); $("dispatcherJobs").innerHTML='<p class="formNote">Could not load jobs. Please refresh.</p>';});
-}
-
-async function syncTrackingAndOrder(j,status){
-  const orderStatus=status==="Accepted"?"Dispatcher Assigned":status;
-  // The dispatch request is the rider's authoritative write. These two mirrors are best-effort.
-  try{
-    await updateDoc(doc(db,"orderTracking",j.orderId),{orderStatus,dispatchStatus:status,dispatcherName:profile.name||"Dispatcher",updatedAt:serverTimestamp()});
-  }catch(e){console.warn("Tracking sync warning:",e.code||e.message)}
-  try{
-    const fields={orderStatus,dispatchStatus:status,updatedAt:serverTimestamp()};
-    if(status==="Accepted"){fields.assignedDispatcherId=profile.id;fields.assignedDispatcherName=profile.name||"Dispatcher";}
-    await updateDoc(doc(db,"orders",j.orderId),fields);
-  }catch(e){console.warn("Order sync warning:",e.code||e.message)}
-}
-
-window.acceptDispatchJob=async id=>{
-  try{
-    const ref=doc(db,"dispatchRequests",id),snap=await getDoc(ref); if(!snap.exists()) return alert("This delivery request no longer exists.");
-    const j=snap.data();
-    if(j.status!=="Offered") return alert("This job has already changed status. Refresh the app.");
-    await updateDoc(ref,{status:"Accepted",acceptedAt:serverTimestamp(),updatedAt:serverTimestamp()});
-    orderCache.delete(j.orderId); await syncTrackingAndOrder(j,"Accepted");
-  }catch(e){console.error(e);alert(`Could not accept this job (${e.code||"error"}). Please refresh and try again.`)}
-};
-
-window.declineDispatchJob=async id=>{
-  try{await updateDoc(doc(db,"dispatchRequests",id),{status:"Declined",updatedAt:serverTimestamp()});}
-  catch(e){console.error(e);alert(`Could not decline this job (${e.code||"error"}).`)}
-};
-
-window.updateDispatchJob=async(id,status)=>{
-  try{
-    const ref=doc(db,"dispatchRequests",id),snap=await getDoc(ref); if(!snap.exists()) return alert("This delivery request no longer exists.");
-    const j=snap.data();
-    const transitions={"Accepted":"Picked Up","Picked Up":"On the Way","On the Way":"Arrived","Arrived":"Delivered"};
-    if(transitions[j.status]!==status) return alert(`This job is currently ${j.status}. Refresh before continuing.`);
-    if(status==="Delivered"&&(j.paymentStatus!=="Paid"||j.deliveryReleaseStatus!=="Authorized")) return alert("Payment has not been confirmed by Biserry. Do not release this order.");
-    const fields={status,updatedAt:serverTimestamp()};
-    if(status==="Picked Up") fields.pickedUpAt=serverTimestamp();
-    if(status==="On the Way") fields.onTheWayAt=serverTimestamp();
-    if(status==="Arrived") fields.arrivedAt=serverTimestamp();
-    if(status==="Delivered"){fields.deliveredAt=serverTimestamp();fields.earningStatus="Earned";}
-    await updateDoc(ref,fields);
-    await syncTrackingAndOrder(j,status);
-  }catch(e){console.error(e);alert(`Could not update delivery (${e.code||"error"}). Please refresh and try again.`)}
-};
-
-loginForm.addEventListener("submit",async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,loginEmail.value.trim(),loginPassword.value)}catch(err){alert("Login failed: "+err.message)}});
-registerForm.addEventListener("submit",async e=>{e.preventDefault();try{const cred=await createUserWithEmailAndPassword(auth,registerEmail.value.trim().toLowerCase(),registerPassword.value);const data={authUid:cred.user.uid,name:registerName.value.trim(),phone:registerPhone.value.trim(),email:cred.user.email,serviceArea:registerArea.value.trim(),vehicleType:registerVehicle.value.trim(),isApproved:false,isActive:true,isAvailable:false,isPublic:false,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};const ref=await addDoc(collection(db,"dispatchers"),data);profile={id:ref.id,...data};authCard.classList.add("hidden");profileCard.classList.remove("hidden");renderProfile();alert("Registration submitted. Biserry admin must approve your dispatcher profile before you can go live.")}catch(err){alert("Registration failed: "+err.message)}});
-availabilityBtn.addEventListener("click",async()=>{if(!profile||profile.isApproved!==true||profile.isActive!==true)return;try{const next=profile.isAvailable!==true;await updateDoc(doc(db,"dispatchers",profile.id),{isAvailable:next,isPublic:next,lastAvailabilityAt:serverTimestamp(),updatedAt:serverTimestamp()});profile.isAvailable=next;profile.isPublic=next;renderProfile()}catch(e){alert(`Could not change availability (${e.code||"error"}).`)}});
-logoutDispatcherBtn.addEventListener("click",()=>signOut(auth)); showLoginBtn.addEventListener("click",()=>toggleForms(false)); showRegisterBtn.addEventListener("click",()=>toggleForms(true));
-enableJobNotifications.addEventListener("click",async()=>{if(!("Notification" in window))return alert("Notifications are not supported on this device.");const p=await Notification.requestPermission();enableJobNotifications.textContent=p==="granted"?"Job Alerts Enabled":"Enable Job Alerts"});
-
-onAuthStateChanged(auth,async user=>{
-  if(!user){unsubscribeJobs?.();profile=null;authCard.classList.remove("hidden");profileCard.classList.add("hidden");jobsCard.classList.add("hidden");earningsCard.classList.add("hidden");return;}
-  try{
-    profile=await findProfile(user.uid);
-    if(!profile){await signOut(auth);return alert("No dispatcher profile is linked to this login. Register as a dispatcher or ask Biserry admin to link your account.");}
-    authCard.classList.add("hidden");profileCard.classList.remove("hidden");renderProfile();watchJobs();
-  }catch(e){console.error(e);alert("Could not load dispatcher profile: "+e.message)}
-});
+import { auth,db,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,onAuthStateChanged,collection,addDoc,getDocs,getDoc,query,where,onSnapshot,doc,updateDoc,setDoc,serverTimestamp } from "../js/firebase-service.js";
+const $=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])),money=v=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(v||0));let profile=null,unsubOrders=null,unsubStandalone=null,orderJobs=[],standaloneJobs=[],seen=new Set(),orderCache=new Map();const activeOrder=["Offered","Accepted","Picked Up","On the Way","Arrived"],activeStandalone=["Assigned","Accepted","Picked Up","On the Way","Arrived"];
+function toggleForms(r=false){$("loginForm").classList.toggle("hidden",r);$("registerForm").classList.toggle("hidden",!r)}
+async function findProfile(uid){const s=await getDocs(query(collection(db,"dispatchers"),where("authUid","==",uid)));return s.empty?null:{id:s.docs[0].id,...s.docs[0].data()}}
+function renderProfile(){if(!profile)return;const ok=profile.isApproved===true&&profile.isActive===true;$("profileName").textContent=profile.name||"Dispatcher";$("profileArea").textContent=[profile.serviceArea,profile.vehicleType].filter(Boolean).join(" • ");$("approvalStatus").textContent=profile.isApproved===true?(profile.isActive===true?"Approved":"Profile inactive"):"Awaiting admin approval";$("availabilityBtn").disabled=!ok;$("availabilityBtn").textContent=profile.isAvailable===true?"I am AVAILABLE — tap to go offline":"I am unavailable — tap to go AVAILABLE";$("availabilityBtn").className=`btn availabilityButton ${profile.isAvailable===true?"available":"unavailable"}`;$("availabilityHelp").textContent=ok?"You can receive Biserry delivery assignments while online.":"Biserry admin must approve your account before you can go live.";$("dispatcherJobsCard").classList.toggle("hidden",!ok);$("dispatcherEarningsCard").classList.toggle("hidden",!ok)}
+function renderEarnings(all){const done=all.filter(x=>x.status==="Delivered"),out=done.filter(x=>x.settlementStatus!=="Paid").reduce((s,x)=>s+Number(x.riderEarning||0),0),settled=done.filter(x=>x.settlementStatus==="Paid").reduce((s,x)=>s+Number(x.riderEarning||0),0);$("riderOutstanding").textContent=money(out);$("riderSettled").textContent=money(settled);$("riderCompleted").textContent=done.length}
+async function loadOrderDetails(list){await Promise.all(list.filter(j=>j.kind==="order"&&j.status!=="Offered").map(async j=>{if(orderCache.has(j.orderId))return;try{const s=await getDoc(doc(db,"orders",j.orderId));if(s.exists())orderCache.set(j.orderId,s.data())}catch{}}))}
+function details(j){if(j.kind==="standalone")return `<div class="deliveryDetailBox"><p><strong>Customer:</strong> ${esc(j.customerName||"Customer")}</p><p><strong>Phone:</strong> <a href="tel:${esc(j.customerPhone||"")}">${esc(j.customerPhone||"—")}</a></p><p><strong>Pickup:</strong> ${esc(j.pickupAddress||"—")}</p><p><strong>Drop-off:</strong> ${esc(j.dropoffAddress||"—")}</p>${j.note?`<p><strong>Note:</strong> ${esc(j.note)}</p>`:""}</div>`;if(j.status==="Offered")return '<p class="formNote">Customer details become available after you accept this grocery-order job.</p>';const o=orderCache.get(j.orderId)||{};return `<div class="deliveryDetailBox"><p><strong>Customer:</strong> ${esc(o.customerName||o.customer?.name||"Customer")}</p><p><strong>Address:</strong> ${esc(o.deliveryAddress||o.customer?.address||o.address||"—")}</p>${o.customerPhone?`<p><strong>Phone:</strong> <a href="tel:${esc(o.customerPhone)}">${esc(o.customerPhone)}</a></p>`:""}</div>`}
+function buttons(j){if(j.kind==="standalone"){if(j.status==="Assigned")return `<button class="btn" onclick="acceptStandalone('${j.id}')">Accept Job</button><button class="btn outline" onclick="declineStandalone('${j.id}')">Decline</button>`;if(j.status==="Accepted")return `<button class="btn" onclick="advanceStandalone('${j.id}','Picked Up')">Picked Up</button>`;if(j.status==="Picked Up")return `<button class="btn" onclick="advanceStandalone('${j.id}','On the Way')">On the Way</button>`;if(j.status==="On the Way")return `<button class="btn" onclick="advanceStandalone('${j.id}','Arrived')">Arrived</button>`;if(j.status==="Arrived")return `<button class="btn" onclick="advanceStandalone('${j.id}','Delivered')">Delivered</button>`}else{const paid=j.paymentStatus==="Paid"&&j.deliveryReleaseStatus==="Authorized";if(j.status==="Offered")return `<button class="btn" onclick="acceptOrderJob('${j.id}')">Accept Job</button><button class="btn outline" onclick="declineOrderJob('${j.id}')">Decline</button>`;if(j.status==="Accepted")return `<button class="btn" onclick="advanceOrderJob('${j.id}','Picked Up')">Picked Up</button>`;if(j.status==="Picked Up")return `<button class="btn" onclick="advanceOrderJob('${j.id}','On the Way')">On the Way</button>`;if(j.status==="On the Way")return `<button class="btn" onclick="advanceOrderJob('${j.id}','Arrived')">Arrived</button>`;if(j.status==="Arrived")return `<button class="btn" ${paid?"":"disabled"} onclick="advanceOrderJob('${j.id}','Delivered')">${paid?"Delivered":"Waiting for Payment"}</button>`}return""}
+async function render(){const all=[...orderJobs.map(x=>({...x,kind:"order"})),...standaloneJobs.map(x=>({...x,kind:"standalone"}))];renderEarnings(all);const active=all.filter(j=>j.kind==="order"?activeOrder.includes(j.status):activeStandalone.includes(j.status));await loadOrderDetails(active);$("dispatcherJobCount").textContent=active.length;active.filter(j=>(j.kind==="order"&&j.status==="Offered")||(j.kind==="standalone"&&j.status==="Assigned")).forEach(j=>{const key=`${j.kind}:${j.id}`;if(!seen.has(key)){if("Notification"in window&&Notification.permission==="granted")new Notification("New Biserry delivery job",{body:`${j.zoneName||j.serviceType||"Delivery"} • You earn ${money(j.riderEarning)}`,icon:"../assets/logo.png"});seen.add(key)}});$("dispatcherJobs").innerHTML=active.length?active.map(j=>`<div class="jobCard ${j.kind==="standalone"?"standalone":""}"><span class="jobType">${j.kind==="standalone"?"STANDALONE DISPATCH":"BISERRY GROCERY ORDER"}</span><h3>${j.kind==="standalone"?`Booking ${esc(j.id)}`:`Order ${esc(j.orderId)}`}</h3><p>${esc(j.zoneName||j.serviceType||"Delivery")} • <strong>You earn ${money(j.riderEarning)}</strong></p><span class="statusPill">${esc(j.status)}</span>${details(j)}<div class="paymentLock ok"><strong>✓ PAYMENT CONFIRMED</strong><br>${j.kind==="standalone"?"This job was released for assignment after payment verification.":"Follow the order payment lock shown by Biserry."}</div><div class="jobActions">${buttons(j)}</div></div>`).join(""):'<p class="formNote">No active delivery request.</p>'}
+function watch(){unsubOrders?.();unsubStandalone?.();if(!profile?.id)return;unsubOrders=onSnapshot(query(collection(db,"dispatchRequests"),where("dispatcherId","==",profile.id)),s=>{orderJobs=s.docs.map(d=>({id:d.id,...d.data()}));render()},console.warn);unsubStandalone=onSnapshot(query(collection(db,"dispatchBookings"),where("assignedDispatcherId","==",profile.id)),s=>{standaloneJobs=s.docs.map(d=>({id:d.id,...d.data()}));render()},console.warn)}
+async function mirrorStandalone(id,patch){await setDoc(doc(db,"dispatchBookingTracking",id),{bookingId:id,...patch,updatedAt:serverTimestamp()},{merge:true})}
+window.acceptStandalone=async id=>{const r=doc(db,"dispatchBookings",id),s=await getDoc(r);if(!s.exists()||s.data().status!=="Assigned")return alert("This assignment is no longer available.");await updateDoc(r,{status:"Accepted",acceptedAt:serverTimestamp(),updatedAt:serverTimestamp()});await mirrorStandalone(id,{status:"Accepted"})};
+window.declineStandalone=async id=>{const r=doc(db,"dispatchBookings",id),s=await getDoc(r);if(!s.exists()||s.data().status!=="Assigned")return alert("This assignment is no longer available.");await updateDoc(r,{status:"Declined",declinedAt:serverTimestamp(),updatedAt:serverTimestamp()});await mirrorStandalone(id,{status:"Declined",assignedDispatcherName:""});};
+window.advanceStandalone=async(id,next)=>{const r=doc(db,"dispatchBookings",id),s=await getDoc(r);if(!s.exists())return;const j=s.data(),map={"Accepted":"Picked Up","Picked Up":"On the Way","On the Way":"Arrived","Arrived":"Delivered"};if(map[j.status]!==next)return alert("Refresh the app before continuing.");if(j.paymentStatus!=="Paid")return alert("Biserry has not confirmed payment.");const p={status:next,updatedAt:serverTimestamp()};if(next==="Picked Up")p.pickedUpAt=serverTimestamp();if(next==="On the Way")p.onTheWayAt=serverTimestamp();if(next==="Arrived")p.arrivedAt=serverTimestamp();if(next==="Delivered"){p.deliveredAt=serverTimestamp();p.earningStatus="Earned";p.settlementStatus=j.settlementStatus||"Pending"}await updateDoc(r,p);await mirrorStandalone(id,{status:next})};
+async function syncOrder(j,status){const orderStatus=status==="Accepted"?"Dispatcher Assigned":status;try{await updateDoc(doc(db,"orderTracking",j.orderId),{orderStatus,dispatchStatus:status,dispatcherName:profile.name||"Dispatcher",updatedAt:serverTimestamp()})}catch{}try{const f={orderStatus,dispatchStatus:status,updatedAt:serverTimestamp()};if(status==="Accepted"){f.assignedDispatcherId=profile.id;f.assignedDispatcherName=profile.name||"Dispatcher"}await updateDoc(doc(db,"orders",j.orderId),f)}catch{}}
+window.acceptOrderJob=async id=>{const r=doc(db,"dispatchRequests",id),s=await getDoc(r);if(!s.exists()||s.data().status!=="Offered")return alert("This job has changed status.");await updateDoc(r,{status:"Accepted",acceptedAt:serverTimestamp(),updatedAt:serverTimestamp()});await syncOrder(s.data(),"Accepted")};window.declineOrderJob=async id=>{await updateDoc(doc(db,"dispatchRequests",id),{status:"Declined",updatedAt:serverTimestamp()})};window.advanceOrderJob=async(id,next)=>{const r=doc(db,"dispatchRequests",id),s=await getDoc(r);if(!s.exists())return;const j=s.data(),map={"Accepted":"Picked Up","Picked Up":"On the Way","On the Way":"Arrived","Arrived":"Delivered"};if(map[j.status]!==next)return alert("Refresh before continuing.");if(next==="Delivered"&&(j.paymentStatus!=="Paid"||j.deliveryReleaseStatus!=="Authorized"))return alert("Payment has not been confirmed.");const p={status:next,updatedAt:serverTimestamp()};if(next==="Picked Up")p.pickedUpAt=serverTimestamp();if(next==="On the Way")p.onTheWayAt=serverTimestamp();if(next==="Arrived")p.arrivedAt=serverTimestamp();if(next==="Delivered"){p.deliveredAt=serverTimestamp();p.earningStatus="Earned"}await updateDoc(r,p);await syncOrder(j,next)};
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,$("loginEmail").value.trim(),$("loginPassword").value)}catch(e){alert("Login failed: "+e.message)}});$("registerForm").addEventListener("submit",async e=>{e.preventDefault();try{const c=await createUserWithEmailAndPassword(auth,$("registerEmail").value.trim().toLowerCase(),$("registerPassword").value);const data={authUid:c.user.uid,name:$("registerName").value.trim(),phone:$("registerPhone").value.trim(),email:c.user.email,serviceArea:$("registerArea").value.trim(),vehicleType:$("registerVehicle").value.trim(),isApproved:false,isActive:true,isAvailable:false,isPublic:false,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};await addDoc(collection(db,"dispatchers"),data);alert("Registration submitted. Biserry admin must approve your profile.")}catch(e){alert("Registration failed: "+e.message)}});$("availabilityBtn").addEventListener("click",async()=>{if(!profile||profile.isApproved!==true||profile.isActive!==true)return;const next=profile.isAvailable!==true;await updateDoc(doc(db,"dispatchers",profile.id),{isAvailable:next,isPublic:next,lastAvailabilityAt:serverTimestamp(),updatedAt:serverTimestamp()});profile.isAvailable=next;profile.isPublic=next;renderProfile()});$("logoutDispatcherBtn").addEventListener("click",()=>signOut(auth));$("showLoginBtn").addEventListener("click",()=>toggleForms(false));$("showRegisterBtn").addEventListener("click",()=>toggleForms(true));$("enableJobNotifications").addEventListener("click",async()=>{if(!("Notification"in window))return alert("Notifications are not supported.");const p=await Notification.requestPermission();$("enableJobNotifications").textContent=p==="granted"?"Job Alerts Enabled":"Enable Job Alerts"});onAuthStateChanged(auth,async u=>{if(!u){unsubOrders?.();unsubStandalone?.();profile=null;$("authCard").classList.remove("hidden");$("profileCard").classList.add("hidden");$("dispatcherJobsCard").classList.add("hidden");$("dispatcherEarningsCard").classList.add("hidden");return}profile=await findProfile(u.uid);if(!profile){await signOut(auth);return alert("No dispatcher profile is linked to this login.")}$("authCard").classList.add("hidden");$("profileCard").classList.remove("hidden");renderProfile();watch()});
