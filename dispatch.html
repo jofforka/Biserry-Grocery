@@ -1,27 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Available Dispatchers | Biserry Groceries</title>
-  <link rel="icon" href="assets/logo.png"><link rel="stylesheet" href="css/styles.css">
-  <style>
-    .dispatchGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:20px}.dispatchCard{background:#fff;border:1px solid #eadfc8;border-radius:20px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.05)}.dispatchLive{display:inline-flex;gap:7px;align-items:center;background:#e7f7ec;color:#176b37;border-radius:999px;padding:6px 10px;font-size:.82rem;font-weight:700}.dispatchActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.dispatchMeta{line-height:1.8;color:#5f5a50}.dispatchIntro{max-width:800px;margin:auto;text-align:center}.dispatchOrderPanel{max-width:800px;margin:0 auto 24px;background:#fff;border:1px solid #eadfc8;border-radius:20px;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.04)}.dispatchOrderRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.dispatchOrderRow input{flex:1;min-width:210px;padding:13px;border:1px solid #d8d1c3;border-radius:12px}.dispatchOrderState{color:#5f5a50;line-height:1.55}.privacyNote{font-size:.88rem;color:#6c675e;margin-top:10px}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f4f2b">
+  <title>Biserry Dispatch | Book a Delivery</title>
+  <meta name="description" content="Book a Biserry delivery, choose a service, schedule pickup, see an estimate and request a verified dispatcher.">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/premium-v7.css?v=7.2">
+  <link rel="stylesheet" href="css/dispatch-v9.css?v=9.0">
 </head>
-<body>
-<header class="topbar"><div class="brand"><img src="assets/logo.png" class="logo-img" alt="Biserry"><div><h1>Biserry Groceries</h1><p>Dispatch Network</p></div></div><nav><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="cart.html">Cart</a><a href="dispatch.html" class="active">Dispatch</a><a href="account.html">Account</a></nav></header>
-<section class="pageHero compactHero"><span class="sectionLabel">Delivery Support</span><h2>Request an available dispatcher</h2><p>Choose a live dispatcher for a Biserry order. Guest checkout is supported.</p></section>
-<section class="section">
-  <div id="dispatchOrderPanel" class="dispatchOrderPanel">
-    <span class="sectionLabel">Your Biserry Order</span>
-    <div id="dispatchOrderState" class="dispatchOrderState">Checking your most recent order…</div>
-    <div class="dispatchOrderRow"><input id="dispatchOrderId" autocomplete="off" placeholder="Enter your Biserry order ID"><button class="btn outline" type="button" onclick="useDispatchOrderId()">Use This Order</button></div>
-    <div class="privacyNote">Your exact order ID is required for guest dispatch requests. Biserry does not expose the full customer order publicly.</div>
+<body class="dispatchV9">
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.png" class="logo-img" alt="Biserry">
+    <div><h1>Biserry Groceries</h1><p>Dispatch Network</p></div>
   </div>
-  <div class="dispatchIntro"><p>Availability updates automatically when approved dispatchers switch their status on or off in the Biserry Dispatcher mini app.</p></div>
-  <div id="dispatchStatus" class="emptyState">Checking available dispatchers…</div><div id="dispatchGrid" class="dispatchGrid"></div>
-</section>
-<footer><p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p><p>Use Request Dispatcher for in-app tracking. WhatsApp and Call remain fallback options.</p></footer>
-<script type="module" src="js/dispatch.js?v=7.2"></script>
-</body></html>
+  <nav>
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="cart.html">Cart</a>
+    <a href="dispatch.html" class="active">Dispatch</a><a href="account.html">Account</a>
+  </nav>
+</header>
+
+<main>
+  <section class="dispatchHero">
+    <div class="dispatchHeroCopy">
+      <span class="dispatchEyebrow">BISERRY DISPATCH</span>
+      <h2>Move it. Schedule it. Track it.</h2>
+      <p>Book a delivery in minutes. Choose the service you need, tell us where it is going, select a pickup time and request a verified Biserry dispatcher.</p>
+      <div class="dispatchTrustRow">
+        <span>✓ Verified riders</span><span>✓ Scheduled pickup</span><span>✓ Clear delivery status</span><span>✓ WhatsApp support</span>
+      </div>
+    </div>
+    <div class="dispatchHeroCard">
+      <div class="heroCardIcon">🚚</div>
+      <strong>Delivery without the back-and-forth</strong>
+      <p>One booking flow from request to rider assignment.</p>
+      <a class="btn" href="#bookDispatch">Book a delivery</a>
+    </div>
+  </section>
+
+  <section class="dispatchShell" id="bookDispatch">
+    <div class="dispatchBookingCard">
+      <div class="bookingHeader">
+        <div>
+          <span class="sectionLabel">Book Dispatch</span>
+          <h2>What do you need delivered?</h2>
+          <p>Start with a Biserry grocery order or request a standalone package delivery.</p>
+        </div>
+        <div class="secureChip">🔒 Secure request</div>
+      </div>
+
+      <div class="bookingTabs" role="tablist">
+        <button class="bookingTab active" type="button" data-mode="order">Biserry Order</button>
+        <button class="bookingTab" type="button" data-mode="package">Send a Package</button>
+      </div>
+
+      <section id="orderMode" class="bookingMode active">
+        <div class="stepTitle"><span>1</span><div><strong>Link your Biserry order</strong><small>Use the order ID from checkout or your confirmation page.</small></div></div>
+        <div id="dispatchOrderPanel" class="dispatchOrderPanel">
+          <div id="dispatchOrderState" class="dispatchOrderState">Checking your most recent order…</div>
+          <div class="dispatchOrderRow">
+            <input id="dispatchOrderId" autocomplete="off" placeholder="Enter your Biserry order ID">
+            <button class="btn outline" type="button" id="useOrderBtn">Use This Order</button>
+          </div>
+          <div class="privacyNote">Your exact order ID is required. Biserry does not expose customer orders publicly.</div>
+        </div>
+      </section>
+
+      <section id="packageMode" class="bookingMode">
+        <form id="packageBookingForm">
+          <div class="stepTitle"><span>1</span><div><strong>Choose your service</strong><small>Select how quickly you want the package moved.</small></div></div>
+          <div class="serviceCards">
+            <label class="serviceCard active">
+              <input type="radio" name="serviceType" value="Standard" checked>
+              <span class="serviceIcon">📦</span><strong>Standard</strong><small>Best value</small>
+            </label>
+            <label class="serviceCard">
+              <input type="radio" name="serviceType" value="Express">
+              <span class="serviceIcon">⚡</span><strong>Express</strong><small>Priority handling</small>
+            </label>
+            <label class="serviceCard">
+              <input type="radio" name="serviceType" value="Scheduled">
+              <span class="serviceIcon">🗓️</span><strong>Scheduled</strong><small>Pick a time</small>
+            </label>
+          </div>
+
+          <div class="stepTitle"><span>2</span><div><strong>Pickup & destination</strong><small>Tell us where the package starts and where it is going.</small></div></div>
+          <div class="formGrid">
+            <label class="field fieldFull"><span>Pickup address</span><input id="pickupAddress" required placeholder="e.g. Wuse 2, Abuja"></label>
+            <label class="field fieldFull"><span>Drop-off address</span><input id="dropoffAddress" required placeholder="e.g. Gwarinpa, Abuja"></label>
+            <label class="field"><span>Delivery zone</span><select id="deliveryZone"><option value="">Select area / zone</option></select></label>
+            <label class="field"><span>Package size</span>
+              <select id="packageSize" required>
+                <option value="Small">Small — envelope / small bag</option>
+                <option value="Medium" selected>Medium — grocery bag / box</option>
+                <option value="Large">Large — bulky package</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="stepTitle"><span>3</span><div><strong>Choose pickup time</strong><small>ASAP or a time that works for you.</small></div></div>
+          <div class="timeChoice">
+            <label class="timeCard active"><input type="radio" name="pickupWhen" value="ASAP" checked><strong>ASAP</strong><small>Next available rider</small></label>
+            <label class="timeCard"><input type="radio" name="pickupWhen" value="Scheduled"><strong>Schedule</strong><small>Choose date & time</small></label>
+          </div>
+          <div id="scheduleFields" class="formGrid scheduleFields" hidden>
+            <label class="field"><span>Date</span><input id="pickupDate" type="date"></label>
+            <label class="field"><span>Time</span><input id="pickupTime" type="time"></label>
+          </div>
+
+          <div class="stepTitle"><span>4</span><div><strong>Your details</strong><small>Used only for this delivery request.</small></div></div>
+          <div class="formGrid">
+            <label class="field"><span>Your name</span><input id="customerName" required autocomplete="name"></label>
+            <label class="field"><span>Phone / WhatsApp</span><input id="customerPhone" required inputmode="tel" autocomplete="tel" placeholder="080…"></label>
+            <label class="field fieldFull"><span>Delivery note <em>optional</em></span><textarea id="deliveryNote" placeholder="Landmark, fragile item, recipient instructions…"></textarea></label>
+          </div>
+
+          <aside id="fareEstimate" class="fareEstimate">
+            <div><small>Estimated delivery</small><strong id="fareAmount">Select a delivery zone</strong></div>
+            <p id="fareNote">Final fare is confirmed before dispatch. No charge is made from this page.</p>
+          </aside>
+
+          <button id="submitPackageBooking" class="dispatchPrimaryBtn" type="submit">
+            Request Dispatch <span>→</span>
+          </button>
+          <p class="bookingFinePrint">Submitting creates a dispatch request. A rider is not assigned until the request is confirmed.</p>
+        </form>
+      </section>
+    </div>
+
+    <aside class="dispatchSide">
+      <div class="sideCard">
+        <span class="sideNumber">01</span><h3>Choose</h3><p>Select a delivery type and destination.</p>
+      </div>
+      <div class="sideCard">
+        <span class="sideNumber">02</span><h3>Schedule</h3><p>Request ASAP pickup or choose a convenient time.</p>
+      </div>
+      <div class="sideCard">
+        <span class="sideNumber">03</span><h3>Assign</h3><p>Available approved dispatchers can receive the job.</p>
+      </div>
+      <div class="sideCard">
+        <span class="sideNumber">04</span><h3>Deliver</h3><p>Follow delivery progress and keep WhatsApp as backup support.</p>
+      </div>
+    </aside>
+  </section>
+
+  <section id="availableDispatchers" class="dispatcherSection">
+    <div class="dispatcherSectionHead">
+      <div><span class="sectionLabel">Live Network</span><h2>Available dispatchers</h2><p>Approved riders appear here when they switch themselves online.</p></div>
+      <span class="livePill"><i></i> Live availability</span>
+    </div>
+    <div id="dispatchStatus" class="emptyState">Checking available dispatchers…</div>
+    <div id="dispatchGrid" class="dispatchGrid"></div>
+  </section>
+
+  <section class="dispatchPromise">
+    <div><strong>Simple booking</strong><span>One clean flow</span></div>
+    <div><strong>Verified network</strong><span>Approved Biserry riders</span></div>
+    <div><strong>Flexible timing</strong><span>ASAP or scheduled</span></div>
+    <div><strong>Human support</strong><span>WhatsApp fallback</span></div>
+  </section>
+</main>
+
+<div id="bookingSuccess" class="bookingModal" hidden>
+  <div class="bookingModalCard">
+    <div class="successMark">✓</div>
+    <span class="sectionLabel">Request Received</span>
+    <h2>Your dispatch request is in.</h2>
+    <p id="bookingSuccessText">We have received your request.</p>
+    <div class="bookingRef"><small>Booking reference</small><strong id="bookingRef"></strong></div>
+    <div class="modalActions">
+      <button id="closeBookingSuccess" class="btn" type="button">Done</button>
+      <a id="bookingWhatsApp" class="btn outline" target="_blank" rel="noopener">WhatsApp Support</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><strong>Biserry Groceries</strong> — Amac Market, Abuja</p>
+  <p>Phone/WhatsApp: +234 810 058 4211 • Instagram: @biserry_groceries</p>
+</footer>
+
+<script type="module" src="js/dispatch.js?v=9.0"></script>
+</body>
+</html>

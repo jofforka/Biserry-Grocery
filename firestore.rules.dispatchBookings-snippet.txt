@@ -1,0 +1,42 @@
+// Add this match block INSIDE:
+// service cloud.firestore { match /databases/{database}/documents { ... } }
+//
+// This is intentionally a snippet, not a full replacement rules file.
+// It allows public creation of tightly constrained standalone dispatch requests.
+// Reads remain admin-only.
+
+match /dispatchBookings/{bookingId} {
+  allow create: if
+    request.resource.data.keys().hasOnly([
+      'type','serviceType','pickupAddress','dropoffAddress','zoneId','zoneName',
+      'packageSize','pickupWhen','pickupDate','pickupTime','customerName','customerPhone',
+      'customerUid','note','estimatedFare','status','paymentStatus',
+      'assignedDispatcherId','assignedDispatcherName','createdAt','updatedAt'
+    ])
+    && request.resource.data.type == 'Standalone Package'
+    && request.resource.data.serviceType in ['Standard','Express','Scheduled']
+    && request.resource.data.pickupWhen in ['ASAP','Scheduled']
+    && request.resource.data.status == 'New'
+    && request.resource.data.paymentStatus == 'Not Requested'
+    && request.resource.data.assignedDispatcherId == null
+    && request.resource.data.pickupAddress is string
+    && request.resource.data.pickupAddress.size() > 3
+    && request.resource.data.pickupAddress.size() <= 300
+    && request.resource.data.dropoffAddress is string
+    && request.resource.data.dropoffAddress.size() > 3
+    && request.resource.data.dropoffAddress.size() <= 300
+    && request.resource.data.customerName is string
+    && request.resource.data.customerName.size() > 1
+    && request.resource.data.customerName.size() <= 120
+    && request.resource.data.customerPhone is string
+    && request.resource.data.customerPhone.size() >= 7
+    && request.resource.data.customerPhone.size() <= 30
+    && request.resource.data.note is string
+    && request.resource.data.note.size() <= 1000
+    && (
+      request.resource.data.customerUid == null
+      || (request.auth != null && request.resource.data.customerUid == request.auth.uid)
+    );
+
+  allow read, update, delete: if isAdmin();
+}
