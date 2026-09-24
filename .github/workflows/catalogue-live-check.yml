@@ -1,0 +1,29 @@
+name: Live catalogue verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/catalogue-live-check.yml']
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/biserry-browser" playwright@1.51.1 --no-audit --no-fund
+          node "$RUNNER_TEMP/biserry-browser/node_modules/playwright/cli.js" install chromium --with-deps
+      - name: Check live Shop and Popular Products
+        run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/live-catalogue.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-catalogue-verification
+          path: live-check
+          retention-days: 14
