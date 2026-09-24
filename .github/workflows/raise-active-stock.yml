@@ -28,7 +28,7 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node raise-active-stock.mjs
-      - name: Repair verified supplier size and price mappings
+      - name: Repair verified supplier sizes in mixed catalogues
         working-directory: automation
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
