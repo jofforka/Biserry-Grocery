@@ -16,7 +16,7 @@ async function validateCart(cart){
     const variant=item.variantId?(product.variants||[]).find(v=>String(v.id)===String(item.variantId)&&v.isActive!==false):null;
     if((item.variantId&&!variant)||(!item.variantId&&product.hasVariants))throw new Error(`${item.name} has changed. Remove it and choose a current size.`);
     const current=variant||product;
-    if(Number(current.price)!==Number(item.price)||Number(current.stock)<Number(item.quantity))throw new Error(`${item.name} has a new price or availability. Remove it and select it again.`);
+    if(Number(current.price)<=1||Number(current.price)!==Number(item.price)||Number(current.stock)<Number(item.quantity))throw new Error(`${item.name} has a new price or availability. Remove it and select it again.`);
   }
 }
 hydrateLocalCustomer();loadZones().then(recalc).catch(console.warn);loadPaymentSettings();syncFulfillment();fulfillment?.addEventListener("change",syncFulfillment);deliveryZone?.addEventListener("change",recalc);onAuthStateChanged(auth,user=>{signedInUser=user||null;if(user)hydrateAccount(user)});
