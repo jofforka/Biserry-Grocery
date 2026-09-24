@@ -16,19 +16,23 @@ const bySku=new Map();
 for(const doc of snap.docs){const sku=String(doc.get('sku')||'').trim();if(sku){const docs=bySku.get(sku)||[];docs.push(doc);bySku.set(sku,docs)}}
 for(const [sku,ref] of Object.entries(references.products)){
  const matches=bySku.get(sku)||[];
- if(matches.length!==1){report.review.push({sku,name:ref.name,reason:matches.length?'Duplicate active SKU':'No active product with exact SKU'});continue}
+ if(matches.length!==1){report.review.push({sku,name:ref.name,reason:matches.length?'Duplicate active SKU':'No active product with exact SKU',sameName:snap.docs.filter(d=>d.get('name')===ref.name).map(d=>({id:d.id,sku:d.get('sku')}))});continue}
  const doc=matches[0];const plan=planVariantNames(doc.data(),ref);
- if(!plan.changes){report.review.push({sku,id:doc.id,name:ref.name,reason:plan.reason});continue}
+ if(!plan.changes){report.review.push({sku,id:doc.id,name:ref.name,reason:plan.reason,currentVariants:(doc.get('variants')||[]).map(v=>({name:v.name,sku:v.sku,price:v.price})),expectedVariants:ref.variants});continue}
  report.matched++;
  if(!plan.changes.length){report.alreadyCorrect++;continue}
  if(!apply){report.changedProducts++;report.changedVariants+=plan.changes.length;report.changes.push({sku,id:doc.id,changes:plan.changes});continue}
  const result=await db.runTransaction(async tx=>{
   const fresh=await tx.get(doc.ref);const p=fresh.data();
+  const auditRef=db.doc(`catalogueMaintenance/ruono-variant-sizes-2026/products/${doc.id}`);
+  const prior=await tx.get(auditRef);
+  if(prior.exists) return {changes:[]};
   if(!fresh.exists||p.isActive!==true||p.sku!==sku) return {reason:'Product changed during update'};
   const latest=planVariantNames(p,ref);
   if(!latest.changes) return {reason:latest.reason};
   if(!latest.changes.length) return {changes:[]};
   const variants=p.variants.map((v,i)=>{const change=latest.changes.find(c=>c.index===i);return change?{...v,name:change.newName}:v});
+  tx.set(auditRef,{sku,source:references.source,beforeVariants:p.variants,changes:latest.changes,at:admin.firestore.FieldValue.serverTimestamp()});
   tx.update(doc.ref,{variants,updatedAt:admin.firestore.FieldValue.serverTimestamp()});
   return {changes:latest.changes};
  });
