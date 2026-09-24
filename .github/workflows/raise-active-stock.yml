@@ -34,6 +34,11 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           APPLY_VARIANT_SIZES: 'true'
         run: node repair-ruono-variant-sizes.mjs
+      - name: Archive conflicting older options on three merged products
+        working-directory: automation
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node archive-merged-legacy-options.mjs
       - name: Enrich missing images (maximum 50 items and 5 searches)
         working-directory: automation
         env:
@@ -49,4 +54,5 @@ jobs:
             automation/image-report.json
             automation/missing-image-review.csv
             automation/variant-size-report.json
+            automation/legacy-options-report.json
           retention-days: 14
