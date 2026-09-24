@@ -1,0 +1,1885 @@
+{
+  "source": "Biserry_Ruono_2026_Price_Update.csv",
+  "products": {
+    "RUONO-FRESH-PERIWINKLE-2026": {
+      "name": "Fresh Periwinkle",
+      "variants": [
+        {
+          "name": "250 g",
+          "sku": "RUONO-FRESH-PERIWINKLE-2026-250-G-01",
+          "price": 4000
+        },
+        {
+          "name": "1.5 kg (half paint)",
+          "sku": "RUONO-FRESH-PERIWINKLE-2026-1-5-KG-HALF-PAINT-02",
+          "price": 15000
+        },
+        {
+          "name": "3 kg (full paint)",
+          "sku": "RUONO-FRESH-PERIWINKLE-2026-3-KG-FULL-PAINT-03",
+          "price": 30000
+        }
+      ]
+    },
+    "RUONO-CASHEW-NUT-2026": {
+      "name": "Cashew Nut",
+      "variants": [
+        {
+          "name": "Bottle",
+          "sku": "RUONO-CASHEW-NUT-2026-BOTTLE-01",
+          "price": 7500
+        },
+        {
+          "name": "From 10 bottles",
+          "sku": "RUONO-CASHEW-NUT-2026-FROM-10-BOTTLES-02",
+          "price": 7000
+        }
+      ]
+    },
+    "RUONO-DRIED-GINGER-PAP-2026": {
+      "name": "Dried Ginger Pap",
+      "variants": [
+        {
+          "name": "500 g",
+          "sku": "RUONO-DRIED-GINGER-PAP-2026-500-G-01",
+          "price": 4000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-DRIED-GINGER-PAP-2026-1-KG-02",
+          "price": 8000
+        },
+        {
+          "name": "2 kg",
+          "sku": "RUONO-DRIED-GINGER-PAP-2026-2-KG-03",
+          "price": 14500
+        }
+      ]
+    },
+    "RUONO-AUTHENTIC-OFADA-RICE-DESTONED-2026": {
+      "name": "Authentic Ofada Rice (destoned)",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-AUTHENTIC-OFADA-RICE-DESTONED-2026-1-KG-01",
+          "price": 4000
+        },
+        {
+          "name": "2.5 kg",
+          "sku": "RUONO-AUTHENTIC-OFADA-RICE-DESTONED-2026-2-5-KG-02",
+          "price": 10000
+        },
+        {
+          "name": "5 kg",
+          "sku": "RUONO-AUTHENTIC-OFADA-RICE-DESTONED-2026-5-KG-03",
+          "price": 20000
+        }
+      ]
+    },
+    "RUONO-HONEY-BEANS-EWA-OLOYIN-2026": {
+      "name": "Honey Beans (Ewa Oloyin)",
+      "variants": [
+        {
+          "name": "Full bag (50 kg)",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-FULL-BAG-50-KG-01",
+          "price": 95000
+        },
+        {
+          "name": "Half bag",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-HALF-BAG-02",
+          "price": 47500
+        },
+        {
+          "name": "5 custards",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-5-CUSTARDS-03",
+          "price": 29000
+        },
+        {
+          "name": "Quarter bag (12.5 kg)",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-QUARTER-BAG-12-5-KG-04",
+          "price": 24500
+        },
+        {
+          "name": "Custard (3.5 kg)",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-CUSTARD-3-5-KG-05",
+          "price": 7500
+        },
+        {
+          "name": "Half custard (1.75 kg)",
+          "sku": "RUONO-HONEY-BEANS-EWA-OLOYIN-2026-HALF-CUSTARD-1-75-KG-06",
+          "price": 4000
+        }
+      ]
+    },
+    "RUONO-WHITE-IRON-BEANS-GRADE-1-2026": {
+      "name": "White Iron Beans - Grade 1",
+      "variants": [
+        {
+          "name": "50 kg",
+          "sku": "RUONO-WHITE-IRON-BEANS-GRADE-1-2026-50-KG-01",
+          "price": 84000
+        },
+        {
+          "name": "25 kg",
+          "sku": "RUONO-WHITE-IRON-BEANS-GRADE-1-2026-25-KG-02",
+          "price": 42000
+        },
+        {
+          "name": "12.5 kg",
+          "sku": "RUONO-WHITE-IRON-BEANS-GRADE-1-2026-12-5-KG-03",
+          "price": 22000
+        },
+        {
+          "name": "Custard bucket",
+          "sku": "RUONO-WHITE-IRON-BEANS-GRADE-1-2026-CUSTARD-BUCKET-04",
+          "price": 6000
+        }
+      ]
+    },
+    "RUONO-SPICY-KULI-KULI-2026": {
+      "name": "Spicy Kuli Kuli",
+      "variants": [
+        {
+          "name": "Custard rubber",
+          "sku": "RUONO-SPICY-KULI-KULI-2026-CUSTARD-RUBBER-01",
+          "price": 9000
+        },
+        {
+          "name": "Half",
+          "sku": "RUONO-SPICY-KULI-KULI-2026-HALF-02",
+          "price": 4500
+        },
+        {
+          "name": "Quarter",
+          "sku": "RUONO-SPICY-KULI-KULI-2026-QUARTER-03",
+          "price": 2500
+        }
+      ]
+    },
+    "RUONO-IJEBU-GARRI-2026": {
+      "name": "Ijebu Garri",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-IJEBU-GARRI-2026-1-KG-01",
+          "price": 2500
+        },
+        {
+          "name": "1.5 kg (half paint)",
+          "sku": "RUONO-IJEBU-GARRI-2026-1-5-KG-HALF-PAINT-02",
+          "price": 3000
+        },
+        {
+          "name": "3 kg (paint)",
+          "sku": "RUONO-IJEBU-GARRI-2026-3-KG-PAINT-03",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-YELLOW-GARRI-2026": {
+      "name": "Yellow Garri",
+      "variants": [
+        {
+          "name": "Custard rubber (3 kg)",
+          "sku": "RUONO-YELLOW-GARRI-2026-CUSTARD-RUBBER-3-KG-01",
+          "price": 3000
+        },
+        {
+          "name": "Half custard (1.5 kg)",
+          "sku": "RUONO-YELLOW-GARRI-2026-HALF-CUSTARD-1-5-KG-02",
+          "price": 1500
+        }
+      ]
+    },
+    "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026": {
+      "name": "Village Palm Oil - unadulterated",
+      "variants": [
+        {
+          "name": "25 L with keg",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-25-L-WITH-KEG-01",
+          "price": 65000
+        },
+        {
+          "name": "25 L content only",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-25-L-CONTENT-ONLY-02",
+          "price": 60000
+        },
+        {
+          "name": "10 L",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-10-L-03",
+          "price": 28000
+        },
+        {
+          "name": "5 L",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-5-L-04",
+          "price": 14000
+        },
+        {
+          "name": "5 L in pouch",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-5-L-IN-POUCH-05",
+          "price": 16500
+        },
+        {
+          "name": "3 L",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-3-L-06",
+          "price": 10000
+        },
+        {
+          "name": "2 L",
+          "sku": "RUONO-VILLAGE-PALM-OIL-UNADULTERATED-2026-2-L-07",
+          "price": 6000
+        }
+      ]
+    },
+    "RUONO-SUN-OIL-PREMIUM-VEGETABLE-OIL-2026": {
+      "name": "Sun Oil Premium Vegetable Oil",
+      "variants": [
+        {
+          "name": "5 L",
+          "sku": "RUONO-SUN-OIL-PREMIUM-VEGETABLE-OIL-2026-5-L-01",
+          "price": 15000
+        },
+        {
+          "name": "10 L",
+          "sku": "RUONO-SUN-OIL-PREMIUM-VEGETABLE-OIL-2026-10-L-02",
+          "price": 29000
+        },
+        {
+          "name": "25 L",
+          "sku": "RUONO-SUN-OIL-PREMIUM-VEGETABLE-OIL-2026-25-L-03",
+          "price": 65000
+        }
+      ]
+    },
+    "RUONO-KULI-KULI-OIL-2026": {
+      "name": "Kuli Kuli Oil",
+      "variants": [
+        {
+          "name": "1 L",
+          "sku": "RUONO-KULI-KULI-OIL-2026-1-L-01",
+          "price": 6000
+        },
+        {
+          "name": "3 L",
+          "sku": "RUONO-KULI-KULI-OIL-2026-3-L-02",
+          "price": 15000
+        },
+        {
+          "name": "5 L",
+          "sku": "RUONO-KULI-KULI-OIL-2026-5-L-03",
+          "price": 23000
+        }
+      ]
+    },
+    "RUONO-IRISH-POTATO-2026": {
+      "name": "Irish Potato",
+      "variants": [
+        {
+          "name": "Half bag",
+          "sku": "RUONO-IRISH-POTATO-2026-HALF-BAG-01",
+          "price": 42000
+        },
+        {
+          "name": "Quarter bag",
+          "sku": "RUONO-IRISH-POTATO-2026-QUARTER-BAG-02",
+          "price": 22000
+        },
+        {
+          "name": "Big bucket",
+          "sku": "RUONO-IRISH-POTATO-2026-BIG-BUCKET-03",
+          "price": 12000
+        }
+      ]
+    },
+    "RUONO-YAM-2026": {
+      "name": "Yam",
+      "variants": [
+        {
+          "name": "Medium: 5 tubers",
+          "sku": "RUONO-YAM-2026-MEDIUM-5-TUBERS-01",
+          "price": 15000
+        },
+        {
+          "name": "Big: 5 tubers",
+          "sku": "RUONO-YAM-2026-BIG-5-TUBERS-02",
+          "price": 20000
+        },
+        {
+          "name": "Jumbo: 5 tubers",
+          "sku": "RUONO-YAM-2026-JUMBO-5-TUBERS-03",
+          "price": 25000
+        }
+      ]
+    },
+    "RUONO-HOT-CHILI-PEPPER-2026": {
+      "name": "Hot Chili Pepper",
+      "variants": [
+        {
+          "name": "Custard rubber (2 kg)",
+          "sku": "RUONO-HOT-CHILI-PEPPER-2026-CUSTARD-RUBBER-2-KG-01",
+          "price": 18000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-HOT-CHILI-PEPPER-2026-1-KG-02",
+          "price": 10000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-HOT-CHILI-PEPPER-2026-500-G-03",
+          "price": 6000
+        }
+      ]
+    },
+    "RUONO-ORON-CRAYFISH-UNCLEAN-2026": {
+      "name": "Oron Crayfish - unclean",
+      "variants": [
+        {
+          "name": "600 g (paint)",
+          "sku": "RUONO-ORON-CRAYFISH-UNCLEAN-2026-600-G-PAINT-01",
+          "price": 10000
+        },
+        {
+          "name": "300 g (half paint)",
+          "sku": "RUONO-ORON-CRAYFISH-UNCLEAN-2026-300-G-HALF-PAINT-02",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-ORON-CRAYFISH-CLEANED-BLENDED-2026": {
+      "name": "Oron Crayfish - cleaned & blended",
+      "variants": [
+        {
+          "name": "600 g",
+          "sku": "RUONO-ORON-CRAYFISH-CLEANED-BLENDED-2026-600-G-01",
+          "price": 13000
+        },
+        {
+          "name": "300 g",
+          "sku": "RUONO-ORON-CRAYFISH-CLEANED-BLENDED-2026-300-G-02",
+          "price": 6500
+        }
+      ]
+    },
+    "RUONO-ORON-CRAYFISH-CLEANED-UNBLENDED-2026": {
+      "name": "Oron Crayfish - cleaned & unblended",
+      "variants": [
+        {
+          "name": "600 g",
+          "sku": "RUONO-ORON-CRAYFISH-CLEANED-UNBLENDED-2026-600-G-01",
+          "price": 12000
+        },
+        {
+          "name": "300 g",
+          "sku": "RUONO-ORON-CRAYFISH-CLEANED-UNBLENDED-2026-300-G-02",
+          "price": 6000
+        }
+      ]
+    },
+    "RUONO-DRY-SNAILS-JUMBO-2026": {
+      "name": "Dry Snails - Jumbo",
+      "variants": [
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRY-SNAILS-JUMBO-2026-100-PCS-01",
+          "price": 200000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRY-SNAILS-JUMBO-2026-50-PCS-02",
+          "price": 100000
+        }
+      ]
+    },
+    "RUONO-DRY-SNAILS-LARGE-2026": {
+      "name": "Dry Snails - Large",
+      "variants": [
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRY-SNAILS-LARGE-2026-100-PCS-01",
+          "price": 170000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRY-SNAILS-LARGE-2026-50-PCS-02",
+          "price": 85000
+        }
+      ]
+    },
+    "RUONO-DRY-SNAILS-BIG-SIZE-2026": {
+      "name": "Dry Snails - Big Size",
+      "variants": [
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRY-SNAILS-BIG-SIZE-2026-100-PCS-01",
+          "price": 150000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRY-SNAILS-BIG-SIZE-2026-50-PCS-02",
+          "price": 75000
+        }
+      ]
+    },
+    "RUONO-DRY-SNAILS-MEDIUM-SIZE-2026": {
+      "name": "Dry Snails - Medium Size",
+      "variants": [
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRY-SNAILS-MEDIUM-SIZE-2026-100-PCS-01",
+          "price": 128000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRY-SNAILS-MEDIUM-SIZE-2026-50-PCS-02",
+          "price": 65000
+        }
+      ]
+    },
+    "RUONO-DRIED-PANLA-2026": {
+      "name": "Dried Panla",
+      "variants": [
+        {
+          "name": "20-25 pcs",
+          "sku": "RUONO-DRIED-PANLA-2026-20-25-PCS-01",
+          "price": 10000
+        },
+        {
+          "name": "Carton, big sizes",
+          "sku": "RUONO-DRIED-PANLA-2026-CARTON-BIG-SIZES-02",
+          "price": 85000
+        },
+        {
+          "name": "Carton, small sizes",
+          "sku": "RUONO-DRIED-PANLA-2026-CARTON-SMALL-SIZES-03",
+          "price": 75000
+        }
+      ]
+    },
+    "RUONO-STOCKFISH-EAR-2026": {
+      "name": "Stockfish Ear",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-STOCKFISH-EAR-2026-1-KG-01",
+          "price": 32000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-STOCKFISH-EAR-2026-500-G-02",
+          "price": 16000
+        },
+        {
+          "name": "Mini pack",
+          "sku": "RUONO-STOCKFISH-EAR-2026-MINI-PACK-03",
+          "price": 8000
+        },
+        {
+          "name": "Quarter bag",
+          "sku": "RUONO-STOCKFISH-EAR-2026-QUARTER-BAG-04",
+          "price": 200000
+        }
+      ]
+    },
+    "RUONO-STOCKFISH-HEAD-WITH-EAR-2026": {
+      "name": "Stockfish Head with Ear",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-STOCKFISH-HEAD-WITH-EAR-2026-1-KG-01",
+          "price": 19000
+        },
+        {
+          "name": "3 kg",
+          "sku": "RUONO-STOCKFISH-HEAD-WITH-EAR-2026-3-KG-02",
+          "price": 55000
+        },
+        {
+          "name": "5 kg",
+          "sku": "RUONO-STOCKFISH-HEAD-WITH-EAR-2026-5-KG-03",
+          "price": 90000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-STOCKFISH-HEAD-WITH-EAR-2026-500-G-04",
+          "price": 10000
+        },
+        {
+          "name": "Quarter bag",
+          "sku": "RUONO-STOCKFISH-HEAD-WITH-EAR-2026-QUARTER-BAG-05",
+          "price": 120000
+        }
+      ]
+    },
+    "RUONO-STOCKFISH-FILLETS-FLESH-2026": {
+      "name": "Stockfish Fillets / Flesh",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-STOCKFISH-FILLETS-FLESH-2026-1-KG-01",
+          "price": 46000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-STOCKFISH-FILLETS-FLESH-2026-500-G-02",
+          "price": 23000
+        },
+        {
+          "name": "Mini pack",
+          "sku": "RUONO-STOCKFISH-FILLETS-FLESH-2026-MINI-PACK-03",
+          "price": 11000
+        },
+        {
+          "name": "Quarter bag",
+          "sku": "RUONO-STOCKFISH-FILLETS-FLESH-2026-QUARTER-BAG-04",
+          "price": 290000
+        }
+      ]
+    },
+    "RUONO-STOCKFISH-CUTLETS-2026": {
+      "name": "Stockfish Cutlets",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-STOCKFISH-CUTLETS-2026-1-KG-01",
+          "price": 38000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-STOCKFISH-CUTLETS-2026-500-G-02",
+          "price": 20000
+        },
+        {
+          "name": "Mini pack",
+          "sku": "RUONO-STOCKFISH-CUTLETS-2026-MINI-PACK-03",
+          "price": 10000
+        },
+        {
+          "name": "Quarter bag",
+          "sku": "RUONO-STOCKFISH-CUTLETS-2026-QUARTER-BAG-04",
+          "price": 255000
+        }
+      ]
+    },
+    "RUONO-DRIED-CATFISH-2026": {
+      "name": "Dried Catfish",
+      "variants": [
+        {
+          "name": "1 kg smoked catfish (whole round)",
+          "sku": "RUONO-DRIED-CATFISH-2026-1-KG-SMOKED-CATFISH-WHOLE-01",
+          "price": 22000
+        },
+        {
+          "name": "1 kg catfish (head, middle & tail)",
+          "sku": "RUONO-DRIED-CATFISH-2026-1-KG-CATFISH-HEAD-MIDDLE--02",
+          "price": 22000
+        },
+        {
+          "name": "1 kg smoked catfish cutlet (middle & tail only)",
+          "sku": "RUONO-DRIED-CATFISH-2026-1-KG-SMOKED-CATFISH-CUTLE-03",
+          "price": 32000
+        }
+      ]
+    },
+    "RUONO-FISH-HEAD-2026": {
+      "name": "Fish Head",
+      "variants": [
+        {
+          "name": "Medium, 10 pcs",
+          "sku": "RUONO-FISH-HEAD-2026-MEDIUM-10-PCS-01",
+          "price": 3500
+        },
+        {
+          "name": "Big, 10 pcs",
+          "sku": "RUONO-FISH-HEAD-2026-BIG-10-PCS-02",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-SMOKED-CATFISH-MAXI-CARTON-2026": {
+      "name": "Smoked Catfish Maxi Carton",
+      "variants": [
+        {
+          "name": "Head, middle & tail (10 kg)",
+          "sku": "RUONO-SMOKED-CATFISH-MAXI-CARTON-2026-HEAD-MIDDLE-TAIL-10-KG-01",
+          "price": 220000
+        },
+        {
+          "name": "Middle & tail only (10 kg)",
+          "sku": "RUONO-SMOKED-CATFISH-MAXI-CARTON-2026-MIDDLE-TAIL-ONLY-10-KG-02",
+          "price": 290000
+        },
+        {
+          "name": "Whole round (10 kg)",
+          "sku": "RUONO-SMOKED-CATFISH-MAXI-CARTON-2026-WHOLE-ROUND-10-KG-03",
+          "price": 220000
+        }
+      ]
+    },
+    "RUONO-DRIED-CATFISH-CUTLET-MANGALA-BIG-2026": {
+      "name": "Dried Catfish Cutlet / Mangala - Big",
+      "variants": [
+        {
+          "name": "10 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-BIG-2026-10-PCS-01",
+          "price": 12000
+        },
+        {
+          "name": "25 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-BIG-2026-25-PCS-02",
+          "price": 30000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-BIG-2026-50-PCS-03",
+          "price": 60000
+        },
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-BIG-2026-100-PCS-04",
+          "price": 120000
+        }
+      ]
+    },
+    "RUONO-DRIED-CATFISH-CUTLET-MANGALA-SMALL-2026": {
+      "name": "Dried Catfish Cutlet / Mangala - Small",
+      "variants": [
+        {
+          "name": "10 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-SMALL-2026-10-PCS-01",
+          "price": 6000
+        },
+        {
+          "name": "25 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-SMALL-2026-25-PCS-02",
+          "price": 15000
+        },
+        {
+          "name": "50 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-SMALL-2026-50-PCS-03",
+          "price": 29000
+        },
+        {
+          "name": "100 pcs",
+          "sku": "RUONO-DRIED-CATFISH-CUTLET-MANGALA-SMALL-2026-100-PCS-04",
+          "price": 58000
+        }
+      ]
+    },
+    "RUONO-ASA-CUTLETS-PREORDER-2026": {
+      "name": "Asa Cutlets - preorder",
+      "variants": [
+        {
+          "name": "Aspen carton (100+ pcs)",
+          "sku": "RUONO-ASA-CUTLETS-PREORDER-2026-ASPEN-CARTON-100-PCS-01",
+          "price": 270000
+        },
+        {
+          "name": "Half",
+          "sku": "RUONO-ASA-CUTLETS-PREORDER-2026-HALF-02",
+          "price": 136000
+        },
+        {
+          "name": "Quarter",
+          "sku": "RUONO-ASA-CUTLETS-PREORDER-2026-QUARTER-03",
+          "price": 73000
+        },
+        {
+          "name": "Big pack",
+          "sku": "RUONO-ASA-CUTLETS-PREORDER-2026-BIG-PACK-04",
+          "price": 32000
+        }
+      ]
+    },
+    "RUONO-ADOR-OGBONO-2026": {
+      "name": "Ador Ogbono",
+      "variants": [
+        {
+          "name": "Custard (2.2 kg)",
+          "sku": "RUONO-ADOR-OGBONO-2026-CUSTARD-2-2-KG-01",
+          "price": 28000
+        },
+        {
+          "name": "750 g (mudu)",
+          "sku": "RUONO-ADOR-OGBONO-2026-750-G-MUDU-02",
+          "price": 13000
+        },
+        {
+          "name": "350 g (half mudu)",
+          "sku": "RUONO-ADOR-OGBONO-2026-350-G-HALF-MUDU-03",
+          "price": 6500
+        }
+      ]
+    },
+    "RUONO-HAND-PEELED-EGUSI-2026": {
+      "name": "Hand-Peeled Egusi",
+      "variants": [
+        {
+          "name": "2.5 kg custard rubber",
+          "sku": "RUONO-HAND-PEELED-EGUSI-2026-2-5-KG-CUSTARD-RUBBER-01",
+          "price": 14000
+        },
+        {
+          "name": "1.25 kg half rubber",
+          "sku": "RUONO-HAND-PEELED-EGUSI-2026-1-25-KG-HALF-RUBBER-02",
+          "price": 7000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-HAND-PEELED-EGUSI-2026-500-G-03",
+          "price": 4500
+        },
+        {
+          "name": "Mudu",
+          "sku": "RUONO-HAND-PEELED-EGUSI-2026-MUDU-04",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-FRESH-UGBA-2026": {
+      "name": "Fresh Ugba",
+      "variants": [
+        {
+          "name": "Rubber",
+          "sku": "RUONO-FRESH-UGBA-2026-RUBBER-01",
+          "price": 20000
+        },
+        {
+          "name": "Half rubber",
+          "sku": "RUONO-FRESH-UGBA-2026-HALF-RUBBER-02",
+          "price": 10000
+        },
+        {
+          "name": "Quarter rubber",
+          "sku": "RUONO-FRESH-UGBA-2026-QUARTER-RUBBER-03",
+          "price": 5000
+        },
+        {
+          "name": "Pack",
+          "sku": "RUONO-FRESH-UGBA-2026-PACK-04",
+          "price": 3000
+        }
+      ]
+    },
+    "RUONO-DEHYDRATED-UGBA-2026": {
+      "name": "Dehydrated Ugba",
+      "variants": [
+        {
+          "name": "Rubber (1.25 kg)",
+          "sku": "RUONO-DEHYDRATED-UGBA-2026-RUBBER-1-25-KG-01",
+          "price": 30000
+        },
+        {
+          "name": "Half",
+          "sku": "RUONO-DEHYDRATED-UGBA-2026-HALF-02",
+          "price": 15000
+        },
+        {
+          "name": "Mini pack",
+          "sku": "RUONO-DEHYDRATED-UGBA-2026-MINI-PACK-03",
+          "price": 8000
+        }
+      ]
+    },
+    "RUONO-DRY-PERIWINKLES-2026": {
+      "name": "Dry Periwinkles",
+      "variants": [
+        {
+          "name": "Rubber",
+          "sku": "RUONO-DRY-PERIWINKLES-2026-RUBBER-01",
+          "price": 47000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-DRY-PERIWINKLES-2026-1-KG-02",
+          "price": 25000
+        }
+      ]
+    },
+    "RUONO-FIO-FIO-2026": {
+      "name": "Fio Fio",
+      "variants": [
+        {
+          "name": "Mudu",
+          "sku": "RUONO-FIO-FIO-2026-MUDU-01",
+          "price": 4500
+        },
+        {
+          "name": "Bucket",
+          "sku": "RUONO-FIO-FIO-2026-BUCKET-02",
+          "price": 10000
+        }
+      ]
+    },
+    "RUONO-AKIDI-2026": {
+      "name": "Akidi",
+      "variants": [
+        {
+          "name": "Mudu",
+          "sku": "RUONO-AKIDI-2026-MUDU-01",
+          "price": 5000
+        },
+        {
+          "name": "Bucket",
+          "sku": "RUONO-AKIDI-2026-BUCKET-02",
+          "price": 12000
+        }
+      ]
+    },
+    "RUONO-ACHICHA-2026": {
+      "name": "Achicha",
+      "variants": [
+        {
+          "name": "Mudu",
+          "sku": "RUONO-ACHICHA-2026-MUDU-01",
+          "price": 5000
+        },
+        {
+          "name": "Crushed achicha",
+          "sku": "RUONO-ACHICHA-2026-CRUSHED-ACHICHA-02",
+          "price": 6500
+        }
+      ]
+    },
+    "RUONO-DEHYDRATED-LEAVES-2026": {
+      "name": "Dehydrated Leaves",
+      "variants": [
+        {
+          "name": "Ewedu",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-EWEDU-01",
+          "price": 8000
+        },
+        {
+          "name": "Afang",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-AFANG-02",
+          "price": 10000
+        },
+        {
+          "name": "Oha",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-OHA-03",
+          "price": 10000
+        },
+        {
+          "name": "Ugu",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-UGU-04",
+          "price": 10000
+        },
+        {
+          "name": "Uziza",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-UZIZA-05",
+          "price": 10000
+        },
+        {
+          "name": "Utazi",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-UTAZI-06",
+          "price": 10000
+        },
+        {
+          "name": "Scent leaf",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-SCENT-LEAF-07",
+          "price": 9000
+        },
+        {
+          "name": "Bitterleaf",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-BITTERLEAF-08",
+          "price": 8000
+        },
+        {
+          "name": "Lemongrass",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-LEMONGRASS-09",
+          "price": 8000
+        },
+        {
+          "name": "Waterleaf",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-WATERLEAF-10",
+          "price": 10000
+        },
+        {
+          "name": "Moringa leaves",
+          "sku": "RUONO-DEHYDRATED-LEAVES-2026-MORINGA-LEAVES-11",
+          "price": 9000
+        }
+      ]
+    },
+    "RUONO-IRU-LOCUST-BEANS-2026": {
+      "name": "Iru (Locust Beans)",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-IRU-LOCUST-BEANS-2026-100-G-01",
+          "price": 1500
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-IRU-LOCUST-BEANS-2026-500-G-02",
+          "price": 8000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-IRU-LOCUST-BEANS-2026-1-KG-03",
+          "price": 12000
+        },
+        {
+          "name": "2 kg",
+          "sku": "RUONO-IRU-LOCUST-BEANS-2026-2-KG-04",
+          "price": 22000
+        },
+        {
+          "name": "Custard (2.5 kg)",
+          "sku": "RUONO-IRU-LOCUST-BEANS-2026-CUSTARD-2-5-KG-05",
+          "price": 27000
+        }
+      ]
+    },
+    "RUONO-BARBECUE-GRILL-SPICE-2026": {
+      "name": "Barbecue / Grill Spice",
+      "variants": [
+        {
+          "name": "120 g",
+          "sku": "RUONO-BARBECUE-GRILL-SPICE-2026-120-G-01",
+          "price": 3000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-BARBECUE-GRILL-SPICE-2026-500-G-02",
+          "price": 7000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-BARBECUE-GRILL-SPICE-2026-1-KG-03",
+          "price": 14000
+        },
+        {
+          "name": "1.25 kg (half paint)",
+          "sku": "RUONO-BARBECUE-GRILL-SPICE-2026-1-25-KG-HALF-PAINT-04",
+          "price": 15500
+        },
+        {
+          "name": "2.5 kg (full paint)",
+          "sku": "RUONO-BARBECUE-GRILL-SPICE-2026-2-5-KG-FULL-PAINT-05",
+          "price": 31000
+        }
+      ]
+    },
+    "RUONO-GINGER-POWDER-2026": {
+      "name": "Ginger Powder",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-GINGER-POWDER-2026-100-G-01",
+          "price": 4000
+        },
+        {
+          "name": "200 g",
+          "sku": "RUONO-GINGER-POWDER-2026-200-G-02",
+          "price": 7500
+        }
+      ]
+    },
+    "RUONO-PEPPER-SOUP-SPICE-2026": {
+      "name": "Pepper Soup Spice",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-PEPPER-SOUP-SPICE-2026-100-G-01",
+          "price": 2500
+        },
+        {
+          "name": "200 g",
+          "sku": "RUONO-PEPPER-SOUP-SPICE-2026-200-G-02",
+          "price": 3500
+        }
+      ]
+    },
+    "RUONO-CURRY-POWDER-2026": {
+      "name": "Curry Powder",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-CURRY-POWDER-2026-100-G-01",
+          "price": 4000
+        },
+        {
+          "name": "150 g",
+          "sku": "RUONO-CURRY-POWDER-2026-150-G-02",
+          "price": 7000
+        },
+        {
+          "name": "200 g",
+          "sku": "RUONO-CURRY-POWDER-2026-200-G-03",
+          "price": 7500
+        }
+      ]
+    },
+    "RUONO-JOLLOF-SPICE-2026": {
+      "name": "Jollof Spice",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-JOLLOF-SPICE-2026-100-G-01",
+          "price": 3500
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-JOLLOF-SPICE-2026-1-KG-02",
+          "price": 25000
+        }
+      ]
+    },
+    "RUONO-TURMERIC-POWDER-2026": {
+      "name": "Turmeric Powder",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-TURMERIC-POWDER-2026-100-G-01",
+          "price": 2500
+        },
+        {
+          "name": "250 g",
+          "sku": "RUONO-TURMERIC-POWDER-2026-250-G-02",
+          "price": 5000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-TURMERIC-POWDER-2026-500-G-03",
+          "price": 8000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-TURMERIC-POWDER-2026-1-KG-04",
+          "price": 12000
+        },
+        {
+          "name": "5 kg",
+          "sku": "RUONO-TURMERIC-POWDER-2026-5-KG-05",
+          "price": 53000
+        }
+      ]
+    },
+    "RUONO-ONION-POWDER-2026": {
+      "name": "Onion Powder",
+      "variants": [
+        {
+          "name": "100 g",
+          "sku": "RUONO-ONION-POWDER-2026-100-G-01",
+          "price": 2000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-ONION-POWDER-2026-1-KG-02",
+          "price": 20000
+        }
+      ]
+    },
+    "RUONO-DATES-2026": {
+      "name": "Dates",
+      "variants": [
+        {
+          "name": "Bucket (whole)",
+          "sku": "RUONO-DATES-2026-BUCKET-WHOLE-01",
+          "price": 15000
+        },
+        {
+          "name": "Date powder: 1 kg",
+          "sku": "RUONO-DATES-2026-DATE-POWDER-1-KG-02",
+          "price": 14000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-DATES-2026-500-G-03",
+          "price": 7000
+        },
+        {
+          "name": "350 g",
+          "sku": "RUONO-DATES-2026-350-G-04",
+          "price": 3000
+        }
+      ]
+    },
+    "RUONO-UNRIPE-PLANTAIN-FLOUR-2026": {
+      "name": "Unripe Plantain Flour",
+      "variants": [
+        {
+          "name": "5 kg",
+          "sku": "RUONO-UNRIPE-PLANTAIN-FLOUR-2026-5-KG-01",
+          "price": 29000
+        },
+        {
+          "name": "2 kg custard",
+          "sku": "RUONO-UNRIPE-PLANTAIN-FLOUR-2026-2-KG-CUSTARD-02",
+          "price": 12000
+        }
+      ]
+    },
+    "RUONO-YAM-FLOUR-2026": {
+      "name": "Yam Flour",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-YAM-FLOUR-2026-1-KG-01",
+          "price": 6500
+        },
+        {
+          "name": "3 kg",
+          "sku": "RUONO-YAM-FLOUR-2026-3-KG-02",
+          "price": 17000
+        }
+      ]
+    },
+    "RUONO-OKPA-FLOUR-2026": {
+      "name": "Okpa Flour",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-OKPA-FLOUR-2026-1-KG-01",
+          "price": 4000
+        },
+        {
+          "name": "3 kg",
+          "sku": "RUONO-OKPA-FLOUR-2026-3-KG-02",
+          "price": 12000
+        },
+        {
+          "name": "Custard",
+          "sku": "RUONO-OKPA-FLOUR-2026-CUSTARD-03",
+          "price": 9000
+        },
+        {
+          "name": "5 custards",
+          "sku": "RUONO-OKPA-FLOUR-2026-5-CUSTARDS-04",
+          "price": 43000
+        },
+        {
+          "name": "10 custards",
+          "sku": "RUONO-OKPA-FLOUR-2026-10-CUSTARDS-05",
+          "price": 85000
+        }
+      ]
+    },
+    "RUONO-COCOYAM-FLOUR-2026": {
+      "name": "Cocoyam Flour",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-COCOYAM-FLOUR-2026-1-KG-01",
+          "price": 12000
+        },
+        {
+          "name": "500 g",
+          "sku": "RUONO-COCOYAM-FLOUR-2026-500-G-02",
+          "price": 6000
+        },
+        {
+          "name": "200 g",
+          "sku": "RUONO-COCOYAM-FLOUR-2026-200-G-03",
+          "price": 4000
+        }
+      ]
+    },
+    "RUONO-ODOURLESS-FUFU-POWDER-2026": {
+      "name": "Odourless Fufu Powder",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-ODOURLESS-FUFU-POWDER-2026-1-KG-01",
+          "price": 3700
+        },
+        {
+          "name": "2 kg",
+          "sku": "RUONO-ODOURLESS-FUFU-POWDER-2026-2-KG-02",
+          "price": 6500
+        },
+        {
+          "name": "5 kg",
+          "sku": "RUONO-ODOURLESS-FUFU-POWDER-2026-5-KG-03",
+          "price": 15500
+        }
+      ]
+    },
+    "RUONO-BEANS-FLOUR-2026": {
+      "name": "Beans Flour",
+      "variants": [
+        {
+          "name": "1 kg",
+          "sku": "RUONO-BEANS-FLOUR-2026-1-KG-01",
+          "price": 5000
+        },
+        {
+          "name": "5 kg bag",
+          "sku": "RUONO-BEANS-FLOUR-2026-5-KG-BAG-02",
+          "price": 24000
+        },
+        {
+          "name": "10 kg bag",
+          "sku": "RUONO-BEANS-FLOUR-2026-10-KG-BAG-03",
+          "price": 48000
+        }
+      ]
+    },
+    "RUONO-PEELED-BEANS-2026": {
+      "name": "Peeled Beans",
+      "variants": [
+        {
+          "name": "Bucket",
+          "sku": "RUONO-PEELED-BEANS-2026-BUCKET-01",
+          "price": 8000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-PEELED-BEANS-2026-1-KG-02",
+          "price": 4000
+        }
+      ]
+    },
+    "RUONO-BANGA-PASTE-2026": {
+      "name": "Banga Paste",
+      "variants": [
+        {
+          "name": "500 g",
+          "sku": "RUONO-BANGA-PASTE-2026-500-G-01",
+          "price": 4000
+        },
+        {
+          "name": "1 L",
+          "sku": "RUONO-BANGA-PASTE-2026-1-L-02",
+          "price": 5000
+        },
+        {
+          "name": "2 L",
+          "sku": "RUONO-BANGA-PASTE-2026-2-L-03",
+          "price": 8000
+        },
+        {
+          "name": "4 L",
+          "sku": "RUONO-BANGA-PASTE-2026-4-L-04",
+          "price": 15000
+        }
+      ]
+    },
+    "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026": {
+      "name": "Fresh Cow Meat - 90% Deboned Agemawo",
+      "variants": [
+        {
+          "name": "Full cow (124 kg)",
+          "sku": "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026-FULL-COW-124-KG-01",
+          "price": 800000
+        },
+        {
+          "name": "Half cow (62 kg)",
+          "sku": "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026-HALF-COW-62-KG-02",
+          "price": 400000
+        },
+        {
+          "name": "Quarter cow (31 kg)",
+          "sku": "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026-QUARTER-COW-31-KG-03",
+          "price": 200000
+        },
+        {
+          "name": "5 people share (24 kg each)",
+          "sku": "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026-5-PEOPLE-SHARE-24-KG-EACH-04",
+          "price": 160000
+        },
+        {
+          "name": "8 people share (15 kg each)",
+          "sku": "RUONO-FRESH-COW-MEAT-90-DEBONED-AGEMAWO-2026-8-PEOPLE-SHARE-15-KG-EACH-05",
+          "price": 100000
+        }
+      ]
+    },
+    "RUONO-COW-SLOTS-2026": {
+      "name": "Cow Slots",
+      "variants": [
+        {
+          "name": "Full slot (12 kg)",
+          "sku": "RUONO-COW-SLOTS-2026-FULL-SLOT-12-KG-01",
+          "price": 80000
+        },
+        {
+          "name": "Half slot (6 kg)",
+          "sku": "RUONO-COW-SLOTS-2026-HALF-SLOT-6-KG-02",
+          "price": 40000
+        },
+        {
+          "name": "Quarter slot (3 kg)",
+          "sku": "RUONO-COW-SLOTS-2026-QUARTER-SLOT-3-KG-03",
+          "price": 20000
+        }
+      ]
+    },
+    "RUONO-COW-PARTS-2026": {
+      "name": "Cow Parts",
+      "variants": [
+        {
+          "name": "Lap with skin",
+          "sku": "RUONO-COW-PARTS-2026-LAP-WITH-SKIN-01",
+          "price": 150000
+        },
+        {
+          "name": "Head",
+          "sku": "RUONO-COW-PARTS-2026-HEAD-02",
+          "price": 80000
+        },
+        {
+          "name": "Tail",
+          "sku": "RUONO-COW-PARTS-2026-TAIL-03",
+          "price": 45000
+        },
+        {
+          "name": "Leg set",
+          "sku": "RUONO-COW-PARTS-2026-LEG-SET-04",
+          "price": 38000
+        },
+        {
+          "name": "Tongue",
+          "sku": "RUONO-COW-PARTS-2026-TONGUE-05",
+          "price": 12000
+        }
+      ]
+    },
+    "RUONO-CUSTOM-COW-CUTS-2026": {
+      "name": "Custom Cow Cuts",
+      "variants": [
+        {
+          "name": "Boneless (3 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-BONELESS-3-KG-01",
+          "price": 22500
+        },
+        {
+          "name": "Muscle (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-MUSCLE-2-KG-02",
+          "price": 15500
+        },
+        {
+          "name": "Torso (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-TORSO-2-KG-03",
+          "price": 15500
+        },
+        {
+          "name": "Fish meat (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-FISH-MEAT-2-KG-04",
+          "price": 16000
+        },
+        {
+          "name": "Brisket bones (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-BRISKET-BONES-2-KG-05",
+          "price": 9000
+        },
+        {
+          "name": "Kidney",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-KIDNEY-06",
+          "price": 8000
+        },
+        {
+          "name": "Liver (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-LIVER-2-KG-07",
+          "price": 15000
+        },
+        {
+          "name": "Assorted (2 kg)",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-ASSORTED-2-KG-08",
+          "price": 13000
+        },
+        {
+          "name": "Shaki",
+          "sku": "RUONO-CUSTOM-COW-CUTS-2026-SHAKI-09",
+          "price": 7000
+        }
+      ]
+    },
+    "RUONO-GOAT-MEAT-2026": {
+      "name": "Goat Meat",
+      "variants": [
+        {
+          "name": "Jumbo goat (15 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-JUMBO-GOAT-15-KG-01",
+          "price": 100000
+        },
+        {
+          "name": "Big goat (12 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-BIG-GOAT-12-KG-02",
+          "price": 80000
+        },
+        {
+          "name": "Medium goat (10-11 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-MEDIUM-GOAT-10-11-KG-03",
+          "price": 70000
+        },
+        {
+          "name": "Half (5 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-HALF-5-KG-04",
+          "price": 35000
+        },
+        {
+          "name": "Quarter (2.3 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-QUARTER-2-3-KG-05",
+          "price": 18000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-GOAT-MEAT-2026-1-KG-06",
+          "price": 7500
+        },
+        {
+          "name": "Deboned (1 kg)",
+          "sku": "RUONO-GOAT-MEAT-2026-DEBONED-1-KG-07",
+          "price": 9000
+        },
+        {
+          "name": "Goat assorted",
+          "sku": "RUONO-GOAT-MEAT-2026-GOAT-ASSORTED-08",
+          "price": 8000
+        },
+        {
+          "name": "Goat head",
+          "sku": "RUONO-GOAT-MEAT-2026-GOAT-HEAD-09",
+          "price": 8000
+        }
+      ]
+    },
+    "RUONO-RAM-MEAT-2026": {
+      "name": "Ram Meat",
+      "variants": [
+        {
+          "name": "Full (18 kg)",
+          "sku": "RUONO-RAM-MEAT-2026-FULL-18-KG-01",
+          "price": 180000
+        },
+        {
+          "name": "Half (9 kg)",
+          "sku": "RUONO-RAM-MEAT-2026-HALF-9-KG-02",
+          "price": 90000
+        },
+        {
+          "name": "Quarter (4.5 kg)",
+          "sku": "RUONO-RAM-MEAT-2026-QUARTER-4-5-KG-03",
+          "price": 45000
+        },
+        {
+          "name": "Midi (2.25 kg)",
+          "sku": "RUONO-RAM-MEAT-2026-MIDI-2-25-KG-04",
+          "price": 30000
+        }
+      ]
+    },
+    "RUONO-FRESH-CHICKEN-CARTON-CUTS-2026": {
+      "name": "Fresh Chicken - carton/cuts",
+      "variants": [
+        {
+          "name": "Carton (10 kg)",
+          "sku": "RUONO-FRESH-CHICKEN-CARTON-CUTS-2026-CARTON-10-KG-01",
+          "price": 48000
+        },
+        {
+          "name": "Half",
+          "sku": "RUONO-FRESH-CHICKEN-CARTON-CUTS-2026-HALF-02",
+          "price": 24000
+        },
+        {
+          "name": "Quarter",
+          "sku": "RUONO-FRESH-CHICKEN-CARTON-CUTS-2026-QUARTER-03",
+          "price": 12000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-FRESH-CHICKEN-CARTON-CUTS-2026-1-KG-04",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-FULL-DRESSED-CHICKEN-2026": {
+      "name": "Full Dressed Chicken",
+      "variants": [
+        {
+          "name": "Big (2.2 kg)",
+          "sku": "RUONO-FULL-DRESSED-CHICKEN-2026-BIG-2-2-KG-01",
+          "price": 11500
+        },
+        {
+          "name": "Jumbo (2.5 kg)",
+          "sku": "RUONO-FULL-DRESSED-CHICKEN-2026-JUMBO-2-5-KG-02",
+          "price": 12500
+        },
+        {
+          "name": "X Jumbo (3 kg)",
+          "sku": "RUONO-FULL-DRESSED-CHICKEN-2026-X-JUMBO-3-KG-03",
+          "price": 14500
+        }
+      ]
+    },
+    "RUONO-OVEN-DRIED-ROASTED-COW-MEAT-2026": {
+      "name": "Oven-Dried / Roasted Cow Meat",
+      "variants": [
+        {
+          "name": "Full cow (37 kg)",
+          "sku": "RUONO-OVEN-DRIED-ROASTED-COW-MEAT-2026-FULL-COW-37-KG-01",
+          "price": 1000000
+        },
+        {
+          "name": "Half cow (18.5 kg)",
+          "sku": "RUONO-OVEN-DRIED-ROASTED-COW-MEAT-2026-HALF-COW-18-5-KG-02",
+          "price": 500000
+        },
+        {
+          "name": "Quarter cow (9 kg)",
+          "sku": "RUONO-OVEN-DRIED-ROASTED-COW-MEAT-2026-QUARTER-COW-9-KG-03",
+          "price": 260000
+        },
+        {
+          "name": "1/8 cow (4.5 kg)",
+          "sku": "RUONO-OVEN-DRIED-ROASTED-COW-MEAT-2026-1-8-COW-4-5-KG-04",
+          "price": 130000
+        }
+      ]
+    },
+    "RUONO-COW-MEAT-TRAVEL-PACKS-2026": {
+      "name": "Cow Meat Travel Packs",
+      "variants": [
+        {
+          "name": "Travel Pack 1 (3.5 kg)",
+          "sku": "RUONO-COW-MEAT-TRAVEL-PACKS-2026-TRAVEL-PACK-1-3-5-KG-01",
+          "price": 100000
+        },
+        {
+          "name": "Travel Pack 2 (1.6 kg)",
+          "sku": "RUONO-COW-MEAT-TRAVEL-PACKS-2026-TRAVEL-PACK-2-1-6-KG-02",
+          "price": 50000
+        },
+        {
+          "name": "Cow tail",
+          "sku": "RUONO-COW-MEAT-TRAVEL-PACKS-2026-COW-TAIL-03",
+          "price": 60000
+        },
+        {
+          "name": "Cow head",
+          "sku": "RUONO-COW-MEAT-TRAVEL-PACKS-2026-COW-HEAD-04",
+          "price": 100000
+        },
+        {
+          "name": "Cow legs (set)",
+          "sku": "RUONO-COW-MEAT-TRAVEL-PACKS-2026-COW-LEGS-SET-05",
+          "price": 55000
+        }
+      ]
+    },
+    "RUONO-SMOKED-FRIED-COW-THIGH-2026": {
+      "name": "Smoked / Fried Cow Thigh",
+      "variants": [
+        {
+          "name": "Smoked cow thigh, ready to eat",
+          "sku": "RUONO-SMOKED-FRIED-COW-THIGH-2026-SMOKED-COW-THIGH-READY-TO-01",
+          "price": 180000
+        },
+        {
+          "name": "Smoked cow thigh, export standard",
+          "sku": "RUONO-SMOKED-FRIED-COW-THIGH-2026-SMOKED-COW-THIGH-EXPORT-S-02",
+          "price": 183000
+        },
+        {
+          "name": "Fried cow thigh",
+          "sku": "RUONO-SMOKED-FRIED-COW-THIGH-2026-FRIED-COW-THIGH-03",
+          "price": 190000
+        }
+      ]
+    },
+    "RUONO-ROASTED-GRILLED-CHICKEN-FULL-BROILER-2026": {
+      "name": "Roasted / Grilled Chicken - Full Broiler",
+      "variants": [
+        {
+          "name": "Medium (2.5 kg live weight)",
+          "sku": "RUONO-ROASTED-GRILLED-CHICKEN-FULL-BROILER-2026-MEDIUM-2-5-KG-LIVE-WEIGHT-01",
+          "price": 15000
+        },
+        {
+          "name": "X Jumbo (4 kg live weight)",
+          "sku": "RUONO-ROASTED-GRILLED-CHICKEN-FULL-BROILER-2026-X-JUMBO-4-KG-LIVE-WEIGHT-02",
+          "price": 20000
+        },
+        {
+          "name": "XX Jumbo (5 kg live weight)",
+          "sku": "RUONO-ROASTED-GRILLED-CHICKEN-FULL-BROILER-2026-XX-JUMBO-5-KG-LIVE-WEIGHT-03",
+          "price": 25000
+        }
+      ]
+    },
+    "RUONO-CHICKEN-CUT-BROILER-2026": {
+      "name": "Chicken Cut - Broiler",
+      "variants": [
+        {
+          "name": "Carton (10 kg)",
+          "sku": "RUONO-CHICKEN-CUT-BROILER-2026-CARTON-10-KG-01",
+          "price": 62000
+        },
+        {
+          "name": "Half carton (5 kg)",
+          "sku": "RUONO-CHICKEN-CUT-BROILER-2026-HALF-CARTON-5-KG-02",
+          "price": 31000
+        },
+        {
+          "name": "Quarter carton (2.5 kg)",
+          "sku": "RUONO-CHICKEN-CUT-BROILER-2026-QUARTER-CARTON-2-5-KG-03",
+          "price": 16000
+        }
+      ]
+    },
+    "RUONO-GRILLED-GUINEA-FOWL-2026": {
+      "name": "Grilled Guinea Fowl",
+      "variants": [
+        {
+          "name": "Medium",
+          "sku": "RUONO-GRILLED-GUINEA-FOWL-2026-MEDIUM-01",
+          "price": 17500
+        },
+        {
+          "name": "Big",
+          "sku": "RUONO-GRILLED-GUINEA-FOWL-2026-BIG-02",
+          "price": 20000
+        }
+      ]
+    },
+    "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026": {
+      "name": "Roasted Native / Local Goat",
+      "variants": [
+        {
+          "name": "Jumbo, ready to eat",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-JUMBO-READY-TO-EAT-01",
+          "price": 120000
+        },
+        {
+          "name": "Jumbo, export standard",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-JUMBO-EXPORT-STANDARD-02",
+          "price": 123000
+        },
+        {
+          "name": "Big, ready to eat",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-BIG-READY-TO-EAT-03",
+          "price": 100000
+        },
+        {
+          "name": "Big, export standard",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-BIG-EXPORT-STANDARD-04",
+          "price": 103000
+        },
+        {
+          "name": "Medium, ready to eat",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-MEDIUM-READY-TO-EAT-05",
+          "price": 90000
+        },
+        {
+          "name": "Medium, export standard",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-MEDIUM-EXPORT-STANDARD-06",
+          "price": 93000
+        },
+        {
+          "name": "Full fried jumbo goat",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-FULL-FRIED-JUMBO-GOAT-07",
+          "price": 130000
+        },
+        {
+          "name": "Full fried big goat",
+          "sku": "RUONO-ROASTED-NATIVE-LOCAL-GOAT-2026-FULL-FRIED-BIG-GOAT-08",
+          "price": 110000
+        }
+      ]
+    },
+    "RUONO-ROASTED-RAM-2026": {
+      "name": "Roasted Ram",
+      "variants": [
+        {
+          "name": "Full ram (6-6.5 kg)",
+          "sku": "RUONO-ROASTED-RAM-2026-FULL-RAM-6-6-5-KG-01",
+          "price": 200000
+        },
+        {
+          "name": "Half ram (3 kg)",
+          "sku": "RUONO-ROASTED-RAM-2026-HALF-RAM-3-KG-02",
+          "price": 105000
+        },
+        {
+          "name": "Quarter ram (1.5 kg)",
+          "sku": "RUONO-ROASTED-RAM-2026-QUARTER-RAM-1-5-KG-03",
+          "price": 55000
+        },
+        {
+          "name": "Full fried ram",
+          "sku": "RUONO-ROASTED-RAM-2026-FULL-FRIED-RAM-04",
+          "price": 210000
+        }
+      ]
+    },
+    "RUONO-TITUS-FISH-2026": {
+      "name": "Titus Fish",
+      "variants": [
+        {
+          "name": "Carton (20 kg)",
+          "sku": "RUONO-TITUS-FISH-2026-CARTON-20-KG-01",
+          "price": 220000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-TITUS-FISH-2026-HALF-CARTON-02",
+          "price": 112000
+        },
+        {
+          "name": "4-person share",
+          "sku": "RUONO-TITUS-FISH-2026-4-PERSON-SHARE-03",
+          "price": 56000
+        },
+        {
+          "name": "8-person share",
+          "sku": "RUONO-TITUS-FISH-2026-8-PERSON-SHARE-04",
+          "price": 28500
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-TITUS-FISH-2026-1-KG-05",
+          "price": 11500
+        }
+      ]
+    },
+    "RUONO-TURKEY-306-2026": {
+      "name": "Turkey 306",
+      "variants": [
+        {
+          "name": "Carton",
+          "sku": "RUONO-TURKEY-306-2026-CARTON-01",
+          "price": 105000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-TURKEY-306-2026-HALF-CARTON-02",
+          "price": 53000
+        },
+        {
+          "name": "Quarter carton",
+          "sku": "RUONO-TURKEY-306-2026-QUARTER-CARTON-03",
+          "price": 27000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-TURKEY-306-2026-1-KG-04",
+          "price": 11000
+        }
+      ]
+    },
+    "RUONO-TILAPIA-FISH-2026": {
+      "name": "Tilapia Fish",
+      "variants": [
+        {
+          "name": "Carton (10 kg)",
+          "sku": "RUONO-TILAPIA-FISH-2026-CARTON-10-KG-01",
+          "price": 48000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-TILAPIA-FISH-2026-HALF-CARTON-02",
+          "price": 24500
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-TILAPIA-FISH-2026-1-KG-03",
+          "price": 5500
+        }
+      ]
+    },
+    "RUONO-TURKEY-WINGS-2026": {
+      "name": "Turkey Wings",
+      "variants": [
+        {
+          "name": "Carton",
+          "sku": "RUONO-TURKEY-WINGS-2026-CARTON-01",
+          "price": 109000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-TURKEY-WINGS-2026-HALF-CARTON-02",
+          "price": 54500
+        },
+        {
+          "name": "Quarter carton",
+          "sku": "RUONO-TURKEY-WINGS-2026-QUARTER-CARTON-03",
+          "price": 27250
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-TURKEY-WINGS-2026-1-KG-04",
+          "price": 11000
+        }
+      ]
+    },
+    "RUONO-CROAKER-2026": {
+      "name": "Croaker",
+      "variants": [
+        {
+          "name": "Carton (20 kg)",
+          "sku": "RUONO-CROAKER-2026-CARTON-20-KG-01",
+          "price": 100000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-CROAKER-2026-HALF-CARTON-02",
+          "price": 50000
+        },
+        {
+          "name": "Quarter carton",
+          "sku": "RUONO-CROAKER-2026-QUARTER-CARTON-03",
+          "price": 25500
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-CROAKER-2026-1-KG-04",
+          "price": 6000
+        }
+      ]
+    },
+    "RUONO-HAKE-PANLA-2026": {
+      "name": "Hake (Panla)",
+      "variants": [
+        {
+          "name": "Carton (10 kg)",
+          "sku": "RUONO-HAKE-PANLA-2026-CARTON-10-KG-01",
+          "price": 45000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-HAKE-PANLA-2026-HALF-CARTON-02",
+          "price": 22500
+        },
+        {
+          "name": "Quarter carton",
+          "sku": "RUONO-HAKE-PANLA-2026-QUARTER-CARTON-03",
+          "price": 11500
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-HAKE-PANLA-2026-1-KG-04",
+          "price": 5000
+        }
+      ]
+    },
+    "RUONO-SHAWA-FISH-2026": {
+      "name": "Shawa Fish",
+      "variants": [
+        {
+          "name": "Carton (20 kg)",
+          "sku": "RUONO-SHAWA-FISH-2026-CARTON-20-KG-01",
+          "price": 65000
+        },
+        {
+          "name": "Half carton",
+          "sku": "RUONO-SHAWA-FISH-2026-HALF-CARTON-02",
+          "price": 32500
+        },
+        {
+          "name": "Quarter carton",
+          "sku": "RUONO-SHAWA-FISH-2026-QUARTER-CARTON-03",
+          "price": 17000
+        },
+        {
+          "name": "1 kg",
+          "sku": "RUONO-SHAWA-FISH-2026-1-KG-04",
+          "price": 4000
+        }
+      ]
+    }
+  }
+}
