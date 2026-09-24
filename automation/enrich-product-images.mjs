@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 import policy from '../functions/image-policy.cjs';
+import {writeFileSync} from 'node:fs';
 const {SOURCES,hasRealImage,resolveImage,sourceFor,pack}=policy;
 const account=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT||'null');
 if(account?.project_id!=='biserry-groceries-os')throw new Error('Firebase project mismatch or missing credential');
@@ -26,9 +27,20 @@ for(const doc of snapshot.docs){
  if(!hasRealImage(p)&&!p.hasVariants)tasks.push({doc,item:p});
  for(const [index,v] of (p.variants||[]).entries())if(v.isActive!==false&&!hasRealImage(v))tasks.push({doc,index,item:{...p,...v,name:p.name+' '+(v.name||''),packSize:v.packSize||v.name||p.packSize,brand:v.brand||p.brand}});
 }
-// Known source pages first. Previously attempted rows rotate behind new ones.
-tasks.sort((a,b)=>Boolean(b.item.imageSourcePageUrl||b.item.productSourceUrl)-Boolean(a.item.imageSourcePageUrl||a.item.productSourceUrl)||String(a.item.imageCheckedAt||'').localeCompare(String(b.item.imageCheckedAt||'')));
-for(const task of tasks.slice(0,15)){
+const eligible=t=>Boolean(t.item.brand&&pack(t.item.packSize||t.item.name));
+const knownSource=t=>Boolean(t.item.imageSourcePageUrl||t.item.productSourceUrl);
+const csv=value=>'"'+String(value??'').replaceAll('"','""')+'"';
+const rows=[['productId','variantIndex','productName','variantName','brand','packSize','sourcePageUrl','imageStatus','reviewReason','nextAction']];
+for(const task of tasks){
+ const p=task.doc.data(),v=task.index===undefined?null:p.variants?.[task.index];
+ const nextAction=!eligible(task)?'Confirm brand and exact pack size; obtain supplier or original product photo if unbranded':
+   knownSource(task)?'Verify the source page depicts this exact product and pack':'Find an authorized manufacturer, supplier or product detail page';
+ rows.push([task.doc.id,task.index??'',p.name||'',v?.name||'',task.item.brand||'',task.item.packSize||'',task.item.imageSourcePageUrl||task.item.productSourceUrl||'',task.item.imageStatus||'',task.item.imageReviewReason||'',nextAction]);
+}
+writeFileSync('missing-image-review.csv',rows.map(row=>row.map(csv).join(',')).join('\n')+'\n');
+// Verified candidates first; rotate prior attempts to the back within each group.
+tasks.sort((a,b)=>Number(eligible(b))-Number(eligible(a))||Number(knownSource(b))-Number(knownSource(a))||String(a.item.imageCheckedAt||'').localeCompare(String(b.item.imageCheckedAt||'')));
+for(const task of tasks.slice(0,50)){
  checked++;const {item,doc,index}=task;let outcome;
  if(!item.brand || !pack(item.packSize||item.name))outcome={status:'needs-review',reason:'Confirmed brand and pack size required'};
  else{

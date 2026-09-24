@@ -28,7 +28,7 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node raise-active-stock.mjs
-      - name: Enrich missing images (maximum 15 items and 5 searches)
+      - name: Enrich missing images (maximum 50 items and 5 searches)
         working-directory: automation
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -39,5 +39,7 @@ jobs:
         if: always()
         with:
           name: catalogue-image-report
-          path: automation/image-report.json
+          path: |
+            automation/image-report.json
+            automation/missing-image-review.csv
           retention-days: 14

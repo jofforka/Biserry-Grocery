@@ -14,7 +14,7 @@ Known generic category photos and logo placeholders count as missing real images
 
 The runner updates image fields only. It never changes selling prices, stock or product identity. External source URLs remain external image URLs; no random image search scraping or bulk image copying occurs. It does not grant image licensing rights. Source availability can change.
 
-Existing GEMINI_API_KEY in GitHub Actions enables up to five grounded Gemini discovery calls per manual batch. Without that secret only supplied source pages are checked. Firebase Secret Manager secrets are not automatically GitHub secrets. Limits are 15 image tasks per run and no automatic recurring schedule. No API keys are sent to the browser or stored in the repository.
+GEMINI_API_KEY in GitHub Actions enables up to five grounded Gemini discovery calls per manual batch. Without that secret only supplied source pages are checked. Firebase Secret Manager secrets are not automatically GitHub secrets. Limits are 50 image tasks per run and no automatic recurring schedule. The workflow exports `missing-image-review.csv` for all remaining image gaps, with the missing identifiers and next action. No API keys are sent to the browser or stored in the repository.
 
 The legacy Firebase Cloud Function source now shares the image policy, but it is not deployed by this workflow: the project has an explicit Spark-only cost guard. If Cloud Functions are deployed separately in the future, deploy the entire functions directory so image-policy.cjs is included.
 
