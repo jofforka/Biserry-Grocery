@@ -17,7 +17,13 @@ const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
 const DEFAULT_MARKUPS = { grains: 16, oil: 14, spices: 22, fresh: 24, drinks: 18, household: 22 };
 const RETAIL_REFERENCE_DOMAINS = ["supermart.ng", "pricepally.com", "jendolstores.com"];
-const IMAGE_HOST_ALLOWLIST = ["supermart.ng", "cdn.shopify.com", "shopifycdn.net", "pricepally.com", "jendolstores.com"];
+const {hasRealImage,resolveImage} = require("./image-policy.cjs");
+async function verifiedImagePatch(item,page) {
+  const result=await resolveImage(item,page);
+  if(result.status!=="verified") return {};
+  const {status,...patch}=result;
+  return {...patch,imageStatus:"Verified exact product image"};
+}
 
 function normalizeText(value = "") {
   return String(value).toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
@@ -57,25 +63,6 @@ function extractInteractionText(data) {
   return candidates.sort((a,b)=>b.length-a.length)[0] || "";
 }
 
-async function extractOgImage(pageUrl) {
-  if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return "";
-  try {
-    const res = await fetch(pageUrl, { headers: { "user-agent": "BiserryCatalogueBot/1.0" }, redirect: "follow" });
-    if (!res.ok) return "";
-    const html = (await res.text()).slice(0, 400000);
-    const patterns = [
-      /<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i,
-      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["']/i,
-      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i
-    ];
-    for (const re of patterns) {
-      const m = html.match(re);
-      if (m?.[1]) return m[1].replace(/&amp;/g, "&");
-    }
-  } catch (e) { console.warn("OG image lookup failed", pageUrl, e.message); }
-  return "";
-}
-
 async function geminiEnrich(item) {
   const key = GEMINI_API_KEY.value();
   if (!key) return null;
@@ -103,15 +90,12 @@ async function geminiEnrich(item) {
 
 async function enrichItem(item, allowAI = true) {
   const patch = {};
+  const missingImage = !hasRealImage(item);
   let page = item.imageSourcePageUrl || item.productSourceUrl || "";
-  if (page) {
-    const image = await extractOgImage(page);
-    if (image && hostAllowed(image, IMAGE_HOST_ALLOWLIST)) {
-      patch.imageUrl = image; patch.imageStatus = "Product image resolved from verified source page"; patch.imageConfidence = 95;
-      patch.imageSourcePageUrl = page;
-    }
+  if (page && missingImage) {
+    Object.assign(patch,await verifiedImagePatch(item,page));
   }
-  const needsFull = !item.brand || !item.packSize || !item.priceSourceUrl || !patch.imageUrl;
+  const needsFull = !item.brand || !item.packSize || !item.priceSourceUrl || (missingImage && !patch.imageUrl);
   if (allowAI && needsFull) {
     try {
       const ai = await geminiEnrich({...item, ...patch});
@@ -128,20 +112,15 @@ async function enrichItem(item, allowAI = true) {
           patch.priceConfidence = Math.round(Number(ai.confidence || 0));
         }
         const candidatePage = ai.imageSourcePageUrl || ai.sourceUrl || "";
-        if (!patch.imageUrl && candidatePage) {
-          const img = await extractOgImage(candidatePage);
-          if (img && hostAllowed(img, IMAGE_HOST_ALLOWLIST)) {
-            patch.imageUrl = img; patch.imageSourcePageUrl = candidatePage;
-            patch.imageStatus = "Product image resolved from AI-grounded source page";
-            patch.imageConfidence = Math.min(95, Math.round(Number(ai.confidence || 85)));
-          }
+        if (missingImage && !patch.imageUrl && candidatePage && Number(ai.confidence) >= 85) {
+          Object.assign(patch,await verifiedImagePatch(item,candidatePage));
         }
         patch.enrichmentNotes = ai.notes || "";
         patch.enrichmentConfidence = Math.round(Number(ai.confidence || 0));
       }
     } catch (e) { patch.enrichmentError = e.message.slice(0,500); }
   }
-  const imageReady = Boolean(patch.imageUrl || item.imageUrl);
+  const imageReady = Boolean(patch.imageUrl || hasRealImage(item));
   const dataReady = Boolean((patch.brand || item.brand) && (patch.packSize || item.packSize));
   patch.enrichmentStatus = imageReady && dataReady ? "enriched" : "needs-review";
   patch.lastEnrichedAt = FieldValue.serverTimestamp();
@@ -215,6 +194,13 @@ exports.enrichPendingCatalogue = onSchedule({ schedule:"every 60 minutes", secre
   for(const d of snap.docs) {
     const current={id:d.id,...d.data()};
     const patch=await enrichItem(current,true);
-    await d.ref.set(patch,{merge:true});
+    await db.runTransaction(async tx=>{
+      const fresh=await tx.get(d.ref);
+      if(!fresh.exists)return;
+      const now=fresh.data();
+      if(now.name!==current.name || now.brand!==current.brand || now.packSize!==current.packSize)return;
+      if(hasRealImage(now)) for(const key of Object.keys(patch)) if(key.startsWith("image"))delete patch[key];
+      tx.update(d.ref,patch);
+    });
   }
 });

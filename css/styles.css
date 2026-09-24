@@ -681,3 +681,61 @@ input,textarea,select,#searchInput,.search{width:100%;padding:12px 14px;border:1
     min-height:225px;
   }
 }
+
+/* Compact catalogue shared by Shop and homepage Popular Products. Mobile rules above remain intact. */
+@media (min-width: 761px) {
+  .shopSection .productGrid, .featuredSection .productGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+  }
+  .shopSection .productGrid .card, .featuredSection .productGrid .card {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0;
+    min-height: 0 !important;
+    height: auto;
+    border-radius: 16px;
+  }
+  .shopSection .productGrid .productImageButton, .featuredSection .productGrid .productImageButton {
+    width: 100%; height: 170px !important; min-height: 170px !important;
+    flex: 0 0 170px !important; padding: 10px; background: #fff;
+  }
+  .shopSection .productGrid .productImageButton img, .featuredSection .productGrid .productImageButton img {
+    width: 100%; height: 100%; object-fit: contain;
+  }
+  .shopSection .productGrid .cardBody, .featuredSection .productGrid .cardBody {
+    padding: 10px !important; gap: 5px !important; flex: 1;
+  }
+  .shopSection .productGrid .card h3, .featuredSection .productGrid .card h3 {
+    font-size: 13px !important; min-height: 32px !important; line-height: 1.25;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  }
+  .shopSection .productGrid .ratingLine, .featuredSection .productGrid .ratingLine,
+  .shopSection .productGrid .categoryTag, .featuredSection .productGrid .categoryTag {display:none}
+  .shopSection .productGrid .variantBox, .featuredSection .productGrid .variantBox {padding: 4px !important}
+  .shopSection .productGrid .variantBox select, .featuredSection .productGrid .variantBox select {padding: 6px !important; font-size: 11px !important}
+  .shopSection .productGrid .price, .featuredSection .productGrid .price {font-size: 16px !important}
+  .shopSection .productGrid .quantityRow, .featuredSection .productGrid .quantityRow {margin-top: auto !important; gap: 4px !important}
+  .shopSection .productGrid .qtyBtn, .featuredSection .productGrid .qtyBtn {width: 29px !important; height: 29px !important}
+  .shopSection .productGrid .qtyDisplay, .featuredSection .productGrid .qtyDisplay {padding: 5px !important}
+  .shopSection .productGrid .addBtn, .featuredSection .productGrid .addBtn {padding: 8px !important; font-size: 12px !important}
+  .shopSection .productGrid .productActionRow, .featuredSection .productGrid .productActionRow {gap: 5px !important}
+}
+@media (min-width: 1200px) {
+  .shopSection .productGrid, .featuredSection .productGrid {grid-template-columns: repeat(5, minmax(0, 1fr)) !important}
+}
+@media (min-width: 1600px) {
+  .shopSection .productGrid, .featuredSection .productGrid {grid-template-columns: repeat(6, minmax(0, 1fr)) !important}
+}
+@media (min-width: 761px) {
+  .shopSection .productGrid .card, .featuredSection .productGrid .card {position:relative}
+  .shopSection .productGrid .productBadges, .featuredSection .productGrid .productBadges {position:absolute;top:8px;left:8px;min-height:0}
+  .shopSection .productGrid .variantBox select, .featuredSection .productGrid .variantBox select {height:30px}
+  .shopSection .productGrid .quantityRow, .featuredSection .productGrid .quantityRow {grid-template-columns:29px minmax(0,1fr) 29px}
+  .shopSection .productGrid .qtyDisplay, .featuredSection .productGrid .qtyDisplay {height:29px;font-size:12px}
+  .shopSection .productGrid .wishlistBtn, .featuredSection .productGrid .wishlistBtn {width:32px;height:32px}
+  .shopSection .productGrid .productActionRow, .featuredSection .productGrid .productActionRow {grid-template-columns:32px minmax(0,1fr)}
+  .shopSection .productGrid .addBtn, .featuredSection .productGrid .addBtn {min-height:32px}
+  .shopSection .productGrid .price, .featuredSection .productGrid .price {margin:0;line-height:1.2}
+  .shopSection .productGrid .stockText, .featuredSection .productGrid .stockText {min-height:16px;font-size:11px;line-height:16px;margin:0}
+}

@@ -1,0 +1,42 @@
+name: Catalogue maintenance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/raise-active-stock.yml']
+permissions:
+  contents: read
+concurrency:
+  group: biserry-catalogue-maintenance
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test inventory and image safeguards
+        run: node --test tests/*.test.cjs
+      - name: Install pinned Firebase Admin dependency
+        working-directory: automation
+        run: npm install --no-fund --no-audit
+      - name: Raise and verify active stock (one-time migration)
+        working-directory: automation
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node raise-active-stock.mjs
+      - name: Enrich missing images (maximum 15 items and 5 searches)
+        working-directory: automation
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node enrich-product-images.mjs | tee image-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: catalogue-image-report
+          path: automation/image-report.json
+          retention-days: 14
