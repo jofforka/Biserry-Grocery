@@ -28,10 +28,11 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node raise-active-stock.mjs
-      - name: Preview supplier size and price mappings
+      - name: Repair verified supplier size and price mappings
         working-directory: automation
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          APPLY_VARIANT_SIZES: 'true'
         run: node repair-ruono-variant-sizes.mjs
       - name: Enrich missing images (maximum 50 items and 5 searches)
         working-directory: automation
