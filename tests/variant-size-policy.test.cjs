@@ -15,3 +15,10 @@ test('ambiguous price mismatch and product mismatch remain for review',()=>{
  assert.equal(planVariantNames(p,ref).changes,undefined);
  assert.equal(planVariantNames({...p,name:'Other'},ref).changes,undefined);
 });
+test('repairs exact supplier SKUs among older product options without touching them',()=>{
+ const old={name:'Big',sku:'',price:1,stock:30};
+ const p={name:ref.name,hasVariants:true,variants:[old,...ref.variants.map(v=>({name:ref.name,sku:v.sku,price:v.price}))]};
+ assert.deepEqual(planVariantNames(p,ref).changes.map(c=>c.index),[1,2,3]);
+ p.variants[2].price=1;
+ assert.equal(planVariantNames(p,ref).changes,undefined);
+});
