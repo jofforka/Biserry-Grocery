@@ -12,6 +12,8 @@ Only products with isActive=true are selected. Embedded variants inherit active 
 
 Three supplier products had older Biserry options merged into their arrays. Once the imported Ruono options were verified, a separate one-time maintenance step archives the three older options on each product without deleting them. Shop and Popular Products show active variants only. Checkout checks current option availability and price before accepting a stored cart. Four supplier entries without a matching active product remain unmodified for review.
 
+Other catalogue products with a placeholder selling price of ₦1 cannot be added to the cart and appear as "Price being confirmed". The checkout validation also rejects an older cart containing such a placeholder. This safeguard does not invent or change prices; the owner must supply verified prices for those unrelated products.
+
 ## Images
 
 The source registry in functions/image-policy.cjs ranks manufacturers ahead of suppliers and retailers. Its initial reviewed manufacturer is Nestlé CWA; the existing supermarket sources remain available. New supplier domains require identity and CDN review. The model cannot approve domains. Unknown brand, size, source, or product matches are left for review.
