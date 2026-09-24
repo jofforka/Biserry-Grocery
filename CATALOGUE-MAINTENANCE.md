@@ -7,7 +7,13 @@ Run GitHub Actions → Catalogue maintenance for stock verification and a bounde
 ## Stock
 Only products with isActive=true are selected. Embedded variants inherit active status unless isActive=false. Every selected stock field is raised to at least 30 independently; higher parent or variant stock is preserved. Prices and visibility are untouched. Per-product transactions read the latest values, retain a before/after record in catalogueMaintenance/stock-floor-30-v1/products, and a completion marker prevents replenishing stock again after subsequent sales. Do not delete that marker to perform routine restocking.
 
+## Supplier sizes
+`automation/ruono-variant-sizes.json` records the exact option names, SKUs and selling prices from the uploaded 2026 Ruono price list. The repair compares the active product name and SKU and every matched option price before updating only option names. It keeps stock and customer prices as they are. Per-product audits preserve the original variants.
+
+Three supplier products had older Biserry options merged into their arrays. Once the imported Ruono options were verified, a separate one-time maintenance step archives the three older options on each product without deleting them. Shop and Popular Products show active variants only. Checkout checks current option availability and price before accepting a stored cart. Four supplier entries without a matching active product remain unmodified for review.
+
 ## Images
+
 The source registry in functions/image-policy.cjs ranks manufacturers ahead of suppliers and retailers. Its initial reviewed manufacturer is Nestlé CWA; the existing supermarket sources remain available. New supplier domains require identity and CDN review. The model cannot approve domains. Unknown brand, size, source, or product matches are left for review.
 
 Known generic category photos and logo placeholders count as missing real images. Actual existing photos are preserved, including during concurrent edits. Each candidate needs a unique Product JSON-LD object or explicit Open Graph product metadata, matching all name terms, brand, quantity, unit dimension and pack count. Redirect destinations are checked before fetching; responses are bounded and image MIME types checked. The accepted image retains its exact source page, source type, matched name, confidence basis and verification date. Confidence 95 is a rule-based quality score, not a calibrated probability.
