@@ -7,7 +7,7 @@ test('pack size distinguishes mass, volume and multipacks',()=>{
 });
 test('rejects another product, brand or pack',()=>{
  assert.equal(matches(item,{name:'Nestle Golden Morn 300g'}),true);
- for(const name of ['Nestle Golden Morn 600g','Nestle Milk 300g','Other Golden Morn 300g','Nestle Golden Morn 300ml'])assert.equal(matches(item,{name}),false);
+ for(const name of ['Nestle Golden Morn 600g','Nestle Milk 300g','Other Golden Morn 300g','Nestle Golden Morn 300ml','Nestle Golden Morn Chocolate 300g'])assert.equal(matches(item,{name}),false);
  assert.equal(matches({...item,brand:''},{name:'Nestle Golden Morn 300g'}),false);
 });
 test('recognizes placeholders, retains actual photos',()=>{

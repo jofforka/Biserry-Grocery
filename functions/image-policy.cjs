@@ -32,8 +32,9 @@ function matches(item, evidence) {
  const expected=pack(item.packSize||item.name);
  const actual=pack(evidence.size||evidence.name);
  if(!expected||!actual||JSON.stringify(expected)!==JSON.stringify(actual))return false;
- const productTerms=normalize(String(item.name||'').replace(/\d+(?:\.\d+)?\s*(?:kg|g|ml|cl|l)\b/gi,'')).split(' ').filter(t=>t&&!['pack','of','x',...brand.split(' ')].includes(t));
- return productTerms.length>0 && productTerms.every(t=>title.split(' ').includes(t));
+ const terms = value => [...new Set(normalize(String(value||'').replace(/\d+(?:\.\d+)?\s*(?:kg|g|ml|cl|l)\b/gi,'').replace(/\b\d+\s*x\b|\bx\s*\d+\b/gi,'')).split(' ').filter(t=>t&&!['pack','of','x',...brand.split(' ')].includes(t)))].sort();
+ const expectedTerms=terms(item.name),observedTerms=terms(evidence.name);
+ return expectedTerms.length>0 && JSON.stringify(expectedTerms)===JSON.stringify(observedTerms);
 }
 function attributes(tag) {
  const result={};for(const m of tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g))result[m[1].toLowerCase()]=decode(m[2]??m[3]);return result;
