@@ -682,7 +682,9 @@ input,textarea,select,#searchInput,.search{width:100%;padding:12px 14px;border:1
   }
 }
 
-/* Compact catalogue shared by Shop and homepage Popular Products. Mobile rules above remain intact. */
+/* Compact catalogue shared by Shop and homepage Popular Products:
+   4 columns on laptops, 5 on standard desktops, 6 on large desktops.
+   The existing <=760px mobile catalogue remains unchanged. */
 @media (min-width: 761px) {
   .shopSection .productGrid, .featuredSection .productGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;

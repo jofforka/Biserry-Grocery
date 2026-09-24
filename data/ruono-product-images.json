@@ -1,0 +1,1182 @@
+{
+  "count": 107,
+  "products": [
+    {
+      "name": "Fresh Chicken - carton/cuts",
+      "imageUrl": "assets/ruono-products/fresh-chicken-carton-cuts.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        40,
+        390,
+        125,
+        451
+      ]
+    },
+    {
+      "name": "Full Dressed Chicken",
+      "imageUrl": "assets/ruono-products/full-dressed-chicken.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        40,
+        462,
+        125,
+        542
+      ]
+    },
+    {
+      "name": "Chicken Head, Neck & Feet",
+      "imageUrl": "assets/ruono-products/chicken-head-neck-feet.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        42,
+        550,
+        130,
+        611
+      ]
+    },
+    {
+      "name": "Chicken Feet",
+      "imageUrl": "assets/ruono-products/chicken-feet.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        43,
+        620,
+        128,
+        660
+      ]
+    },
+    {
+      "name": "Oven-Dried / Roasted Cow Meat",
+      "imageUrl": "assets/ruono-products/oven-dried-roasted-cow-meat.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        40,
+        676,
+        133,
+        756
+      ]
+    },
+    {
+      "name": "Cow Meat Travel Packs",
+      "imageUrl": "assets/ruono-products/cow-meat-travel-packs.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        44,
+        778,
+        134,
+        844
+      ]
+    },
+    {
+      "name": "Smoked / Fried Cow Thigh",
+      "imageUrl": "assets/ruono-products/smoked-fried-cow-thigh.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        42,
+        877,
+        133,
+        942
+      ]
+    },
+    {
+      "name": "Grasscutter",
+      "imageUrl": "assets/ruono-products/grasscutter.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        46,
+        945,
+        132,
+        992
+      ]
+    },
+    {
+      "name": "Antelope",
+      "imageUrl": "assets/ruono-products/antelope.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        46,
+        997,
+        135,
+        1034
+      ]
+    },
+    {
+      "name": "Roasted / Grilled Chicken - Full Broiler",
+      "imageUrl": "assets/ruono-products/roasted-grilled-chicken-full-broiler.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        548,
+        392,
+        616,
+        472
+      ]
+    },
+    {
+      "name": "Chicken Cut - Broiler",
+      "imageUrl": "assets/ruono-products/chicken-cut-broiler.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        540,
+        576,
+        650,
+        632
+      ]
+    },
+    {
+      "name": "Grilled Guinea Fowl",
+      "imageUrl": "assets/ruono-products/grilled-guinea-fowl.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        545,
+        646,
+        635,
+        705
+      ]
+    },
+    {
+      "name": "Whole Local Chicken",
+      "imageUrl": "assets/ruono-products/whole-local-chicken.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        545,
+        713,
+        640,
+        770
+      ]
+    },
+    {
+      "name": "Roasted Native / Local Goat",
+      "imageUrl": "assets/ruono-products/roasted-native-local-goat.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        540,
+        791,
+        640,
+        890
+      ]
+    },
+    {
+      "name": "Roasted Ram",
+      "imageUrl": "assets/ruono-products/roasted-ram.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        544,
+        937,
+        654,
+        1020
+      ]
+    },
+    {
+      "name": "Titus Fish",
+      "imageUrl": "assets/ruono-products/titus-fish.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        40,
+        1111,
+        150,
+        1177
+      ]
+    },
+    {
+      "name": "Turkey 306",
+      "imageUrl": "assets/ruono-products/turkey-306.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        43,
+        1192,
+        147,
+        1260
+      ]
+    },
+    {
+      "name": "Tilapia Fish",
+      "imageUrl": "assets/ruono-products/tilapia-fish.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        40,
+        1272,
+        148,
+        1325
+      ]
+    },
+    {
+      "name": "Turkey Wings",
+      "imageUrl": "assets/ruono-products/turkey-wings.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        42,
+        1340,
+        145,
+        1404
+      ]
+    },
+    {
+      "name": "Croaker",
+      "imageUrl": "assets/ruono-products/croaker.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        537,
+        1111,
+        642,
+        1172
+      ]
+    },
+    {
+      "name": "Hake (Panla)",
+      "imageUrl": "assets/ruono-products/hake-panla.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        542,
+        1185,
+        641,
+        1233
+      ]
+    },
+    {
+      "name": "Shawa Fish",
+      "imageUrl": "assets/ruono-products/shawa-fish.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        542,
+        1241,
+        643,
+        1295
+      ]
+    },
+    {
+      "name": "Sausage",
+      "imageUrl": "assets/ruono-products/sausage.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        544,
+        1311,
+        635,
+        1340
+      ]
+    },
+    {
+      "name": "Chicken Gizzard",
+      "imageUrl": "assets/ruono-products/chicken-gizzard.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        545,
+        1345,
+        630,
+        1375
+      ]
+    },
+    {
+      "name": "Prawn",
+      "imageUrl": "assets/ruono-products/prawn.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        544,
+        1376,
+        634,
+        1404
+      ]
+    },
+    {
+      "name": "Turkey Gizzard",
+      "imageUrl": "assets/ruono-products/turkey-gizzard.webp",
+      "sourceCataloguePage": "CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg",
+      "sourceCrop": [
+        544,
+        1388,
+        630,
+        1429
+      ]
+    },
+    {
+      "name": "Fresh Cow Meat - 90% Deboned Agemawo",
+      "imageUrl": "assets/ruono-products/fresh-cow-meat-90-deboned-agemawo.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        68,
+        470,
+        220,
+        568
+      ]
+    },
+    {
+      "name": "Cow Slots",
+      "imageUrl": "assets/ruono-products/cow-slots.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        75,
+        591,
+        218,
+        656
+      ]
+    },
+    {
+      "name": "Cow Parts",
+      "imageUrl": "assets/ruono-products/cow-parts.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        65,
+        669,
+        226,
+        786
+      ]
+    },
+    {
+      "name": "Custom Cow Cuts",
+      "imageUrl": "assets/ruono-products/custom-cow-cuts.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        68,
+        820,
+        225,
+        966
+      ]
+    },
+    {
+      "name": "Goat Meat",
+      "imageUrl": "assets/ruono-products/goat-meat.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        64,
+        1014,
+        230,
+        1207
+      ]
+    },
+    {
+      "name": "Ram Meat",
+      "imageUrl": "assets/ruono-products/ram-meat.webp",
+      "sourceCataloguePage": "F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg",
+      "sourceCrop": [
+        65,
+        1225,
+        226,
+        1354
+      ]
+    },
+    {
+      "name": "Dehydrated Leaves",
+      "imageUrl": "assets/ruono-products/dehydrated-leaves.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        58,
+        550,
+        228,
+        711
+      ]
+    },
+    {
+      "name": "Iru (Locust Beans)",
+      "imageUrl": "assets/ruono-products/iru-locust-beans.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        91,
+        881,
+        215,
+        968
+      ]
+    },
+    {
+      "name": "Barbecue / Grill Spice",
+      "imageUrl": "assets/ruono-products/barbecue-grill-spice.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        112,
+        1023,
+        227,
+        1122
+      ]
+    },
+    {
+      "name": "Ginger Powder",
+      "imageUrl": "assets/ruono-products/ginger-powder.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        134,
+        1163,
+        224,
+        1200
+      ]
+    },
+    {
+      "name": "Pepper Soup Spice",
+      "imageUrl": "assets/ruono-products/pepper-soup-spice.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        120,
+        1238,
+        225,
+        1290
+      ]
+    },
+    {
+      "name": "Curry Powder",
+      "imageUrl": "assets/ruono-products/curry-powder.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        148,
+        1335,
+        229,
+        1370
+      ]
+    },
+    {
+      "name": "Jollof Spice",
+      "imageUrl": "assets/ruono-products/jollof-spice.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        544,
+        497,
+        642,
+        557
+      ]
+    },
+    {
+      "name": "Turmeric Powder",
+      "imageUrl": "assets/ruono-products/turmeric-powder.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        546,
+        577,
+        660,
+        690
+      ]
+    },
+    {
+      "name": "Onion Powder",
+      "imageUrl": "assets/ruono-products/onion-powder.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        548,
+        702,
+        650,
+        759
+      ]
+    },
+    {
+      "name": "Banga Spice",
+      "imageUrl": "assets/ruono-products/banga-spice.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        551,
+        788,
+        643,
+        840
+      ]
+    },
+    {
+      "name": "Dates",
+      "imageUrl": "assets/ruono-products/dates.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        548,
+        842,
+        647,
+        916
+      ]
+    },
+    {
+      "name": "Jaggery",
+      "imageUrl": "assets/ruono-products/jaggery.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        552,
+        940,
+        632,
+        987
+      ]
+    },
+    {
+      "name": "Tiger Nut",
+      "imageUrl": "assets/ruono-products/tiger-nut.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        548,
+        989,
+        643,
+        1045
+      ]
+    },
+    {
+      "name": "Cloves",
+      "imageUrl": "assets/ruono-products/cloves.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        549,
+        1055,
+        644,
+        1115
+      ]
+    },
+    {
+      "name": "Zobo",
+      "imageUrl": "assets/ruono-products/zobo.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        548,
+        1120,
+        647,
+        1180
+      ]
+    },
+    {
+      "name": "Zobo Mix + Jaggery",
+      "imageUrl": "assets/ruono-products/zobo-mix-jaggery.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        548,
+        1190,
+        647,
+        1252
+      ]
+    },
+    {
+      "name": "Star Anise",
+      "imageUrl": "assets/ruono-products/star-anise.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        546,
+        1260,
+        645,
+        1320
+      ]
+    },
+    {
+      "name": "Cinnamon",
+      "imageUrl": "assets/ruono-products/cinnamon.webp",
+      "sourceCataloguePage": "EACA4F01-D6E5-40EB-BED6-C638C6F0F8AB.jpeg",
+      "sourceCrop": [
+        545,
+        1325,
+        647,
+        1388
+      ]
+    },
+    {
+      "name": "Dried Catfish",
+      "imageUrl": "assets/ruono-products/dried-catfish.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        77,
+        374,
+        193,
+        420
+      ]
+    },
+    {
+      "name": "Fish Head",
+      "imageUrl": "assets/ruono-products/fish-head.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        76,
+        427,
+        193,
+        477
+      ]
+    },
+    {
+      "name": "Smoked Catfish Maxi Carton",
+      "imageUrl": "assets/ruono-products/smoked-catfish-maxi-carton.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        75,
+        484,
+        195,
+        537
+      ]
+    },
+    {
+      "name": "Catfish Fillet",
+      "imageUrl": "assets/ruono-products/catfish-fillet.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        77,
+        542,
+        195,
+        583
+      ]
+    },
+    {
+      "name": "Catfish Powder",
+      "imageUrl": "assets/ruono-products/catfish-powder.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        85,
+        585,
+        190,
+        630
+      ]
+    },
+    {
+      "name": "Dried Catfish Cutlet / Mangala (Big Size)",
+      "imageUrl": "assets/ruono-products/dried-catfish-cutlet-mangala-big-size.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        76,
+        631,
+        198,
+        695
+      ]
+    },
+    {
+      "name": "Dried Catfish Cutlet / Mangala (Small Size)",
+      "imageUrl": "assets/ruono-products/dried-catfish-cutlet-mangala-small-size.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        78,
+        702,
+        197,
+        768
+      ]
+    },
+    {
+      "name": "Asa Cutlets - preorder",
+      "imageUrl": "assets/ruono-products/asa-cutlets-preorder.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        75,
+        779,
+        199,
+        849
+      ]
+    },
+    {
+      "name": "Ador Ogbono",
+      "imageUrl": "assets/ruono-products/ador-ogbono.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        80,
+        863,
+        188,
+        931
+      ]
+    },
+    {
+      "name": "Hand-Peeled Egusi",
+      "imageUrl": "assets/ruono-products/hand-peeled-egusi.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        77,
+        936,
+        198,
+        1000
+      ]
+    },
+    {
+      "name": "Blended Egusi",
+      "imageUrl": "assets/ruono-products/blended-egusi.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        80,
+        1009,
+        194,
+        1055
+      ]
+    },
+    {
+      "name": "Fresh Ugba",
+      "imageUrl": "assets/ruono-products/fresh-ugba.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        74,
+        1060,
+        203,
+        1126
+      ]
+    },
+    {
+      "name": "Dehydrated Ugba",
+      "imageUrl": "assets/ruono-products/dehydrated-ugba.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        75,
+        1130,
+        202,
+        1196
+      ]
+    },
+    {
+      "name": "Dry Periwinkles",
+      "imageUrl": "assets/ruono-products/dry-periwinkles.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        83,
+        1200,
+        193,
+        1253
+      ]
+    },
+    {
+      "name": "Dry Ukwa",
+      "imageUrl": "assets/ruono-products/dry-ukwa.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        87,
+        1258,
+        187,
+        1288
+      ]
+    },
+    {
+      "name": "Fio Fio",
+      "imageUrl": "assets/ruono-products/fio-fio.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        82,
+        1288,
+        195,
+        1326
+      ]
+    },
+    {
+      "name": "Akidi",
+      "imageUrl": "assets/ruono-products/akidi.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        83,
+        1326,
+        190,
+        1362
+      ]
+    },
+    {
+      "name": "Achicha",
+      "imageUrl": "assets/ruono-products/achicha.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        79,
+        1364,
+        194,
+        1394
+      ]
+    },
+    {
+      "name": "Abacha",
+      "imageUrl": "assets/ruono-products/abacha.webp",
+      "sourceCataloguePage": "82918AF1-549E-44FE-9030-A94FCA31C90A.jpeg",
+      "sourceCrop": [
+        79,
+        1398,
+        194,
+        1434
+      ]
+    },
+    {
+      "name": "Oron Crayfish - unclean",
+      "imageUrl": "assets/ruono-products/oron-crayfish-unclean.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        95,
+        463,
+        190,
+        511
+      ]
+    },
+    {
+      "name": "Oron Crayfish - cleaned & blended",
+      "imageUrl": "assets/ruono-products/oron-crayfish-cleaned-blended.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        96,
+        512,
+        191,
+        558
+      ]
+    },
+    {
+      "name": "Oron Crayfish - cleaned & unblended",
+      "imageUrl": "assets/ruono-products/oron-crayfish-cleaned-unblended.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        95,
+        563,
+        192,
+        610
+      ]
+    },
+    {
+      "name": "Prawns",
+      "imageUrl": "assets/ruono-products/prawns.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        85,
+        616,
+        197,
+        659
+      ]
+    },
+    {
+      "name": "Shrimps",
+      "imageUrl": "assets/ruono-products/shrimps.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        88,
+        657,
+        195,
+        705
+      ]
+    },
+    {
+      "name": "Dry Snails - Jumbo",
+      "imageUrl": "assets/ruono-products/dry-snails-jumbo.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        94,
+        707,
+        197,
+        758
+      ]
+    },
+    {
+      "name": "Dry Snails - Large",
+      "imageUrl": "assets/ruono-products/dry-snails-large.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        93,
+        758,
+        196,
+        809
+      ]
+    },
+    {
+      "name": "Dry Snails - Big Size",
+      "imageUrl": "assets/ruono-products/dry-snails-big-size.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        93,
+        810,
+        197,
+        857
+      ]
+    },
+    {
+      "name": "Dry Snails - Medium Size",
+      "imageUrl": "assets/ruono-products/dry-snails-medium-size.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        93,
+        860,
+        198,
+        909
+      ]
+    },
+    {
+      "name": "Dried Panla",
+      "imageUrl": "assets/ruono-products/dried-panla.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        87,
+        908,
+        201,
+        990
+      ]
+    },
+    {
+      "name": "Deboned Panla",
+      "imageUrl": "assets/ruono-products/deboned-panla.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        88,
+        992,
+        202,
+        1038
+      ]
+    },
+    {
+      "name": "Stockfish Ear",
+      "imageUrl": "assets/ruono-products/stockfish-ear.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        86,
+        1038,
+        204,
+        1113
+      ]
+    },
+    {
+      "name": "Stockfish Head with Ear",
+      "imageUrl": "assets/ruono-products/stockfish-head-with-ear.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        82,
+        1115,
+        207,
+        1215
+      ]
+    },
+    {
+      "name": "Stockfish Fillets / Flesh",
+      "imageUrl": "assets/ruono-products/stockfish-fillets-flesh.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        84,
+        1220,
+        203,
+        1300
+      ]
+    },
+    {
+      "name": "Stockfish Cutlets",
+      "imageUrl": "assets/ruono-products/stockfish-cutlets.webp",
+      "sourceCataloguePage": "45BBCF72-D195-416D-BD66-434FA73FF323.jpeg",
+      "sourceCrop": [
+        84,
+        1315,
+        206,
+        1394
+      ]
+    },
+    {
+      "name": "Village Palm Oil (unadulterated)",
+      "imageUrl": "assets/ruono-products/village-palm-oil-unadulterated.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        91,
+        565,
+        287,
+        719
+      ]
+    },
+    {
+      "name": "Sun Oil Premium Vegetable Oil",
+      "imageUrl": "assets/ruono-products/sun-oil-premium-vegetable-oil.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        93,
+        730,
+        282,
+        819
+      ]
+    },
+    {
+      "name": "Kuli Kuli Oil",
+      "imageUrl": "assets/ruono-products/kuli-kuli-oil.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        93,
+        827,
+        277,
+        924
+      ]
+    },
+    {
+      "name": "Irish Potato",
+      "imageUrl": "assets/ruono-products/irish-potato.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        91,
+        936,
+        281,
+        1028
+      ]
+    },
+    {
+      "name": "Yam",
+      "imageUrl": "assets/ruono-products/yam.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        94,
+        1031,
+        277,
+        1126
+      ]
+    },
+    {
+      "name": "Hot Chili Pepper",
+      "imageUrl": "assets/ruono-products/hot-chili-pepper.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        89,
+        1135,
+        282,
+        1234
+      ]
+    },
+    {
+      "name": "Cameroon Pepper (unblended)",
+      "imageUrl": "assets/ruono-products/cameroon-pepper-unblended.webp",
+      "sourceCataloguePage": "749C0965-ABD9-412A-B576-FC84EDB13CCF.jpeg",
+      "sourceCrop": [
+        94,
+        1245,
+        278,
+        1331
+      ]
+    },
+    {
+      "name": "Authentic Ofada Rice (destoned)",
+      "imageUrl": "assets/ruono-products/authentic-ofada-rice-destoned.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        82,
+        546,
+        237,
+        651
+      ]
+    },
+    {
+      "name": "Honey Beans (Ewa Oloyin)",
+      "imageUrl": "assets/ruono-products/honey-beans-ewa-oloyin.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        81,
+        692,
+        239,
+        808
+      ]
+    },
+    {
+      "name": "White Iron Beans - Grade 1",
+      "imageUrl": "assets/ruono-products/white-iron-beans-grade-1.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        82,
+        845,
+        240,
+        960
+      ]
+    },
+    {
+      "name": "Spicy Kuli Kuli",
+      "imageUrl": "assets/ruono-products/spicy-kuli-kuli.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        82,
+        985,
+        239,
+        1091
+      ]
+    },
+    {
+      "name": "Ijebu Garri",
+      "imageUrl": "assets/ruono-products/ijebu-garri.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        83,
+        1110,
+        235,
+        1187
+      ]
+    },
+    {
+      "name": "Yellow Garri",
+      "imageUrl": "assets/ruono-products/yellow-garri.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        84,
+        1197,
+        235,
+        1264
+      ]
+    },
+    {
+      "name": "White Garri",
+      "imageUrl": "assets/ruono-products/white-garri.webp",
+      "sourceCataloguePage": "D7DE73B8-307A-42DA-8798-4EDB72019280.jpeg",
+      "sourceCrop": [
+        85,
+        1276,
+        233,
+        1340
+      ]
+    },
+    {
+      "name": "Tapioca",
+      "imageUrl": "assets/ruono-products/tapioca.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        91,
+        581,
+        198,
+        633
+      ]
+    },
+    {
+      "name": "Fresh Periwinkle",
+      "imageUrl": "assets/ruono-products/fresh-periwinkle.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        88,
+        651,
+        204,
+        749
+      ]
+    },
+    {
+      "name": "Cashew Nut",
+      "imageUrl": "assets/ruono-products/cashew-nut.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        90,
+        766,
+        202,
+        840
+      ]
+    },
+    {
+      "name": "Yaji",
+      "imageUrl": "assets/ruono-products/yaji.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        91,
+        860,
+        199,
+        922
+      ]
+    },
+    {
+      "name": "White Pap",
+      "imageUrl": "assets/ruono-products/white-pap.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        91,
+        935,
+        198,
+        996
+      ]
+    },
+    {
+      "name": "Guinea Corn",
+      "imageUrl": "assets/ruono-products/guinea-corn.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        91,
+        1008,
+        201,
+        1070
+      ]
+    },
+    {
+      "name": "Dried Yellow Pap",
+      "imageUrl": "assets/ruono-products/dried-yellow-pap.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        91,
+        1080,
+        199,
+        1140
+      ]
+    },
+    {
+      "name": "Dried Ginger Pap",
+      "imageUrl": "assets/ruono-products/dried-ginger-pap.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        88,
+        1148,
+        206,
+        1245
+      ]
+    },
+    {
+      "name": "Mixed Grain Pap",
+      "imageUrl": "assets/ruono-products/mixed-grain-pap.webp",
+      "sourceCataloguePage": "84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg",
+      "sourceCrop": [
+        90,
+        1260,
+        203,
+        1326
+      ]
+    }
+  ]
+}
