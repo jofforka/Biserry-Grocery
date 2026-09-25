@@ -63,6 +63,35 @@ def _subject_box(image: Image.Image) -> tuple[int, int, int, int]:
     )
 
 
+def _remove_isolated_specks(image: Image.Image) -> Image.Image:
+    """Remove only tiny disconnected scan/catalogue marks (never large objects)."""
+    mask = _foreground_mask(image)
+    height, width = mask.shape
+    seen = np.zeros_like(mask, dtype=bool)
+    pixels = np.asarray(image.convert("RGB"), dtype=np.uint8).copy()
+    for start_y, start_x in zip(*np.nonzero(mask & ~seen)):
+        if seen[start_y, start_x]:
+            continue
+        stack = [(int(start_y), int(start_x))]
+        seen[start_y, start_x] = True
+        component: list[tuple[int, int]] = []
+        while stack:
+            y, x = stack.pop()
+            component.append((y, x))
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    if dx == 0 and dy == 0:
+                        continue
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < height and 0 <= nx < width and mask[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+        if len(component) <= 6:
+            for y, x in component:
+                pixels[y, x] = BACKGROUND
+    return Image.fromarray(pixels, "RGB")
+
+
 def _neutralize_background(image: Image.Image) -> Image.Image:
     rgb = np.asarray(image.convert("RGB"), dtype=np.float32)
     value = rgb.max(axis=2) / 255.0
@@ -83,6 +112,7 @@ def _neutralize_background(image: Image.Image) -> Image.Image:
 def enhance(source: Path, destination: Path) -> None:
     with Image.open(source) as opened:
         image = ImageOps.exif_transpose(opened).convert("RGB")
+    image = _remove_isolated_specks(image)
     image = image.crop(_subject_box(image))
     image = _neutralize_background(image)
 

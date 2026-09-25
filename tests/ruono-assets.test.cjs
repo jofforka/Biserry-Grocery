@@ -16,6 +16,13 @@ const allowedPages=new Set([
   '84D1F70B-8C00-4D64-AC3B-6D509D4DC7AF.jpeg',
 ]);
 
+function webpDimensions(buffer){
+  const marker=buffer.indexOf(Buffer.from('VP8 '));
+  assert.ok(marker>=0,'expected a lossy VP8 WebP payload');
+  assert.equal(buffer.subarray(marker+11,marker+14).toString('hex'),'9d012a');
+  return [buffer.readUInt16LE(marker+14)&0x3fff,buffer.readUInt16LE(marker+16)&0x3fff];
+}
+
 test('Ruono manifest contains exactly 107 unique local catalogue crops',()=>{
   assert.equal(manifest.count,107);
   assert.equal(manifest.products.length,107);
@@ -28,9 +35,28 @@ test('Ruono manifest contains exactly 107 unique local catalogue crops',()=>{
     assert.ok(item.sourceCrop.every(Number.isInteger));
     const absolute=path.resolve(root,item.imageUrl);
     assert.equal(path.dirname(absolute),path.join(root,'assets','ruono-products'));
-    assert.ok(fs.statSync(absolute).size>500,`${item.imageUrl} is unexpectedly small`);
-    assert.equal(fs.readFileSync(absolute).subarray(0,4).toString('ascii'),'RIFF');
+    const size=fs.statSync(absolute).size;
+    assert.ok(size>=2500&&size<=30000,`${item.imageUrl} has an unreasonable byte size: ${size}`);
+    const bytes=fs.readFileSync(absolute);
+    assert.equal(bytes.subarray(0,4).toString('ascii'),'RIFF');
+    assert.deepEqual(webpDimensions(bytes),[512,512]);
   }
+});
+
+test('optimized hero banner is the expected responsive PNG',()=>{
+  const hero=path.join(root,'assets','hero-banner.png');
+  const bytes=fs.readFileSync(hero);
+  assert.equal(bytes.subarray(1,4).toString('ascii'),'PNG');
+  assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)],[1600,900]);
+  assert.ok(bytes.length>=500000&&bytes.length<=2500000,`hero banner byte size is unexpected: ${bytes.length}`);
+  const home=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  assert.match(home,/assets\/hero-banner\.png\?v=20260925-enhanced/);
+});
+
+test('store cache-busts the enhanced Ruono asset paths',()=>{
+  const store=fs.readFileSync(path.join(root,'js','store.js'),'utf8');
+  assert.match(store,/RUONO_ASSET_VERSION = "20260925-enhanced"/);
+  assert.match(store,/assets\/ruono-products\//);
 });
 
 test('asset directory has no unmapped or missing thumbnails',()=>{
