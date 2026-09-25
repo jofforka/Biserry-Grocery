@@ -57,6 +57,9 @@ test('store cache-busts the enhanced Ruono asset paths',()=>{
   const store=fs.readFileSync(path.join(root,'js','store.js'),'utf8');
   assert.match(store,/RUONO_ASSET_VERSION = "20260925-enhanced"/);
   assert.match(store,/assets\/ruono-products\//);
+  for(const page of ['index.html','shop.html','cart.html','checkout.html','farmers-market.html']){
+    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260925-enhanced/,page);
+  }
 });
 
 test('asset directory has no unmapped or missing thumbnails',()=>{
