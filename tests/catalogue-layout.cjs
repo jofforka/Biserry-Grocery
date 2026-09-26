@@ -11,7 +11,7 @@ const stub=`export const db={};export const collection=()=>({});export const que
  const rows=[];
  try{
  for(const file of ['shop.html','index.html']) for(const [width,expected] of [[390,2],[1024,4],[1366,5],[1600,6]]){
-  await page.setViewportSize({width,height:1000});await page.goto(`http://127.0.0.1:${server.address().port}/${file}`);await page.waitForSelector('.productGrid .card');
+  await page.setViewportSize({width,height:1000});await page.goto(`http://127.0.0.1:${server.address().port}/${file}`,{waitUntil:'domcontentloaded'});await page.waitForSelector('.productGrid .card');
   const result=await page.locator('.productGrid').evaluate(grid=>{const card=grid.querySelector('.card'),img=card.querySelector('.productImageButton');return {columns:getComputedStyle(grid).gridTemplateColumns.split(' ').length,cardHeight:card.getBoundingClientRect().height,imageHeight:img.getBoundingClientRect().height,overflow:document.documentElement.scrollWidth>innerWidth};});
   assert.equal(result.columns,expected);assert.equal(result.imageHeight,width>760?170:104);assert.equal(result.overflow,false);if(width>760)assert.ok(result.cardHeight<430,JSON.stringify(result));rows.push({file,width,...result});
   if(file==='shop.html'&&width===1366){await page.locator('#shop').screenshot({path:path.join(os.tmpdir(),'biserry-desktop.png')});await page.locator('.variantBox select').first().selectOption('600g');await page.locator('.addBtn').first().click();const cart=await page.evaluate(()=>JSON.parse(localStorage.getItem('biserryCart')));assert.equal(cart[0].variantId,'600g');assert.equal(cart[0].price,6000);}

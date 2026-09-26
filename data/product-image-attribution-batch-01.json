@@ -1,0 +1,186 @@
+{
+  "batch": 1,
+  "count": 20,
+  "products": [
+    {
+      "name": "Turkey Gizzard",
+      "file": "turkey-gizzard.webp",
+      "url": "https://redandgreensafricanafood.com/wp-content/uploads/2024/05/Turkey-Gizzard.webp",
+      "page": "https://redandgreensafricanafood.com/product/turkey-gizzards-1kg/",
+      "license": "source-site terms",
+      "sourceWidth": 1200,
+      "sourceHeight": 799
+    },
+    {
+      "name": "Sausage",
+      "file": "sausage.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Raw_sausages.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Raw_sausages.jpg",
+      "license": "GFDL",
+      "sourceWidth": 1152,
+      "sourceHeight": 1536
+    },
+    {
+      "name": "Abacha",
+      "file": "abacha.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The_dried_shredded_cassava%2C_Abacha%2C_sampled_for_sale.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:The_dried_shredded_cassava,_Abacha,_sampled_for_sale.jpg",
+      "license": "CC BY-SA 4.0",
+      "sourceWidth": 3456,
+      "sourceHeight": 4608
+    },
+    {
+      "name": "Catfish Fillet",
+      "file": "catfish-fillet.webp",
+      "url": "https://images.heb.com/is/image/HEBGrocery/000373242-1",
+      "page": "https://www.centralmarket.com/product/h-e-b-fish-market-fresh-catfish-fillet/373242",
+      "license": "source-site terms",
+      "sourceWidth": 3738,
+      "sourceHeight": 3738
+    },
+    {
+      "name": "Prawn",
+      "file": "prawn.webp",
+      "url": "https://londongrocery.net/cdn/shop/files/fresh-wtr-prawns_75e8b7e9-237f-4be8-8689-e3874379da87_800x.png?v=1722180430",
+      "page": "https://londongrocery.net/products/fresh-wtr-prawns",
+      "license": "source-site terms",
+      "sourceWidth": 800,
+      "sourceHeight": 800
+    },
+    {
+      "name": "Dry Ukwa",
+      "file": "dry-ukwa.webp",
+      "url": "https://i5.walmartimages.com/seo/Geevic-Ukwa-Breadfruit-35-2-oz-Dried-Breadfruit-Seeds_15489e9e-a4c5-48ee-b13b-bff068a63a88.8f64576bd70f641c23ee4f5198a8120b.jpeg",
+      "page": "https://www.walmart.com/",
+      "license": "source-site terms",
+      "sourceWidth": 735,
+      "sourceHeight": 1024
+    },
+    {
+      "name": "Chicken Gizzard",
+      "file": "chicken-gizzard.webp",
+      "url": "https://www.vegspot.ie/cdn/shop/files/Untitled-1_0005_AdobeStock_1497692171-copy-12_b1502405-55db-4e23-a74e-31ed8ab24a91.png?v=1766771154&width=1780",
+      "page": "https://www.vegspot.ie/products/fresh-chicken-gizzard",
+      "license": "source-site terms",
+      "sourceWidth": 1080,
+      "sourceHeight": 1080
+    },
+    {
+      "name": "Croaker",
+      "file": "croaker.webp",
+      "url": "https://static.wixstatic.com/media/507676_8b42902ba32b4a6eb160f0a35fce087b~mv2.jpg/v1/fill/w_995,h_1230,al_c,q_85,enc_avif,quality_auto/507676_8b42902ba32b4a6eb160f0a35fce087b~mv2.jpg",
+      "page": "https://www.seafoodxpress.com/",
+      "license": "source-site terms",
+      "sourceWidth": 995,
+      "sourceHeight": 1230
+    },
+    {
+      "name": "Blended Egusi",
+      "file": "blended-egusi.webp",
+      "url": "https://i.etsystatic.com/23932426/r/il/b971a1/2626355046/il_1140xN.2626355046_gepc.jpg",
+      "page": "https://www.etsy.com/",
+      "license": "source-site terms",
+      "sourceWidth": 1140,
+      "sourceHeight": 1139
+    },
+    {
+      "name": "Whole Local Chicken",
+      "file": "whole-local-chicken.webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Whole_raw_chicken_-_Japan_Dec_22_2019.jpeg",
+      "page": "https://commons.wikimedia.org/w/index.php?curid=85131154",
+      "license": "CC BY",
+      "sourceWidth": 1383,
+      "sourceHeight": 1383
+    },
+    {
+      "name": "Chicken Feet",
+      "file": "chicken-feet.webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/15/Processed_Frozen_Chicken_Feet_%26_frozen_chicken_Paws.jpg",
+      "page": "https://commons.wikimedia.org/w/index.php?curid=61261995",
+      "license": "CC BY-SA",
+      "sourceWidth": 1024,
+      "sourceHeight": 768
+    },
+    {
+      "name": "Shawa Fish",
+      "file": "shawa-fish.webp",
+      "url": "https://res.cloudinary.com/dkkytaqvz/image/upload/q_auto,f_auto,w_1000,c_limit/v1779288049/farmket_imgs/snsv5n2mnnipyndttnri.jpg",
+      "page": "https://farmket.ng/product/IF8uSsFiV0JcylVAO9Lp/shawa-fish",
+      "license": "source-site terms",
+      "sourceWidth": 1000,
+      "sourceHeight": 1333
+    },
+    {
+      "name": "Antelope",
+      "file": "antelope.webp",
+      "url": "https://live.staticflickr.com/187/396013649_cbb739f537_b.jpg",
+      "page": "https://www.flickr.com/photos/36298222@N00/396013649",
+      "license": "CC BY-NC-SA",
+      "sourceWidth": 768,
+      "sourceHeight": 1024
+    },
+    {
+      "name": "Catfish Powder",
+      "file": "catfish-powder.webp",
+      "url": "https://mashedafoods.com/wp-content/uploads/2025/01/Smoked-Powder.webp",
+      "page": "https://mashedafoods.com/",
+      "license": "source-site terms",
+      "sourceWidth": 1000,
+      "sourceHeight": 1000
+    },
+    {
+      "name": "Fresh Chicken - carton/cuts",
+      "file": "fresh-chicken-carton-cuts.webp",
+      "url": "https://lusakadelivery.com/cdn/shop/products/102-14-scaled.jpg?v=1614687742",
+      "page": "https://lusakadelivery.com/",
+      "license": "source-site terms",
+      "sourceWidth": 2560,
+      "sourceHeight": 1985
+    },
+    {
+      "name": "Hake (Panla)",
+      "file": "hake-panla.webp",
+      "url": "https://londongrocery.net/cdn/shop/products/whole_hake_fish_7de53b7e-87b9-492e-8608-657794725bcc_1024x.png?v=1635086416",
+      "page": "https://londongrocery.net/",
+      "license": "source-site terms",
+      "sourceWidth": 1024,
+      "sourceHeight": 1024
+    },
+    {
+      "name": "Achicha",
+      "file": "achicha.webp",
+      "url": "https://i.etsystatic.com/14628657/r/il/ebe58a/6687426930/il_1080xN.6687426930_260g.jpg",
+      "page": "https://www.etsy.com/listing/1868469248/obiji-foods-achicha-ede-dried-cocoyam",
+      "license": "source-site terms",
+      "sourceWidth": 1080,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Jaggery",
+      "file": "jaggery.webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/%281%29_Jaggery_Gud_Punjab_India.jpg",
+      "page": "https://commons.wikimedia.org/w/index.php?curid=29908723",
+      "license": "CC BY",
+      "sourceWidth": 3008,
+      "sourceHeight": 2000
+    },
+    {
+      "name": "Akidi",
+      "file": "akidi.webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Black_beans%2C_uncooked%2C_2024-11-27.jpg",
+      "page": "https://commons.wikimedia.org/w/index.php?curid=155924234",
+      "license": "CC0",
+      "sourceWidth": 4000,
+      "sourceHeight": 6000
+    },
+    {
+      "name": "Full Dressed Chicken",
+      "file": "full-dressed-chicken.webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Whole_raw_chicken_-_Japan_Dec_22_2019.jpeg",
+      "page": "https://commons.wikimedia.org/w/index.php?curid=85131154",
+      "license": "CC BY",
+      "sourceWidth": 1383,
+      "sourceHeight": 1383
+    }
+  ]
+}

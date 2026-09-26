@@ -5,6 +5,8 @@ const path=require('node:path');
 
 const root=path.resolve(__dirname,'..');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'data','ruono-product-images.json'),'utf8'));
+const batchOne=JSON.parse(fs.readFileSync(path.join(root,'data','product-image-attribution-batch-01.json'),'utf8'));
+const upgradedFiles=new Set(batchOne.products.map(item=>item.file));
 const allowedPages=new Set([
   'CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg',
   'F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg',
@@ -36,10 +38,22 @@ test('Ruono manifest contains exactly 107 unique local catalogue crops',()=>{
     const absolute=path.resolve(root,item.imageUrl);
     assert.equal(path.dirname(absolute),path.join(root,'assets','ruono-products'));
     const size=fs.statSync(absolute).size;
-    assert.ok(size>=2500&&size<=30000,`${item.imageUrl} has an unreasonable byte size: ${size}`);
+    const upgraded=upgradedFiles.has(path.basename(item.imageUrl));
+    assert.ok(size>=2500&&size<=(upgraded?300000:30000),`${item.imageUrl} has an unreasonable byte size: ${size}`);
     const bytes=fs.readFileSync(absolute);
     assert.equal(bytes.subarray(0,4).toString('ascii'),'RIFF');
-    assert.deepEqual(webpDimensions(bytes),[512,512]);
+    assert.deepEqual(webpDimensions(bytes),upgraded?[1024,1024]:[512,512]);
+  }
+});
+
+test('batch 1 upgrades exactly 20 mapped products from usable source dimensions',()=>{
+  assert.equal(batchOne.batch,1);
+  assert.equal(batchOne.count,20);
+  assert.equal(batchOne.products.length,20);
+  assert.equal(upgradedFiles.size,20);
+  for(const item of batchOne.products){
+    assert.ok(item.sourceWidth>=700&&item.sourceHeight>=700,`${item.name} source is too small`);
+    assert.ok(manifest.products.some(product=>path.basename(product.imageUrl)===item.file),`${item.file} is not mapped`);
   }
 });
 
@@ -55,10 +69,10 @@ test('optimized hero banner is the expected responsive PNG',()=>{
 
 test('store cache-busts the enhanced Ruono asset paths',()=>{
   const store=fs.readFileSync(path.join(root,'js','store.js'),'utf8');
-  assert.match(store,/RUONO_ASSET_VERSION = "20260925-enhanced"/);
+  assert.match(store,/RUONO_ASSET_VERSION = "20260926-b01"/);
   assert.match(store,/assets\/ruono-products\//);
   for(const page of ['index.html','shop.html','cart.html','checkout.html','farmers-market.html']){
-    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260925-enhanced/,page);
+    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260926-b01/,page);
   }
 });
 
