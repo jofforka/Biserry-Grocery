@@ -1,0 +1,186 @@
+{
+  "batch": 3,
+  "count": 20,
+  "products": [
+    {
+      "name": "Dry Snails - Medium Size",
+      "file": "dry-snails-medium-size.webp",
+      "url": "https://i.ebayimg.com/images/g/QwoAAeSwNC9nsv8v/s-l1200.jpg",
+      "page": "https://www.ebay.co.uk/itm/126486342744",
+      "license": "source-site terms",
+      "sourceWidth": 720,
+      "sourceHeight": 916
+    },
+    {
+      "name": "Cloves",
+      "file": "cloves.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Cloves%20whole.JPG?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Cloves_whole.JPG",
+      "license": "public domain",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Dry Snails - Large",
+      "file": "dry-snails-large.webp",
+      "url": "https://i.etsystatic.com/42464239/r/il/4fe9cc/5165254822/il_1140xN.5165254822_a14g.jpg",
+      "page": "https://www.etsy.com/listing/1525618116/oven-dry-snails-jumbo-extra-jumbo-bush",
+      "license": "source-site terms",
+      "sourceWidth": 1140,
+      "sourceHeight": 855
+    },
+    {
+      "name": "Sun Oil Premium Vegetable Oil",
+      "file": "sun-oil-premium-vegetable-oil.webp",
+      "url": "https://elegantbarcodes.com.ng/static/sunoil.jpg",
+      "page": "https://elegantbarcodes.com.ng/sunoil",
+      "license": "source-site terms",
+      "sourceWidth": 3545,
+      "sourceHeight": 4724
+    },
+    {
+      "name": "Tapioca",
+      "file": "tapioca.webp",
+      "url": "https://static.wixstatic.com/media/ea3d49_8e7b7e07e2a1495bb19128f503ebde9a~mv2.jpg/v1/fill/w_980,h_980,al_c,q_85,usm_0.66_1.00_0.01/ea3d49_8e7b7e07e2a1495bb19128f503ebde9a~mv2.jpg",
+      "page": "https://www.bubultea.com/product-page/perlas-de-tapioca-blanca",
+      "license": "source-site terms",
+      "sourceWidth": 980,
+      "sourceHeight": 980
+    },
+    {
+      "name": "Oron Crayfish - cleaned & blended",
+      "file": "oron-crayfish-cleaned-blended.webp",
+      "url": "https://images-na.ssl-images-amazon.com/images/I/81ObRalEA9L.jpg",
+      "page": "https://www.whizz.co.ke/product/19164554/colour-flavour-premium-quality-nigerian-dry-shrimp-crayfish-powder-7-ounce-pack-of-2/",
+      "license": "source-site terms",
+      "sourceWidth": 2560,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Dry Snails - Jumbo",
+      "file": "dry-snails-jumbo.webp",
+      "url": "https://cokodeal.com/images/sellers_deals/1702311633128-1703845294.jpg",
+      "page": "https://cokodeal.com/",
+      "license": "source-site terms",
+      "sourceWidth": 720,
+      "sourceHeight": 960
+    },
+    {
+      "name": "Pepper Soup Spice",
+      "file": "pepper-soup-spice.webp",
+      "url": "https://shop.ojaoba.com/cdn/shop/files/peppersoupspice.heic?v=1763814964&width=1600&format=jpg",
+      "page": "https://shop.ojaoba.com/products/pepper-soup-spiece",
+      "license": "source-site terms",
+      "sourceWidth": 1600,
+      "sourceHeight": 2133
+    },
+    {
+      "name": "Grilled Guinea Fowl",
+      "file": "grilled-guinea-fowl.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Roasted%20Guinea%20fowls%20in%20Northern%20Ghana%2002.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Roasted_Guinea_fowls_in_Northern_Ghana_02.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Star Anise",
+      "file": "star-anise.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Star%20anise%20~%20Illicium%20verum.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Star_anise_~_Illicium_verum.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 1920
+    },
+    {
+      "name": "White Garri",
+      "file": "white-garri.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/White%20garri%20made%20from%20cassava.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:White_garri_made_from_cassava.jpg",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Yaji",
+      "file": "yaji.webp",
+      "url": "https://www.alhajisuya.com/cdn/shop/products/yaji-suya-spice-spices-553.png?v=1661087293",
+      "page": "https://www.alhajisuya.com/products/yaji-suya-spice",
+      "license": "source-site terms",
+      "sourceWidth": 1024,
+      "sourceHeight": 1024
+    },
+    {
+      "name": "Jollof Spice",
+      "file": "jollof-spice.webp",
+      "url": "https://mile12african.ca/cdn/shop/files/5FCCD190-9E36-4C2C-BFD4-CFD1B8318F29.jpg?v=1733519110&width=1200",
+      "page": "https://mile12african.ca/",
+      "license": "source-site terms",
+      "sourceWidth": 1200,
+      "sourceHeight": 1600
+    },
+    {
+      "name": "Cow Meat Travel Packs",
+      "file": "cow-meat-travel-packs.webp",
+      "url": "https://beeolafoods.com/cdn/shop/files/450F9532-C2EB-46D0-BC7D-B28052C0FB17.jpg?v=1739983169&width=1600",
+      "page": "https://beeolafoods.com/products/freshly-smoked-beef-agemawo-5pieces",
+      "license": "source-site terms",
+      "sourceWidth": 1600,
+      "sourceHeight": 2133
+    },
+    {
+      "name": "Dried Catfish",
+      "file": "dried-catfish.webp",
+      "url": "https://i0.wp.com/acesfish.com/wp-content/uploads/2025/07/catfish-1-s-l1600.webp?resize=1024%2C1016&ssl=1",
+      "page": "https://acesfish.com/",
+      "license": "source-site terms",
+      "sourceWidth": 1024,
+      "sourceHeight": 1016
+    },
+    {
+      "name": "Irish Potato",
+      "file": "irish-potato.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Fresh%20Irish%20potatoes.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Fresh_Irish_potatoes.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 897
+    },
+    {
+      "name": "Hand-Peeled Egusi",
+      "file": "hand-peeled-egusi.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Egusi%20seeds.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Egusi_seeds.jpg",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Oron Crayfish - cleaned & unblended",
+      "file": "oron-crayfish-cleaned-unblended.webp",
+      "url": "https://udyfoods.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-07-at-10.54.36-AM.jpeg",
+      "page": "https://udyfoods.com/product/oron-clean-unblended-crayfish/",
+      "license": "source-site terms",
+      "sourceWidth": 1600,
+      "sourceHeight": 2133
+    },
+    {
+      "name": "Cameroon Pepper (unblended)",
+      "file": "cameroon-pepper-unblended.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sun%20dry%20red%20chilli.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Sun_dry_red_chilli.jpg",
+      "license": "CC BY 2.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 2880
+    },
+    {
+      "name": "Guinea Corn",
+      "file": "guinea-corn.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/A%20plate%20of%20sorghum%20grain.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:A_plate_of_sorghum_grain.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 1815
+    }
+  ]
+}
