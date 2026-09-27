@@ -1,0 +1,186 @@
+{
+  "batch": 4,
+  "count": 20,
+  "products": [
+    {
+      "name": "Yam",
+      "file": "yam.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Abuja%20yam.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Abuja_yam.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Oron Crayfish - unclean",
+      "file": "oron-crayfish-unclean.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Dry%20crayfish.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Dry_crayfish.jpg",
+      "license": "CC BY-SA 4.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Yellow Garri",
+      "file": "yellow-garri.webp",
+      "url": "https://beeolafoods.com/cdn/shop/files/52703F44-6B52-4985-96C5-B452B65EAD89.jpg?v=1763285249&width=1920",
+      "page": "https://beeolafoods.com/products/yellow-garri",
+      "license": "source-site terms",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Ador Ogbono",
+      "file": "ador-ogbono.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Ogbono%20Seed.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Ogbono_Seed.jpg",
+      "license": "CC BY 4.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Smoked Catfish Maxi Carton",
+      "file": "smoked-catfish-maxi-carton.webp",
+      "url": "https://i.etsystatic.com/28408211/r/il/417acd/6858858338/il_fullxfull.6858858338_otra.jpg",
+      "page": "https://www.etsy.com/listing/4304806266/wholesale-smoked-catfish-nigeriaafrica",
+      "license": "source-site terms",
+      "sourceWidth": 1126,
+      "sourceHeight": 2000
+    },
+    {
+      "name": "Asa Cutlets - preorder",
+      "file": "asa-cutlets-preorder.webp",
+      "url": "https://danflowfoods.com/cdn/shop/products/Untitleddesign_36.png?v=1682439821&width=1445",
+      "page": "https://danflowfoods.com/products/eja-osan",
+      "license": "source-site terms",
+      "sourceWidth": 700,
+      "sourceHeight": 700
+    },
+    {
+      "name": "Zobo",
+      "file": "zobo.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Fresh%20dry%20SOBO%20OR%20ZOBO%20%28%20dried%20hibiscus%20flowers%29.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Fresh_dry_SOBO_OR_ZOBO_(_dried_hibiscus_flowers).jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 1280
+    },
+    {
+      "name": "Kuli Kuli Oil",
+      "file": "kuli-kuli-oil.webp",
+      "url": "https://i.etsystatic.com/29975550/r/il/acc4ac/4611757740/il_1080xN.4611757740_n2zl.jpg",
+      "page": "https://www.etsy.com/listing/1033827846/nigerian-groundnut-kuli-kuli-oil-16-oz-1",
+      "license": "source-site terms",
+      "sourceWidth": 1080,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Dried Catfish Cutlet / Mangala (Small Size)",
+      "file": "dried-catfish-cutlet-mangala-small-size.webp",
+      "url": "https://i.ebayimg.com/images/g/fPQAAOSwRqhmTl8S/s-l1200.jpg",
+      "page": "https://www.ebay.co.uk/itm/145791353384",
+      "license": "source-site terms",
+      "sourceWidth": 960,
+      "sourceHeight": 1200
+    },
+    {
+      "name": "Dry Periwinkles",
+      "file": "dry-periwinkles.webp",
+      "url": "https://i.ebayimg.com/images/g/QuoAAOSwn2Fn4rjc/s-l1200.png",
+      "page": "https://www.ebay.co.uk/itm/116713808832",
+      "license": "source-site terms",
+      "sourceWidth": 838,
+      "sourceHeight": 1200
+    },
+    {
+      "name": "Hot Chili Pepper",
+      "file": "hot-chili-pepper.webp",
+      "url": "https://images.unsplash.com/photo-1526346698789-22fd84314424?auto=format&fit=crop&fm=jpg&q=85&w=1800",
+      "page": "https://unsplash.com/photos/1526346698789-22fd84314424",
+      "license": "Unsplash License",
+      "sourceWidth": 1800,
+      "sourceHeight": 1200
+    },
+    {
+      "name": "Zobo Mix + Jaggery",
+      "file": "zobo-mix-jaggery.webp",
+      "url": "https://m.media-amazon.com/images/I/61o8x9X3YwL._SL1202_.jpg",
+      "page": "https://www.ubuy.co.zw/en/product/1144M5C2-rodo-zobo-mix-hibiscus-flowers-nigerian-drink-100-natural-boil-add-sugar-and-drink-also-called-rosel",
+      "license": "source-site terms",
+      "sourceWidth": 891,
+      "sourceHeight": 1202
+    },
+    {
+      "name": "Ijebu Garri",
+      "file": "ijebu-garri.webp",
+      "url": "https://jdpglobalfoods.com/wp-content/uploads/2020/08/IMG-20200708-WA0014.jpg",
+      "page": "https://jdpglobalfoods.com/product/garri-ijebu/",
+      "license": "source-site terms",
+      "sourceWidth": 750,
+      "sourceHeight": 1050
+    },
+    {
+      "name": "Mixed Grain Pap",
+      "file": "mixed-grain-pap.webp",
+      "url": "https://mysasun.com/cdn/shop/files/mysasun-ogi-empire-mixed-grain-ogi-akamu-pap-2lb-african-breakfast.png?v=1766046485&width=1600",
+      "page": "https://mysasun.com/products/ogi-empire-mixed-grain-ogi-akamu-pap-2lb-copy",
+      "license": "source-site terms",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536
+    },
+    {
+      "name": "Dried Catfish Cutlet / Mangala (Big Size)",
+      "file": "dried-catfish-cutlet-mangala-big-size.webp",
+      "url": "https://tout-africain.odoo.com/web/image/product.template/38/image_1920?unique=eec712f",
+      "page": "https://tout-africain.odoo.com/shop/mf-mangala-fish-2pcs-38",
+      "license": "source-site terms",
+      "sourceWidth": 672,
+      "sourceHeight": 896
+    },
+    {
+      "name": "Tiger Nut",
+      "file": "tiger-nut.webp",
+      "url": "https://i.etsystatic.com/22200767/r/il/ac9058/6858616018/il_1080xN.6858616018_bu1d.jpg",
+      "page": "https://www.etsy.com/listing/4304734247/organic-dried-tiger-nuts-african",
+      "license": "source-site terms",
+      "sourceWidth": 1080,
+      "sourceHeight": 806
+    },
+    {
+      "name": "Cow Slots",
+      "file": "cow-slots.webp",
+      "url": "https://swrfmarket.com/cdn/shop/files/pa1_da358afe-0ef4-4dcf-b449-789922e5c094_1024x1024.jpg?v=1749067406",
+      "page": "https://swrfmarket.com/",
+      "license": "source-site terms",
+      "sourceWidth": 1001,
+      "sourceHeight": 1023
+    },
+    {
+      "name": "Stockfish Ear",
+      "file": "stockfish-ear.webp",
+      "url": "https://shop.ojaoba.com/cdn/shop/files/Stockfishear.jpg?v=1770201408&width=1920",
+      "page": "https://shop.ojaoba.com/products/stockfish-ear",
+      "license": "source-site terms",
+      "sourceWidth": 810,
+      "sourceHeight": 1013
+    },
+    {
+      "name": "Smoked / Fried Cow Thigh",
+      "file": "smoked-fried-cow-thigh.webp",
+      "url": "https://www.preciouscore.com/wp-content/uploads/2023/01/Nigerian-Beef-Stew-fried-beef-720x1080.jpg",
+      "page": "https://www.preciouscore.com/nigerian-beef-stew/",
+      "license": "source-site terms",
+      "sourceWidth": 720,
+      "sourceHeight": 1080
+    },
+    {
+      "name": "Cashew Nut",
+      "file": "cashew-nut.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Raw%20cashew%20nuts.JPG?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Raw_cashew_nuts.JPG",
+      "license": "CC BY 3.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    }
+  ]
+}

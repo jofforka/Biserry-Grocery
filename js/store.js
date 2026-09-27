@@ -3,7 +3,7 @@ import { db, collection, getDocs, addDoc, serverTimestamp, query, where, limit, 
 const CART_STORAGE_KEY = "biserryCart";
 const WISHLIST_STORAGE_KEY = "biserryWishlist";
 const RECENT_STORAGE_KEY = "biserryRecentlyViewed";
-const RUONO_ASSET_VERSION = "20260927-b03";
+const RUONO_ASSET_VERSION = "20260927-b04";
 
 const fallbackProducts = [
   {id:"demo-1",name:"Golden Morn",category:"grains",hasVariants:true,variantLabel:"Size",imageUrl:"assets/rice.jpg",isFeatured:true,variants:[{id:"900g",name:"900g",price:5000,stock:10},{id:"300g",name:"300g",price:2500,stock:10}]},
