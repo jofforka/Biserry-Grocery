@@ -1,0 +1,186 @@
+{
+  "batch": 2,
+  "count": 20,
+  "products": [
+    {
+      "name": "Deboned Panla",
+      "file": "deboned-panla.webp",
+      "url": "https://cdn.shopify.com/s/files/1/0249/8582/9438/files/4412D645-A8E8-4EF1-8CA1-B38CA72EC65E.jpg?v=1749740771&width=1920",
+      "page": "https://tomthefish.co.uk/products/hake-fillets",
+      "license": "source-site terms",
+      "sourceWidth": 771,
+      "sourceHeight": 771
+    },
+    {
+      "name": "Cinnamon",
+      "file": "cinnamon.webp",
+      "url": "https://live.staticflickr.com/8141/7309903584_efef4fc8bd_b.jpg",
+      "page": "https://www.flickr.com/photos/65187097@N03/7309903584",
+      "license": "CC BY 2.0",
+      "sourceWidth": 1024,
+      "sourceHeight": 683
+    },
+    {
+      "name": "Tilapia Fish",
+      "file": "tilapia-fish.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Liat%20Portal%20for%20Foodie%20Disorder%20-%20Whole%20raw%20tilapia%20fish.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Whole_raw_tilapia_fish.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Ginger Powder",
+      "file": "ginger-powder.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Ginger%20powder%20%281%29.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Ginger_powder_(1).jpg",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1920
+    },
+    {
+      "name": "Onion Powder",
+      "file": "onion-powder.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Onion%20Powder%2C%20Penzeys%20Spices%2C%20Arlington%20Heights%20MA.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Onion_Powder,_Penzeys_Spices,_Arlington_Heights_MA.jpg",
+      "license": "CC BY-SA",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Prawns",
+      "file": "prawns.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Prawn%20raw%20cleaned%202021.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Prawn_raw_cleaned_2021.jpg",
+      "license": "CC BY-SA",
+      "sourceWidth": 1920,
+      "sourceHeight": 2557
+    },
+    {
+      "name": "Titus Fish",
+      "file": "titus-fish.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Frozen%20fresh%20mackerel.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Frozen_fresh_mackerel.jpg",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1920
+    },
+    {
+      "name": "Grasscutter",
+      "file": "grasscutter.webp",
+      "url": "https://live.staticflickr.com/8390/8609544906_d3c2e67ae6_b.jpg",
+      "page": "https://www.flickr.com/photos/71584508@N00/8609544906",
+      "license": "CC BY-NC-SA 2.0",
+      "sourceWidth": 1024,
+      "sourceHeight": 768
+    },
+    {
+      "name": "Fio Fio",
+      "file": "fio-fio.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pigeon%20peas%20dried%20%28cropped%29.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Pigeon_peas_dried_(cropped).jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 1350
+    },
+    {
+      "name": "Chicken Cut - Broiler",
+      "file": "chicken-cut-broiler.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tikka%20Cut%20Chicken%20Pieces.JPG?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Tikka_Cut_Chicken_Pieces.JPG",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "White Pap",
+      "file": "white-pap.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Corn%20flour.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Corn_flour.jpg",
+      "license": "Wikimedia Commons license",
+      "sourceWidth": 1920,
+      "sourceHeight": 2560
+    },
+    {
+      "name": "Chicken Head, Neck & Feet",
+      "file": "chicken-head-neck-feet.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Fresh%20Raw%20Chicken%20and%20Feet%20Displayed.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Fresh_Raw_Chicken_and_Feet_Displayed.jpg",
+      "license": "CC BY-SA 4.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1081
+    },
+    {
+      "name": "Shrimps",
+      "file": "shrimps.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Raw%20shrimp.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Raw_shrimp.jpg",
+      "license": "CC0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Turkey 306",
+      "file": "turkey-306.webp",
+      "url": "https://shop.ojaoba.com/cdn/shop/files/turkey306.jpg?v=1764185444&width=1600",
+      "page": "https://shop.ojaoba.com/products/turkey-306-wing-5kg-half-carton-copy",
+      "license": "source-site terms",
+      "sourceWidth": 870,
+      "sourceHeight": 1131
+    },
+    {
+      "name": "Curry Powder",
+      "file": "curry-powder.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Curry%20madras-spice.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Curry_madras-spice.jpg",
+      "license": "CC BY-SA 1.0",
+      "sourceWidth": 1680,
+      "sourceHeight": 836
+    },
+    {
+      "name": "Turkey Wings",
+      "file": "turkey-wings.webp",
+      "url": "https://grassrootscoop.com/cdn/shop/products/Turkey_wings.png?v=1657310553&width=2130",
+      "page": "https://grassrootscoop.com/products/pasture-raised-turkey-wings",
+      "license": "source-site terms",
+      "sourceWidth": 2130,
+      "sourceHeight": 2130
+    },
+    {
+      "name": "Dried Yellow Pap",
+      "file": "dried-yellow-pap.webp",
+      "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Polenta%20uncooked.jpg?width=1600",
+      "page": "https://commons.wikimedia.org/wiki/File:Polenta_uncooked.jpg",
+      "license": "CC BY-SA 3.0",
+      "sourceWidth": 1920,
+      "sourceHeight": 1440
+    },
+    {
+      "name": "Banga Spice",
+      "file": "banga-spice.webp",
+      "url": "https://static.wixstatic.com/media/e7770e_f2c5016e23124d72b9d2c3d7b3ae3126~mv2.jpg",
+      "page": "https://www.pristinesupermart.com/product-page/banga-spice",
+      "license": "source-site terms",
+      "sourceWidth": 6144,
+      "sourceHeight": 8192
+    },
+    {
+      "name": "Dry Snails - Big Size",
+      "file": "dry-snails-big-size.webp",
+      "url": "https://www.lizzyfoodexports.com/images/snail_2.jpeg",
+      "page": "https://www.lizzyfoodexports.com/products/dried-snails",
+      "license": "source-site terms",
+      "sourceWidth": 720,
+      "sourceHeight": 956
+    },
+    {
+      "name": "Fish Head",
+      "file": "fish-head.webp",
+      "url": "https://unsplash.com/photos/ehAXRd4Zfks/download?force=true&w=1600",
+      "page": "https://unsplash.com/photos/close-up-of-fresh-fish-heads-in-market-ehAXRd4Zfks",
+      "license": "Unsplash License",
+      "sourceWidth": 1600,
+      "sourceHeight": 1200
+    }
+  ]
+}
