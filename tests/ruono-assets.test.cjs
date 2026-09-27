@@ -8,7 +8,8 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'data','ruono-product-i
 const batchOne=JSON.parse(fs.readFileSync(path.join(root,'data','product-image-attribution-batch-01.json'),'utf8'));
 const batchTwo=JSON.parse(fs.readFileSync(path.join(root,'data','product-image-attribution-batch-02.json'),'utf8'));
 const batchThree=JSON.parse(fs.readFileSync(path.join(root,'data','product-image-attribution-batch-03.json'),'utf8'));
-const upgradedFiles=new Set([...batchOne.products,...batchTwo.products,...batchThree.products].map(item=>item.file));
+const batchFour=JSON.parse(fs.readFileSync(path.join(root,'data','product-image-attribution-batch-04.json'),'utf8'));
+const upgradedFiles=new Set([...batchOne.products,...batchTwo.products,...batchThree.products,...batchFour.products].map(item=>item.file));
 const allowedPages=new Set([
   'CAAC19A5-2DFC-41C5-BDEF-F87143DD9753.jpeg',
   'F26C9AB0-2C71-401E-966D-8CD349A9019E.jpeg',
@@ -75,8 +76,19 @@ test('batch 3 upgrades exactly 20 mapped products from usable source dimensions'
   assert.equal(batchThree.count,20);
   assert.equal(batchThree.products.length,20);
   assert.equal(new Set(batchThree.products.map(item=>item.file)).size,20);
-  assert.equal(upgradedFiles.size,60);
   for(const item of batchThree.products){
+    assert.ok(item.sourceWidth>=600&&item.sourceHeight>=600,`${item.name} source is too small`);
+    assert.ok(manifest.products.some(product=>path.basename(product.imageUrl)===item.file),`${item.file} is not mapped`);
+  }
+});
+
+test('batch 4 upgrades exactly 20 mapped products from usable source dimensions',()=>{
+  assert.equal(batchFour.batch,4);
+  assert.equal(batchFour.count,20);
+  assert.equal(batchFour.products.length,20);
+  assert.equal(new Set(batchFour.products.map(item=>item.file)).size,20);
+  assert.equal(upgradedFiles.size,80);
+  for(const item of batchFour.products){
     assert.ok(item.sourceWidth>=600&&item.sourceHeight>=600,`${item.name} source is too small`);
     assert.ok(manifest.products.some(product=>path.basename(product.imageUrl)===item.file),`${item.file} is not mapped`);
   }
@@ -94,10 +106,10 @@ test('optimized hero banner is the expected responsive PNG',()=>{
 
 test('store cache-busts the enhanced Ruono asset paths',()=>{
   const store=fs.readFileSync(path.join(root,'js','store.js'),'utf8');
-  assert.match(store,/RUONO_ASSET_VERSION = "20260927-b03"/);
+  assert.match(store,/RUONO_ASSET_VERSION = "20260927-b04"/);
   assert.match(store,/assets\/ruono-products\//);
   for(const page of ['index.html','shop.html','cart.html','checkout.html','farmers-market.html']){
-    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260927-b03/,page);
+    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260927-b04/,page);
   }
 });
 
