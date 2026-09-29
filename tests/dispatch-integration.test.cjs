@@ -11,6 +11,9 @@ test("dispatch storefront keeps standalone zones human-readable and hides stale 
   assert.match(src,/zoneLabel=z=>String\(z\?\.name\|\|z\?\.zoneName\|\|z\?\.zone/);
   assert.match(src,/filter\(d=>d\.isApproved===true&&d\.isActive===true&&d\.isAvailable===true\)/);
   assert.match(src,/zoneName:z\?zoneLabel\(z\):""/);
+  const zoneLoader=src.match(/async function loadZones\(\)\{[^\n]+/)?.[0]||"";
+  assert.doesNotMatch(zoneLoader,/isApproved|isAvailable/);
+  assert.match(src,/renderDispatchers\(s\.docs\.map\(d=>\(\{id:d\.id,\.\.\.d\.data\(\)\}\)\)\.filter\(d=>d\.isApproved===true&&d\.isActive===true&&d\.isAvailable===true\)\)/);
 });
 
 test("dispatch autopilot respects scheduled pickup and total rider workload",()=>{
