@@ -22,3 +22,5 @@ jobs:
           node "$RUNNER_TEMP/biserry-browser/node_modules/playwright/cli.js" install chromium --with-deps
       - name: Verify local Shop and Popular Products layouts
         run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/catalogue-layout.cjs
+      - name: Verify dispatch browser flows
+        run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/dispatch-browser-smoke.cjs
