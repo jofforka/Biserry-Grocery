@@ -2,7 +2,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||"playwright");
 const http=require("node:http"),fs=require("node:fs"),path=require("node:path"),assert=require("node:assert/strict");
 const root=path.resolve(__dirname,"..");
 
-const firebaseStub=String.raw\`
+const firebaseStub=String.raw`
 const signed=localStorage.getItem("__accountSmokeSigned")==="1";
 const writes=[];
 const user=signed?{uid:"buyer-1",email:"buyer@example.com",emailVerified:false,reload:async()=>{},getIdToken:async()=>""}:null;
@@ -34,7 +34,7 @@ export const getDocs=async ref=>{
   return{docs:[]};
 };
 export const setDoc=async(ref,data)=>{writes.push({ref,data});localStorage.setItem("__accountWrites",JSON.stringify(writes))};
-\`;
+`;
 
 (async()=>{
   const server=http.createServer((req,res)=>{
@@ -48,7 +48,7 @@ export const setDoc=async(ref,data)=>{writes.push({ref,data});localStorage.setIt
   });
   await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve)});
   const address=server.address();assert.ok(address&&typeof address==="object");
-  const base=\`http://127.0.0.1:\${address.port}\`;
+  const base=`http://127.0.0.1:${address.port}`;
   const launch={headless:true};if(process.env.CHROMIUM_EXECUTABLE)launch.executablePath=process.env.CHROMIUM_EXECUTABLE;
   const browser=await chromium.launch(launch);
   try{
