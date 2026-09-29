@@ -2,7 +2,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||"playwright");
 const http=require("node:http"),fs=require("node:fs"),path=require("node:path"),assert=require("node:assert/strict");
 const root=path.resolve(__dirname,"..");
 
-const firebaseStub=String.raw\`
+const firebaseStub=String.raw`
 const isRider=location.pathname.includes("/dispatcher/");
 globalThis.__fbWrites=[];
 const TS={toMillis:()=>Date.now()};
@@ -43,7 +43,7 @@ export const signInWithEmailAndPassword=async()=>({user:auth.currentUser});
 export const createUserWithEmailAndPassword=async()=>({user:{uid:"new-rider",email:"new@example.com"}});
 export const signOut=async()=>{auth.currentUser=null};
 export const deleteDoc=async()=>{};
-\`;
+`;
 
 (async()=>{
   const server=http.createServer((req,res)=>{
@@ -55,7 +55,7 @@ export const deleteDoc=async()=>{};
       res.end(fs.readFileSync(file));
     }catch{res.statusCode=404;res.end("not found");}
   }).listen(0,"127.0.0.1");
-  const baseUrl=\`http://127.0.0.1:\${server.address().port}\`;
+  const baseUrl=`http://127.0.0.1:${server.address().port}`;
   const launch={headless:true};if(process.env.CHROMIUM_EXECUTABLE)launch.executablePath=process.env.CHROMIUM_EXECUTABLE;
   const browser=await chromium.launch(launch);
   try{
