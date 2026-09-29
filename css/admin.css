@@ -103,6 +103,13 @@ body{
   background:rgba(255,255,255,.18);
 }
 
+.adminNavToggle{
+  display:none!important;
+  margin-bottom:12px!important;
+  background:rgba(255,255,255,.14)!important;
+  text-align:center!important;
+}
+
 .adminMain{padding:30px}
 .adminTop{margin-bottom:24px}
 .adminTop h1{color:var(--green);margin:0}
@@ -432,7 +439,14 @@ textarea{min-height:120px}
   .sidebar{
     position:relative;
     height:auto;
+    padding:16px 18px;
   }
+
+  .sidebar img{width:64px;height:64px;margin-bottom:8px}
+  .sidebar h2{margin:0 0 12px}
+  .adminNavToggle{display:block!important}
+  .sidebar.navCollapsed>a,
+  .sidebar.navCollapsed>#logoutBtn{display:none}
 
   .adminGrid{grid-template-columns:repeat(2,1fr)}
 
