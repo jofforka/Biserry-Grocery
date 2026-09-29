@@ -23,7 +23,7 @@ test('store uses on-demand full catalogue search and grouped categories',()=>{
 
 test('WhatsApp routing separates public support from order receiving',()=>{
   const config=fs.readFileSync(path.join(root,'js','firebase-config.js'),'utf8');
-  assert.match(config,/phone:\s*"\\+234 810 058 4211"/);
+  assert.match(config,/phone:\s*"\+234 810 058 4211"/);
   assert.match(config,/whatsapp:\s*"2348100584211"/);
   assert.match(config,/orderWhatsapp:\s*"2348118103510"/);
   assert.match(config,/backupWhatsapp:\s*"2348137216136"/);
