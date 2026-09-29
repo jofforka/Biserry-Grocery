@@ -112,8 +112,9 @@ async function searchFullCatalogue(term){
       snap.docs.forEach(d=>found.push({id:d.id,...d.data()}));
     }
     if(requestId!==activeSearchRequest)return;
+    products=dedupeProducts([...products,...found]);
     const localMatches=products.filter(p=>productSearchText(p).includes(needle));
-    remoteSearchResults=dedupeProducts([...localMatches,...found]);
+    remoteSearchResults=dedupeProducts(localMatches);
     if(status)status.textContent=remoteSearchResults.length
       ?`${remoteSearchResults.length} matching product${remoteSearchResults.length===1?"":"s"} found across the full catalogue.`
       :"No matching active product found.";
