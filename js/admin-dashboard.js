@@ -1,8 +1,9 @@
 import { protectAdminPage } from "./admin-auth.js";
 import {
   auth, db, collection, getDocs, getDoc, doc, getCountFromServer,
-  query, where, orderBy, limit, sendEmailVerification
+  query, where, orderBy, limit
 } from "./firebase-service.js";
+import { ADMIN_UIDS } from "./firebase-config.js";
 
 const money = v => new Intl.NumberFormat("en-NG", {
   style: "currency", currency: "NGN", maximumFractionDigits: 0
@@ -31,51 +32,25 @@ function loadAdminSecurity() {
     if(actions)actions.innerHTML="";
     return;
   }
-  const verified=user.emailVerified===true;
-  el.innerHTML=`<strong>${verified?"✓ Verified":"⚠ Email not verified"}</strong><br>
-    Account: ${esc(user.email||"Unknown")}
-    <br><small>${verified?"Firebase confirms this admin email is verified. Verified-email enforcement can now be enabled safely.":"Verify this exact Biserry admin account before enabling email_verified enforcement."}</small>`;
+  const configuredUids=(Array.isArray(ADMIN_UIDS)?ADMIN_UIDS:[]).map(x=>String(x||"").trim()).filter(Boolean);
+  const uid=String(user.uid||"");
+  const pinned=configuredUids.length>0&&configuredUids.includes(uid);
+  el.innerHTML=`<strong>${pinned?"✓ UID authorization active":"UID migration ready"}</strong><br>
+    Account: ${esc(user.email||"Unknown")}<br>
+    Firebase UID: <code id="adminFirebaseUid">${esc(uid||"Unavailable")}</code>
+    <br><small>${pinned?"This exact Firebase user is pinned as the Biserry admin.":"Biserry is still using the existing email fallback until this exact UID is inserted into the admin configuration and Firestore rules."}</small>`;
   if(actions){
-    actions.innerHTML=verified
-      ? '<button class="btn outline" id="refreshAdminVerificationBtn" type="button">Refresh Verification Status</button>'
-      : '<button class="btn" id="sendAdminVerificationBtn" type="button">Send Verification Email</button><button class="btn outline" id="refreshAdminVerificationBtn" type="button">Refresh Verification Status</button>';
-    document.getElementById("sendAdminVerificationBtn")?.addEventListener("click",sendAdminVerificationEmail);
-    document.getElementById("refreshAdminVerificationBtn")?.addEventListener("click",refreshAdminVerification);
-  }
-}
-
-async function sendAdminVerificationEmail(){
-  const user=auth.currentUser,btn=document.getElementById("sendAdminVerificationBtn");
-  if(!user)return alert("Admin account is not signed in.");
-  if(user.emailVerified){loadAdminSecurity();return alert("This admin email is already verified.");}
-  try{
-    if(btn){btn.disabled=true;btn.textContent="Sending…";}
-    await sendEmailVerification(user);
-    alert(`Verification email sent to ${user.email}. Open that email, click the Firebase verification link, then return here and click “Refresh Verification Status”.`);
-  }catch(e){
-    const msg=e?.code==="auth/too-many-requests"
-      ?"Firebase has temporarily limited verification emails. Wait a little, then try again."
-      :(e?.message||"Could not send verification email.");
-    alert(msg);
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent="Send Verification Email";}
-  }
-}
-
-async function refreshAdminVerification(){
-  const user=auth.currentUser,btn=document.getElementById("refreshAdminVerificationBtn");
-  if(!user)return alert("Admin account is not signed in.");
-  try{
-    if(btn){btn.disabled=true;btn.textContent="Refreshing…";}
-    await user.reload();
-    await auth.currentUser?.getIdToken?.(true);
-    loadAdminSecurity();
-    alert(auth.currentUser?.emailVerified?"Email verification confirmed ✓":"Firebase still shows this email as not verified. Click the verification link in the email first.");
-  }catch(e){
-    alert("Could not refresh verification status: "+(e?.message||"Please try again."));
-  }finally{
-    const current=document.getElementById("refreshAdminVerificationBtn");
-    if(current){current.disabled=false;current.textContent="Refresh Verification Status";}
+    actions.innerHTML=uid
+      ? '<button class="btn outline" id="copyAdminUidBtn" type="button">Copy Firebase UID</button>'
+      : "";
+    document.getElementById("copyAdminUidBtn")?.addEventListener("click",async()=>{
+      try{
+        await navigator.clipboard.writeText(uid);
+        alert("Firebase UID copied.");
+      }catch{
+        prompt("Copy this Firebase UID:",uid);
+      }
+    });
   }
 }
 
