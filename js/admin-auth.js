@@ -23,22 +23,48 @@ function isAuthorizedAdmin(user) {
 }
 
 function ensureOpsNav() {
-  document.querySelectorAll(".sidebar").forEach(sidebar => {
-    const add = (href, text, beforeHref) => {
-      if (sidebar.querySelector(`a[href="${href}"]`)) return;
-      const link = document.createElement("a");
-      link.href = href;
-      link.textContent = text;
-      const before = sidebar.querySelector(`a[href="${beforeHref}"]`);
-      if (before) sidebar.insertBefore(link, before);
-      else {
-        const logout = sidebar.querySelector("#logoutBtn");
-        logout ? sidebar.insertBefore(link, logout) : sidebar.appendChild(link);
-      }
-    };
-    add("dispatch-bookings.html", "Dispatch Control", "dispatchers.html");
-    add("dispatchers.html", "Dispatchers", "inventory-logs.html");
-    add("dispatch-settlements.html", "Rider Settlements", "inventory-logs.html");
+  const items=[
+    ["dashboard.html","Dashboard"],
+    ["products.html","Products"],
+    ["bulk-upload.html","Bulk Upload"],
+    ["orders.html","Orders"],
+    ["payments.html","Payments"],
+    ["customers.html","Customers"],
+    ["reports.html","Reports"],
+    ["delivery-zones.html","Delivery Zones"],
+    ["dispatch-bookings.html","Dispatch Control"],
+    ["dispatchers.html","Dispatchers"],
+    ["dispatch-settlements.html","Rider Settlements"],
+    ["inventory-logs.html","Inventory Logs"],
+    ["../index.html","View Store"]
+  ];
+  const current=location.pathname.split("/").pop()||"dashboard.html";
+  document.querySelectorAll(".sidebar").forEach(sidebar=>{
+    sidebar.querySelectorAll(":scope > a").forEach(a=>a.remove());
+    let toggle=sidebar.querySelector(".adminNavToggle");
+    if(!toggle){
+      toggle=document.createElement("button");
+      toggle.type="button";
+      toggle.className="adminNavToggle";
+      toggle.textContent="☰ Admin Menu";
+      const title=sidebar.querySelector("h2");
+      title?.insertAdjacentElement("afterend",toggle);
+    }
+    const logout=sidebar.querySelector("#logoutBtn");
+    for(const [href,label] of items){
+      const link=document.createElement("a");
+      link.href=href;
+      link.textContent=label;
+      if(href===current)link.classList.add("active");
+      logout?sidebar.insertBefore(link,logout):sidebar.appendChild(link);
+    }
+    const compact=window.matchMedia?.("(max-width: 1100px)")?.matches;
+    sidebar.classList.toggle("navCollapsed",Boolean(compact));
+    toggle.setAttribute("aria-expanded",String(!compact));
+    toggle.addEventListener("click",()=>{
+      const collapsed=sidebar.classList.toggle("navCollapsed");
+      toggle.setAttribute("aria-expanded",String(!collapsed));
+    });
   });
 }
 ensureOpsNav();
