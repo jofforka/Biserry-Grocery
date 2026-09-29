@@ -7,6 +7,7 @@ const table=document.getElementById("paymentsTable"),summary=document.getElement
 const bankName=document.getElementById("bankName"),accountName=document.getElementById("accountName"),accountNumber=document.getElementById("accountNumber"),adminWhatsApp=document.getElementById("adminWhatsApp"),cloudinaryCloudName=document.getElementById("cloudinaryCloudName"),cloudinaryUploadPreset=document.getElementById("cloudinaryUploadPreset");
 const money=v=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(v||0));
 const esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+const safeHttpsUrl=v=>{try{const u=new URL(String(v||""));return u.protocol==="https:"?u.href:""}catch{return""}};
 let seenPending=new Set();
 
 async function loadSettings(){
@@ -39,6 +40,34 @@ alertsBtn?.addEventListener("click",async()=>{
   alertsBtn.textContent=p==="granted"?"Browser Alerts Enabled":"Enable Browser Alerts";
 });
 
+async function validateOrderCommercials(order){
+  let expected=0;
+  const cache=new Map();
+  for(const item of order.items||[]){
+    const productId=String(item.productId||"").trim(),qty=Number(item.quantity||0);
+    if(!productId||!Number.isFinite(qty)||qty<=0)throw new Error("Order contains an invalid product or quantity.");
+    if(!cache.has(productId))cache.set(productId,await getDoc(doc(db,"products",productId)));
+    const snap=cache.get(productId);
+    if(!snap.exists())throw new Error("A product in this order no longer exists.");
+    const p=snap.data();
+    if(p.isActive!==true)throw new Error(`${p.name||"A product"} is no longer active.`);
+    if(item.variantId){
+      const v=(p.variants||[]).find(x=>String(x.id)===String(item.variantId)&&x.isActive!==false);
+      if(!v)throw new Error(`${p.name||"A product"} option is no longer available.`);
+      if(Number(v.price||0)!==Number(item.price||0))throw new Error(`${p.name||"A product"} price has changed.`);
+      if(Number(v.stock||0)<qty)throw new Error(`Not enough stock for ${p.name||"a product"}.`);
+      expected+=Number(v.price||0)*qty;
+    }else{
+      if(p.hasVariants)throw new Error(`${p.name||"A product"} now requires a size/option.`);
+      if(Number(p.price||0)!==Number(item.price||0))throw new Error(`${p.name||"A product"} price has changed.`);
+      if(Number(p.stock||0)<qty)throw new Error(`Not enough stock for ${p.name||"a product"}.`);
+      expected+=Number(p.price||0)*qty;
+    }
+  }
+  const storedProductTotal=Number(order.productTotal||0),deliveryFee=Number(order.deliveryFee||0),storedTotal=Number(order.total||0);
+  if(expected!==storedProductTotal||expected+deliveryFee!==storedTotal)throw new Error("Order totals do not match the current catalogue.");
+}
+
 async function reviewPayment(orderId,approved,reason=""){
   const proofRef=doc(db,"paymentProofs",orderId),orderRef=doc(db,"orders",orderId),trackingRef=doc(db,"orderTracking",orderId),dispatchRef=doc(db,"dispatchRequests",orderId);
   const [proofSnap,orderSnap,dispatchSnap]=await Promise.all([getDoc(proofRef),getDoc(orderRef),getDoc(dispatchRef)]);
@@ -48,6 +77,7 @@ async function reviewPayment(orderId,approved,reason=""){
   if(proof.status!=="Awaiting Verification")throw new Error("This payment proof has already been reviewed.");
   if(Number(proof.amount||0)!==Number(order.total||0))throw new Error("Payment amount does not match the order total.");
   if(approved&&order.orderStatus==="Cancelled")throw new Error("Cancelled orders cannot be approved for release.");
+  if(approved)await validateOrderCommercials(order);
 
   const batch=writeBatch(db),now=serverTimestamp();
   const paymentStatus=approved?"Paid":"Rejected",deliveryReleaseStatus=approved?"Authorized":"Locked";
@@ -88,7 +118,10 @@ window.rejectPayment=async orderId=>{
 function render(rows){
   const pending=rows.filter(x=>x.status==="Awaiting Verification");
   summary.textContent=`${pending.length} awaiting verification • ${rows.length} recent submissions`;
-  table.innerHTML=rows.length?rows.map(p=>`<tr><td><strong>${esc(p.orderId)}</strong><br><small>${esc(p.submittedAt?.toDate?.()?.toLocaleString?.()||"")}</small></td><td><strong>${money(p.amount)}</strong></td><td>${esc(p.paymentReference||"Not supplied")}</td><td>${p.receiptUrl?`<a class="editBtn" target="_blank" rel="noopener" href="${esc(p.receiptUrl)}">View Receipt</a>`:"No image"}</td><td><span class="statusBadge">${esc(p.status||"")}</span>${p.rejectionReason?`<br><small>${esc(p.rejectionReason)}</small>`:""}</td><td>${p.status==="Awaiting Verification"?`<button class="editBtn" onclick="approvePayment('${p.orderId}')">Approve</button> <button class="deleteBtn" onclick="rejectPayment('${p.orderId}')">Reject</button>`:"Reviewed"}</td></tr>`).join(""):`<tr><td colspan="6"><div class="emptyState">No payment submissions yet.</div></td></tr>`;
+  table.innerHTML=rows.length?rows.map(p=>{
+    const receipt=safeHttpsUrl(p.receiptUrl);
+    return `<tr><td><strong>${esc(p.orderId)}</strong><br><small>${esc(p.submittedAt?.toDate?.()?.toLocaleString?.()||"")}</small></td><td><strong>${money(p.amount)}</strong></td><td>${esc(p.paymentReference||"Not supplied")}</td><td>${receipt?`<a class="editBtn" target="_blank" rel="noopener noreferrer" href="${esc(receipt)}">View Receipt</a>`:(p.receiptUrl?"Unsafe/invalid URL":"No image")}</td><td><span class="statusBadge">${esc(p.status||"")}</span>${p.rejectionReason?`<br><small>${esc(p.rejectionReason)}</small>`:""}</td><td>${p.status==="Awaiting Verification"?`<button class="editBtn" onclick="approvePayment('${p.orderId}')">Approve</button> <button class="deleteBtn" onclick="rejectPayment('${p.orderId}')">Reject</button>`:"Reviewed"}</td></tr>`;
+  }).join(""):`<tr><td colspan="6"><div class="emptyState">No payment submissions yet.</div></td></tr>`;
   if("Notification" in window && Notification.permission==="granted"){
     for(const p of pending){
       if(!seenPending.has(p.orderId)){
