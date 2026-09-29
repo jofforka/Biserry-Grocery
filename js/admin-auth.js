@@ -6,7 +6,7 @@ import {
   onAuthStateChanged
 } from "./firebase-service.js";
 
-import { ADMIN_EMAILS } from "./firebase-config.js";
+import { ADMIN_EMAILS, ADMIN_UIDS } from "./firebase-config.js";
 
 const loginForm = document.getElementById("loginForm");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -17,9 +17,18 @@ function normalizedAdminEmails() {
     .filter(Boolean);
 }
 
+function normalizedAdminUids() {
+  return (Array.isArray(ADMIN_UIDS) ? ADMIN_UIDS : [])
+    .map(x => String(x || "").trim())
+    .filter(Boolean);
+}
+
 function isAuthorizedAdmin(user) {
-  const email = String(user?.email || "").trim().toLowerCase();
-  return !!user && normalizedAdminEmails().includes(email);
+  if (!user) return false;
+  const uids = normalizedAdminUids();
+  if (uids.length) return uids.includes(String(user.uid || "").trim());
+  const email = String(user.email || "").trim().toLowerCase();
+  return normalizedAdminEmails().includes(email);
 }
 
 function ensureOpsNav() {
@@ -123,7 +132,7 @@ if (loginForm) {
 
       if (!isAuthorizedAdmin(credential.user)) {
         await signOut(auth);
-        alert("This email is not authorized as admin.");
+        alert("This Firebase account is not authorized as admin.");
         return;
       }
 
