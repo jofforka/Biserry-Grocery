@@ -744,3 +744,35 @@ input,textarea,select,#searchInput,.search{width:100%;padding:12px 14px;border:1
   .shopSection .productGrid .price, .featuredSection .productGrid .price {margin:0;line-height:1.2}
   .shopSection .productGrid .stockText, .featuredSection .productGrid .stockText {min-height:16px;font-size:11px;line-height:16px;margin:0}
 }
+
+/* Pre-launch catalogue grouping + full-search status */
+.catalogueCategoryHeader{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 2px 8px;
+  margin-top:8px;
+  border-bottom:2px solid var(--border);
+}
+.catalogueCategoryHeader span{
+  color:var(--green);
+  font-size:20px;
+  font-weight:900;
+}
+.catalogueCategoryHeader small{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.catalogueSearchStatus{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+@media(max-width:760px){
+  .catalogueCategoryHeader{padding-top:15px}
+  .catalogueCategoryHeader span{font-size:17px}
+}
