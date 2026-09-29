@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"..");
 
 const firebaseStub=String.raw`
 const isRider=location.pathname.includes("/dispatcher/");
-globalThis.__fbWrites=[];
+globalThis.__fbWrites=(()=>{try{return JSON.parse(localStorage.getItem("__fbWrites")||"[]")}catch{return[]}})();
 const TS={toMillis:()=>Date.now()};
 const base={
   delivery_zones:{zone1:{zone:"Gwarinpa",fee:2000,isActive:true,commissionPercent:20,biserryCommission:400,riderEarning:1600}},
