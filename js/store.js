@@ -12,9 +12,9 @@ const fallbackProducts = [
   {id:"demo-3",name:"Tomato Paste",category:"spices",price:1200,stock:20,imageUrl:"assets/tomato-paste.jpg",isFeatured:true}
 ];
 
-let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;
+let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;\nlet searchIndexPromise=null, remoteSearchResults=null, activeSearchRequest=0, searchTimer=null;
 const PRODUCT_BATCH_SIZE=24;
-const SHOP_CATALOGUE_LIMIT=150;
+const SHOP_CATALOGUE_LIMIT=150;\nconst SEARCH_MAX_MATCHES=60;
 const CATEGORY_ORDER=["grains","oil","spices","fresh","drinks","household"];
 const CATEGORY_LABELS={grains:"Grains",oil:"Oils",spices:"Spices",fresh:"Fresh Produce",drinks:"Drinks",household:"Household"};
 let productCursor=null, productCatalogueExhausted=false, productLoading=false;
