@@ -55,5 +55,5 @@ test("dispatch rules prevent riders from self-settling and earning early",()=>{
 });
 
 test("service worker rotates cache for dispatch hardening",()=>{
-  assert.match(read("service-worker.js"),/biserry-groceries-v11-6-dispatch-hardening/);
+  assert.match(read("service-worker.js"),/biserry-groceries-v11-7-whatsapp-routing/);
 });
