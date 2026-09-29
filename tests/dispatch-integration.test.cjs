@@ -6,6 +6,11 @@ const path=require("node:path");
 const root=path.resolve(__dirname,"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
+test("dispatch browser module parses cleanly",()=>{
+  const src=read("js/dispatch.js").replace(/^import[^\n]*\n/,"");
+  assert.doesNotThrow(()=>new Function(src));
+});
+
 test("dispatch storefront keeps standalone zones human-readable and hides stale riders",()=>{
   const src=read("js/dispatch.js");
   assert.match(src,/zoneLabel=z=>String\(z\?\.name\|\|z\?\.zoneName\|\|z\?\.zone/);
