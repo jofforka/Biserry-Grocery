@@ -63,11 +63,16 @@ export const deleteDoc=async()=>{};
   const browser=await chromium.launch(launch);
   try{
     const page=await browser.newPage({serviceWorkers:"block"});
+    const pageErrors=[];
+    page.on("pageerror",e=>{pageErrors.push(e.message);console.error("DISPATCH PAGEERROR:",e.message)});
+    page.on("console",m=>{if(m.type()==="error")console.error("DISPATCH CONSOLE:",m.text())});
     await page.route("**/js/firebase-service.js",route=>route.fulfill({contentType:"application/javascript",body:firebaseStub}));
 
     // Standalone booking: page -> booking write -> public tracking mirror.
-    await page.goto(baseUrl+"/dispatch.html",{waitUntil:"domcontentloaded"});
+    await page.goto(baseUrl+"/dispatch.html",{waitUntil:"networkidle"});
+    assert.equal(await page.evaluate(()=>typeof window.requestBiserryDispatcher),"function",`dispatch module did not initialize: ${pageErrors.join(" | ")}`);
     await page.getByRole("button",{name:"Send a Package"}).click();
+    assert.equal(await page.locator("#packageMode").evaluate(el=>el.classList.contains("active")),true,`package tab did not activate: ${pageErrors.join(" | ")}`);
     await page.locator("#pickupAddress").fill("Wuse 2, Abuja");
     await page.locator("#dropoffAddress").fill("Gwarinpa, Abuja");
     await page.locator("#deliveryZone").selectOption("zone1");
