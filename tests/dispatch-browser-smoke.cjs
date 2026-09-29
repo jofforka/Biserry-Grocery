@@ -54,8 +54,11 @@ export const deleteDoc=async()=>{};
       res.setHeader("Content-Type",type);
       res.end(fs.readFileSync(file));
     }catch{res.statusCode=404;res.end("not found");}
-  }).listen(0,"127.0.0.1");
-  const baseUrl=`http://127.0.0.1:${server.address().port}`;
+  });
+  await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve);});
+  const address=server.address();
+  assert.ok(address&&typeof address==="object","smoke-test server did not start");
+  const baseUrl=`http://127.0.0.1:${address.port}`;
   const launch={headless:true};if(process.env.CHROMIUM_EXECUTABLE)launch.executablePath=process.env.CHROMIUM_EXECUTABLE;
   const browser=await chromium.launch(launch);
   try{
