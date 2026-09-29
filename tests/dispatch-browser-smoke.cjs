@@ -47,7 +47,8 @@ export const deleteDoc=async()=>{};
 
 (async()=>{
   const server=http.createServer((req,res)=>{
-    const pathname=new URL(req.url,"http://localhost").pathname;
+    let pathname=new URL(req.url,"http://localhost").pathname;
+    if(pathname.endsWith("/")) pathname+="index.html";
     const file=path.join(root,pathname);
     try{
       const type=file.endsWith(".css")?"text/css":file.endsWith(".js")?"application/javascript":file.endsWith(".html")?"text/html":file.endsWith(".json")?"application/json":"application/octet-stream";
