@@ -63,6 +63,65 @@ window.toggleWishlist=id=>{wishlist=wishlist.includes(id)?wishlist.filter(x=>x!=
 function productCard(p){const v=getSelectedVariant(p),q=getSelectedQuantity(p.id),price=v?Number(v.price||0):Number(p.price||0),stock=v?Number(v.stock||0):Number(p.stock||0),img=normalizeImageUrl(v?.imageUrl||p.imageUrl||p.image),tag=p.variantLabel?`${p.variantLabel}s`:p.hasVariants?"Options":p.category,wished=wishlist.includes(p.id),stockClass=stock<=Number(p.lowStockThreshold||5)?"stockText low":"stockText";const variantHtml=p.hasVariants&&availableVariants(p).length?`<div class="variantBox"><label for="variant-${p.id}">${p.variantLabel||"Size"}</label><select id="variant-${p.id}" aria-label="Choose ${p.variantLabel||"size"} for ${p.name}" onchange="selectVariant('${p.id}',this.value)">${availableVariants(p).map(x=>`<option value="${x.id}" ${v?.id===x.id?"selected":""}>${x.name} — ${Number(x.price)>1?formatNaira(Number(x.price)):"Price being confirmed"}</option>`).join("")}</select></div>`:"";return `<div class="card"><button class="productImage productImageButton" type="button" onclick="openProductModal('${p.id}')"><img src="${img}" alt="${p.name}" onerror="this.src='assets/logo.png'"><span class="imageHint">View</span></button><div class="cardBody"><div class="productBadges">${(p.isFeatured||p.featured)?'<span class="productBadge">Featured</span>':''}${stock<=Number(p.lowStockThreshold||5)&&stock>0?'<span class="productBadge">Low</span>':''}</div><div class="productMeta"><h3>${p.name}</h3><span class="categoryTag">${tag}</span></div><div class="ratingLine">★★★★★</div>${variantHtml}${!p.hasVariants&&p.packSize?`<p class="productPackSize">Size: ${p.packSize}</p>`:""}<p class="price">${price>1?formatNaira(price):"Price being confirmed"}</p><p class="${stockClass}">${stock>0?`Stock: ${stock}`:"Out of Stock"}</p><div class="quantityRow"><button class="qtyBtn" onclick="decreaseProductQty('${p.id}')" type="button">−</button><div class="qtyDisplay">${q}</div><button class="qtyBtn" onclick="increaseProductQty('${p.id}')" type="button">+</button></div><div class="productActionRow"><button class="wishlistBtn ${wished?'active':''}" onclick="toggleWishlist('${p.id}')" type="button">♥</button><button class="btn addBtn" onclick="addToCart('${p.id}')" type="button" ${stock<=0||price<=1?"disabled":""}>${price<=1?"Price unavailable":"🛒 Add"}</button></div></div></div>`}
 function categoryRank(category){const i=CATEGORY_ORDER.indexOf(String(category||"").toLowerCase());return i<0?CATEGORY_ORDER.length:i}
 function categoryLabel(category){const key=String(category||"").toLowerCase();return CATEGORY_LABELS[key]||String(category||"Other").replace(/[-_]+/g," ").replace(/\b\w/g,m=>m.toUpperCase())}
+function dedupeProducts(list){
+  const seen=new Set();
+  return list.filter(p=>{const key=String(p?.id||p?.sku||p?.name||"");if(!key||seen.has(key))return false;seen.add(key);return true;});
+}
+async function loadSearchIndex(){
+  if(!searchIndexPromise){
+    searchIndexPromise=fetch("data/product-search-index.json?v=20260929")
+      .then(r=>{if(!r.ok)throw new Error("Search index unavailable");return r.json();})
+      .catch(e=>{searchIndexPromise=null;throw e;});
+  }
+  return searchIndexPromise;
+}
+function indexMatchScore(item,needle){
+  const name=normalizeSearch(item.n),sub=normalizeSearch(item.s),sku=normalizeSearch(item.k),cat=normalizeSearch(item.c);
+  if(name===needle)return 0;
+  if(name.startsWith(needle))return 1;
+  if(name.split(" ").includes(needle))return 2;
+  if(name.includes(needle))return 3;
+  if(sub.includes(needle))return 4;
+  if(sku.includes(needle))return 5;
+  if(cat.includes(needle))return 6;
+  return 99;
+}
+async function searchFullCatalogue(term){
+  const needle=normalizeSearch(term);
+  if(needle.length<2){remoteSearchResults=null;renderProducts();return;}
+  const requestId=++activeSearchRequest;
+  const status=document.getElementById("catalogueSearchStatus");
+  if(status)status.textContent="Searching the full Biserry catalogue…";
+  try{
+    const index=await loadSearchIndex();
+    const matched=(index.products||[])
+      .map(item=>({item,score:indexMatchScore(item,needle)}))
+      .filter(x=>x.score<99)
+      .sort((a,b)=>a.score-b.score||String(a.item.n).localeCompare(String(b.item.n)))
+      .slice(0,SEARCH_MAX_MATCHES)
+      .map(x=>x.item);
+    const names=[...new Set(matched.map(x=>x.n).filter(Boolean))];
+    const found=[];
+    for(let i=0;i<names.length;i+=30){
+      const batch=names.slice(i,i+30);
+      if(!batch.length)continue;
+      const snap=await getDocs(query(collection(db,"products"),where("isActive","==",true),where("name","in",batch)));
+      snap.docs.forEach(d=>found.push({id:d.id,...d.data()}));
+    }
+    if(requestId!==activeSearchRequest)return;
+    const localMatches=products.filter(p=>productSearchText(p).includes(needle));
+    remoteSearchResults=dedupeProducts([...localMatches,...found]);
+    if(status)status.textContent=remoteSearchResults.length
+      ?`${remoteSearchResults.length} matching product${remoteSearchResults.length===1?"":"s"} found across the full catalogue.`
+      :"No matching active product found.";
+  }catch(e){
+    console.warn("Full catalogue search failed:",e.message);
+    if(requestId!==activeSearchRequest)return;
+    remoteSearchResults=null;
+    if(status)status.textContent="Showing matches from the loaded catalogue.";
+  }
+  renderProducts();
+}
 function productSearchText(p){
   const variants=availableVariants(p).map(v=>`${v.name||""} ${v.sku||""}`).join(" ");
   return normalizeSearch([
@@ -72,8 +131,9 @@ function productSearchText(p){
 }
 function getFiltered(){
   const term=normalizeSearch(searchInput?.value||"");
-  return products.filter(p=>{
-    const categoryOk=term?true:(currentCategory==="all"||String(p.category||"").toLowerCase()===String(currentCategory).toLowerCase());
+  const source=term.length>=2&&Array.isArray(remoteSearchResults)?remoteSearchResults:products;
+  return source.filter(p=>{
+    const categoryOk=currentCategory==="all"||String(p.category||"").toLowerCase()===String(currentCategory).toLowerCase();
     return categoryOk&&(!term||productSearchText(p).includes(term));
   }).sort((a,b)=>categoryRank(a.category)-categoryRank(b.category)||categoryLabel(a.category).localeCompare(categoryLabel(b.category))||String(a.name||"").localeCompare(String(b.name||"")));
 }
@@ -113,7 +173,20 @@ window.openProductModal=id=>{const viewed=products.find(x=>String(x.id)===String
 
 async function submitFarmersMarket(e){e.preventDefault();const data={customerName:document.getElementById("fmName").value.trim(),customerPhone:document.getElementById("fmPhone").value.trim(),deliveryAddress:document.getElementById("fmAddress").value.trim(),shoppingList:document.getElementById("fmList").value.trim(),budgetRange:document.getElementById("fmBudget").value.trim(),preferredDeliveryDate:document.getElementById("fmDate").value,notes:document.getElementById("fmNotes").value.trim(),status:"New",createdAt:serverTimestamp()};try{await addDoc(collection(db,"farmers_market_requests"),data);toast("Market list submitted");const msg=encodeURIComponent(`Farmers Market Request\nName: ${data.customerName}\nPhone: ${data.customerPhone}\nAddress: ${data.deliveryAddress}\nBudget: ${data.budgetRange}\nDate: ${data.preferredDeliveryDate}\nList: ${data.shoppingList}\nNotes: ${data.notes}`);window.open(`https://wa.me/${BUSINESS.whatsapp}?text=${msg}`,"_blank","noopener");farmersMarketForm.reset()}catch(err){alert("Request failed: "+err.message)}}
 
-document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentCategory=b.dataset.category;renderProducts()}));searchInput?.addEventListener("input",()=>{renderProducts();});clearCartBtn?.addEventListener("click",()=>{cart=[];saveCart();renderCart()});floatingCartBtn?.addEventListener("click",openMiniCart);bottomCartBtn?.addEventListener("click",openMiniCart);closeMiniCartBtn?.addEventListener("click",closeMiniCart);miniCartOverlay?.addEventListener("click",closeMiniCart);mobileMenuBtn?.addEventListener("click",()=>mainNav?.classList.toggle("open"));mainNav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>mainNav?.classList.remove("open")));farmersMarketForm?.addEventListener("submit",submitFarmersMarket);
+document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentCategory=b.dataset.category;renderProducts()}));searchInput?.addEventListener("input",()=>{
+  const term=normalizeSearch(searchInput.value);
+  clearTimeout(searchTimer);
+  if(term.length<2){
+    activeSearchRequest++;
+    remoteSearchResults=null;
+    const status=document.getElementById("catalogueSearchStatus");
+    if(status)status.textContent=term?"Type at least 2 characters to search the full catalogue.":"Search by product name, category, size or SKU.";
+    renderProducts();
+    return;
+  }
+  renderProducts();
+  searchTimer=setTimeout(()=>searchFullCatalogue(term),250);
+});clearCartBtn?.addEventListener("click",()=>{cart=[];saveCart();renderCart()});floatingCartBtn?.addEventListener("click",openMiniCart);bottomCartBtn?.addEventListener("click",openMiniCart);closeMiniCartBtn?.addEventListener("click",closeMiniCart);miniCartOverlay?.addEventListener("click",closeMiniCart);mobileMenuBtn?.addEventListener("click",()=>mainNav?.classList.toggle("open"));mainNav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>mainNav?.classList.remove("open")));farmersMarketForm?.addEventListener("submit",submitFarmersMarket);
 
 export function getCartForCheckout(){return cart}export function getCartSubtotalForCheckout(){return subtotal()}export function getCartTotalForCheckout(){return subtotal()}export function clearCartAfterOrder(){cart=[];saveCart();renderCart()}
 function ensureCustomerNavigation(){const mainNav=document.getElementById("mainNav");if(!mainNav)return;if(!mainNav.querySelector('a[href="dispatch.html"]')){const link=document.createElement("a");link.href="dispatch.html";link.textContent="Dispatch";mainNav.appendChild(link)}if(!mainNav.querySelector('a[href="account.html"]')){const link=document.createElement("a");link.href="account.html";link.textContent="Account";mainNav.appendChild(link)}}
