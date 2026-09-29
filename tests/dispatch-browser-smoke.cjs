@@ -107,7 +107,7 @@ export const deleteDoc=async()=>{};
     // Rider app: one standalone + one grocery job, both progress safely to Delivered.
     const rider=await browser.newPage({serviceWorkers:"block"});
     await rider.route("**/js/firebase-service.js",route=>route.fulfill({contentType:"application/javascript",body:firebaseStub}));
-    await rider.goto(baseUrl+"/dispatcher/",{waitUntil:"domcontentloaded"});
+    await rider.goto(baseUrl+"/dispatcher/index.html",{waitUntil:"domcontentloaded"});
     await rider.waitForSelector(".jobCard");
     assert.equal(await rider.locator(".jobCard").count(),2);
     await rider.evaluate(async()=>{
