@@ -24,3 +24,5 @@ jobs:
         run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/catalogue-layout.cjs
       - name: Verify dispatch browser flows
         run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/dispatch-browser-smoke.cjs
+      - name: Verify customer account flows
+        run: PLAYWRIGHT_PATH="$RUNNER_TEMP/biserry-browser/node_modules/playwright" node tests/account-browser-smoke.cjs
