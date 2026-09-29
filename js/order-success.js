@@ -8,6 +8,7 @@ const trackLink=document.getElementById("trackOrderLink");
 const orderText=document.getElementById("orderNumberText");
 const primaryLink=document.getElementById("primaryOrderWhatsApp");
 const backupLink=document.getElementById("backupOrderWhatsApp");
+const releaseNote=document.getElementById("orderReleaseNote");
 
 function money(v){
   return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(v||0));
@@ -49,6 +50,10 @@ if(orderId){
 }
 
 const order=lastOrder();
+if(order?.fulfillment==="Pickup"){
+  dispatchLink.style.display="none";
+  if(releaseNote)releaseNote.innerHTML="<strong>Bank transfer only.</strong><br>Your pickup order will be released after Biserry verifies your transfer.";
+}
 const message=encodeURIComponent(orderMessage(order));
 primaryLink.href=`https://wa.me/${BUSINESS.orderWhatsapp}?text=${message}`;
 backupLink.href=`https://wa.me/${BUSINESS.backupWhatsapp}?text=${message}`;
