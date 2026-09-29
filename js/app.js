@@ -236,7 +236,7 @@ document.getElementById("checkoutForm").addEventListener("submit", function(e) {
     `Items:%0A${orderList}%0A%0A` +
     `Total: ${formatNaira(getCartTotal())}`;
 
-  window.open(`https://wa.me/2348100584211?text=${message}`, "_blank");
+  window.open(`https://wa.me/2348118103510?text=${message}`, "_blank");
 });
 
 renderProducts();
