@@ -55,5 +55,5 @@ test("dispatch rules prevent riders from self-settling and earning early",()=>{
 });
 
 test("service worker rotates cache for final launch",()=>{
-  assert.match(read("service-worker.js"),/biserry-groceries-v11-8-final-launch/);
+  assert.match(read("service-worker.js"),/biserry-groceries-v11-9-final-freeze/);
 });
