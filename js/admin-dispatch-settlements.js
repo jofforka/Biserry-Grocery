@@ -15,12 +15,12 @@ async function load(){
   const rows=[
     ...grocerySnap.docs.map(d=>({id:d.id,source:"grocery",reference:d.data().orderId||d.id,...d.data()})),
     ...standaloneSnap.docs.map(d=>({id:d.id,source:"standalone",reference:d.id,...d.data()}))
-  ];
+  ].filter(r=>Number(r.riderEarning||0)>0);
   const outstanding=rows.filter(r=>r.settlementStatus!=="Paid").reduce((s,r)=>s+Number(r.riderEarning||0),0);
   const paid=rows.filter(r=>r.settlementStatus==="Paid").reduce((s,r)=>s+Number(r.riderEarning||0),0);
   const biserry=rows.reduce((s,r)=>s+Number(r.biserryCommission||0),0);
   summary.innerHTML=`<strong>Outstanding rider settlements: ${money(outstanding)}</strong> • Paid: ${money(paid)} • Biserry dispatch commission earned: ${money(biserry)}`;
-  table.innerHTML=rows.length?rows.map(r=>`<tr><td><strong>${esc(r.reference)}</strong><br><small>${r.source==="standalone"?"Standalone dispatch":"Grocery order"}</small></td><td>${esc(r.dispatcherName||r.assignedDispatcherName||"")}</td><td>${esc(r.zoneName||r.deliveryZone||"")}</td><td>${money(r.deliveryFee??r.confirmedFare)}</td><td>${money(r.biserryCommission)}</td><td><strong>${money(r.riderEarning)}</strong></td><td>${esc(r.settlementStatus||"Pending")}</td><td>${r.settlementStatus!=="Paid"?`<button class="editBtn" onclick="markRiderPaid('${r.source}','${r.id}')">Mark Paid</button>`:"Settled"}</td></tr>`).join(""):`<tr><td colspan="8"><div class="emptyState">No completed rider jobs yet.</div></td></tr>`;
+  table.innerHTML=rows.length?rows.map(r=>`<tr><td><strong>${esc(r.reference)}</strong><br><small>${r.source==="standalone"?"Standalone dispatch":"Grocery order"}</small></td><td>${esc(r.dispatcherName||r.assignedDispatcherName||"")}</td><td>${esc(r.zoneName||r.deliveryZone||"")}</td><td>${money(r.deliveryFee??r.confirmedFare)}</td><td>${money(r.biserryCommission)}</td><td><strong>${money(r.riderEarning)}</strong></td><td>${esc(r.settlementStatus||"Pending")}</td><td>${r.settlementStatus!=="Paid"?`<button class="editBtn" onclick="markRiderPaid('${r.source}','${r.id}')">Mark Paid</button>`:"Settled"}</td></tr>`).join(""):`<tr><td colspan="8"><div class="emptyState">No completed rider earnings yet.</div></td></tr>`;
 }
 
 window.markRiderPaid=async(source,id)=>{
