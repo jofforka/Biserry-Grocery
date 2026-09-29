@@ -14,6 +14,8 @@ export const BUSINESS = {
   name: "Biserry Groceries",
   phone: "+234 810 058 4211",
   whatsapp: "2348100584211",
+  orderWhatsapp: "2348118103510",
+  backupWhatsapp: "2348137216136",
   address: "Amac Market, Abuja",
   instagram: "@biserry_groceries",
   currency: "NGN"

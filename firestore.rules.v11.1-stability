@@ -199,6 +199,8 @@ service cloud.firestore {
                           'status','acceptedAt','pickedUpAt','onTheWayAt','arrivedAt','deliveredAt','earningStatus','updatedAt'
                         ])
                         && validRiderStatusTransition(resource.data.status, request.resource.data.status)
+                        && (request.resource.data.status == 'Delivered'
+                            || request.resource.data.earningStatus == resource.data.earningStatus)
                         && (request.resource.data.status != 'Delivered'
                             || (resource.data.paymentStatus == 'Paid'
                                 && resource.data.deliveryReleaseStatus == 'Authorized'
@@ -257,11 +259,16 @@ service cloud.firestore {
                       && request.resource.data.riderEarning == resource.data.riderEarning
                       && request.resource.data.biserryCommission == resource.data.biserryCommission
                       && request.resource.data.paymentStatus == resource.data.paymentStatus
+                      && request.resource.data.settlementStatus == resource.data.settlementStatus
                       && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
                         'status','acceptedAt','declinedAt','pickedUpAt','onTheWayAt','arrivedAt',
                         'deliveredAt','earningStatus','settlementStatus','updatedAt'
                       ])
                       && validStandaloneTransition(resource.data.status, request.resource.data.status)
+                      && (request.resource.data.status == 'Delivered'
+                          || request.resource.data.earningStatus == resource.data.earningStatus)
+                      && (request.resource.data.status != 'Delivered'
+                          || request.resource.data.earningStatus == 'Earned')
                     );
       allow delete: if isAdmin();
     }
