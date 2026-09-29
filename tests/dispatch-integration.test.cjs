@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 test("dispatch browser module parses cleanly",()=>{
-  const src=read("js/dispatch.js").replace(/^import[^\n]*\n/,"");
+  const src=read("js/dispatch.js").replace(/^(?:import[^\n]*\n)+/,"");
   assert.doesNotThrow(()=>new Function(src));
 });
 
