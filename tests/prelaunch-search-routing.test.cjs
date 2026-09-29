@@ -34,8 +34,9 @@ test('WhatsApp routing uses the primary operational number with backup copy',()=
 
   const operationalFiles=[
     'shop.html','cart.html','checkout.html','farmers-market.html','dispatch.html',
-    'js/order-tracking.js','js/payment.js','js/dispatch.js','js/dispatch-track.js',
-    'js/store.js','js/app.js'
+    'dispatch-track.html','payment.html','track-order.html','order-success.html','account.html',
+    'admin/payments.html','js/order-tracking.js','js/payment.js','js/dispatch.js',
+    'js/dispatch-track.js','js/store.js','js/app.js','js/admin-payments.js'
   ];
   for(const file of operationalFiles){
     const src=fs.readFileSync(path.join(root,file),'utf8');
