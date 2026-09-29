@@ -12,6 +12,7 @@ const summary = document.getElementById("dispatcherSummary");
 const title = document.getElementById("dispatcherFormTitle");
 const saveBtn = document.getElementById("saveDispatcherBtn");
 
+const esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
 function field(id){ return document.getElementById(id); }
 function boolValue(id){ return field(id).value === "true"; }
 function publicVisible(data){ return data.isApproved === true && data.isActive === true && data.isAvailable === true; }
@@ -34,10 +35,10 @@ function render(){
   summary.textContent = `${dispatchers.length} total • ${available} publicly available • ${pending} awaiting approval`;
   table.innerHTML = list.length ? list.map(d => `
     <tr>
-      <td><strong>${d.name || "Unnamed"}</strong>${d.email ? `<br><small>${d.email}</small>` : ""}</td>
-      <td>${d.phone || ""}<br><a href="https://wa.me/${normalizePhone(d.phone)}" target="_blank">WhatsApp</a></td>
-      <td>${d.serviceArea || "—"}</td>
-      <td>${d.vehicleType || "—"}</td>
+      <td><strong>${esc(d.name || "Unnamed")}</strong>${d.email ? `<br><small>${esc(d.email)}</small>` : ""}</td>
+      <td>${esc(d.phone || "")}<br><a href="https://wa.me/${normalizePhone(d.phone)}" target="_blank" rel="noopener">WhatsApp</a></td>
+      <td>${esc(d.serviceArea || "—")}</td>
+      <td>${esc(d.vehicleType || "—")}</td>
       <td><span class="statusBadge" style="background:${d.isApproved===true?'#e6f5ea':'#fff1d6'};color:${d.isApproved===true?'#176b37':'#8a5a00'}">${d.isApproved===true?'Approved':'Pending'}</span>${d.isActive===true?'':'<br><small>Profile inactive</small>'}</td>
       <td><span class="statusBadge" style="background:${d.isPublic===true?'#e6f5ea':'#f4e7e7'};color:${d.isPublic===true?'#176b37':'#8b2d2d'}">${d.isPublic===true?'Available':'Unavailable'}</span></td>
       <td><div class="actionBtns">
