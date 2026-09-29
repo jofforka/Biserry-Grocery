@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /admin.html
 Disallow: /dispatcher/
 Disallow: /account.html
 Disallow: /cart.html
