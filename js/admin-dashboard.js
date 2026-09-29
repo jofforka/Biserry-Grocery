@@ -1,6 +1,6 @@
 import { protectAdminPage } from "./admin-auth.js";
 import {
-  db, collection, getDocs, getDoc, doc, getCountFromServer,
+  auth, db, collection, getDocs, getDoc, doc, getCountFromServer,
   query, where, orderBy, limit
 } from "./firebase-service.js";
 
@@ -22,6 +22,20 @@ function ageText(ts) {
   if (mins < 60) return `${mins} minutes ago`;
   return `${Math.round(mins / 60)} hours ago`;
 }
+function loadAdminSecurity() {
+  const el=document.getElementById("adminSecurityStatus");
+  if(!el)return;
+  const user=auth.currentUser;
+  if(!user){
+    el.innerHTML="<strong>Admin identity unavailable.</strong><br>Sign out and sign back in to refresh Firebase Authentication.";
+    return;
+  }
+  const verified=user.emailVerified===true;
+  el.innerHTML=`<strong>${verified?"✓ Email verified":"⚠ Email not verified"}</strong><br>
+    Account: ${esc(user.email||"Unknown")} • Firebase UID: ${esc(user.uid||"")}
+    <br><small>${verified?"This account is ready for verified-email admin enforcement.":"Do not enable email_verified enforcement yet. Verify this account first."}</small>`;
+}
+
 async function loadAutopilot() {
   const el = document.getElementById("autopilotHealth");
   try {
@@ -86,6 +100,7 @@ async function loadDashboard() {
     } catch {
       document.getElementById("lowStockList").innerHTML="<p>Low-stock snapshot unavailable.</p>";
     }
+    loadAdminSecurity();
     await loadAutopilot();
   } catch(e) {
     alert("Dashboard load failed: "+e.message);
