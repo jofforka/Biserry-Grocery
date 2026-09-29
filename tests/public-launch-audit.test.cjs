@@ -80,8 +80,29 @@ test("public SEO pages have canonical URLs and private pages stay out of sitemap
 
 test("final service worker rotates cache and includes shared mobile/account assets",()=>{
   const sw=read("service-worker.js");
-  assert.match(sw,/biserry-groceries-v11-8-final-launch/);
+  assert.match(sw,/biserry-groceries-v11-9-final-freeze/);
   assert.match(sw,/\.\/js\/mobile-nav\.js/);
   assert.match(sw,/\.\/js\/customer-account\.js/);
   assert.match(sw,/\.\/js\/order-success\.js/);
+});
+
+
+test("external new-tab links use noopener",()=>{
+  for(const page of publicPages){
+    const html=read(page);
+    for(const match of html.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)){
+      assert.match(match[0],/rel=["'][^"']*noopener/i,page+" has unsafe target=_blank link: "+match[0]);
+    }
+  }
+});
+
+test("legacy admin and dispatcher entry points are private",()=>{
+  const legacy=read("admin.html");
+  const adminLogin=read("admin/login.html");
+  const dispatcher=read("dispatcher/index.html");
+  assert.match(legacy,/noindex,nofollow/i);
+  assert.match(legacy,/admin\/login\.html/);
+  assert.match(adminLogin,/noindex,nofollow/i);
+  assert.match(dispatcher,/noindex,nofollow/i);
+  assert.match(read("robots.txt"),/Disallow:\s*\/admin\.html/);
 });
