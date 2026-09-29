@@ -30,11 +30,21 @@ test("dispatch autopilot respects scheduled pickup and total rider workload",()=
   assert.match(src,/data\.assignedDispatcherId \|\| data\.dispatcherId/);
 });
 
-test("settlement ledger includes grocery and standalone dispatch",()=>{
+test("settlement ledger includes both dispatch modes and hides zero-value rider rows",()=>{
   const src=read("js/admin-dispatch-settlements.js");
   assert.match(src,/collection\(db,"dispatchRequests"\)/);
   assert.match(src,/collection\(db,"dispatchBookings"\)/);
   assert.match(src,/source==="standalone"\?"dispatchBookings":"dispatchRequests"/);
+  assert.match(src,/filter\(r=>Number\(r\.riderEarning\|\|0\)>0\)/);
+});
+
+test("completed dispatch bookings expose only safe read/contact actions",()=>{
+  const src=read("js/admin-dispatch-bookings.js");
+  assert.match(src,/const terminal=\["Delivered","Cancelled"\]\.includes\(b\.status\)/);
+  assert.match(src,/!terminal&&!paid\?[^\n]*Quote \/ Override/);
+  assert.match(src,/!terminal&&!paid&&b\.confirmedFare!=null\?[^\n]*Mark Paid/);
+  assert.match(src,/const assignable=!terminal&&paid&&b\.status==="Ready"/);
+  assert.match(src,/!terminal\?[^\n]*Cancel/);
 });
 
 test("dispatch rules prevent riders from self-settling and earning early",()=>{
