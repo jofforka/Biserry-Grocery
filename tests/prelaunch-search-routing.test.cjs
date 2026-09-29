@@ -21,30 +21,28 @@ test('store uses on-demand full catalogue search and grouped categories',()=>{
   assert.match(store,/CATEGORY_ORDER=\["grains","oil","spices","fresh","drinks","household"\]/);
 });
 
-test('WhatsApp routing uses the primary operational number with backup copy',()=>{
+test('WhatsApp routing separates public support from order receiving',()=>{
   const config=fs.readFileSync(path.join(root,'js','firebase-config.js'),'utf8');
-  assert.match(config,/whatsapp:\s*"2348118103510"/);
+  assert.match(config,/phone:\s*"\\+234 810 058 4211"/);
+  assert.match(config,/whatsapp:\s*"2348100584211"/);
   assert.match(config,/orderWhatsapp:\s*"2348118103510"/);
   assert.match(config,/backupWhatsapp:\s*"2348137216136"/);
-  assert.match(config,/legacyHomepagePhone:\s*"\+234 810 058 4211"/);
 
   const success=fs.readFileSync(path.join(root,'js','order-success.js'),'utf8');
   assert.match(success,/BUSINESS\.orderWhatsapp/);
   assert.match(success,/BUSINESS\.backupWhatsapp/);
 
-  const operationalFiles=[
-    'shop.html','cart.html','checkout.html','farmers-market.html','dispatch.html',
-    'dispatch-track.html','payment.html','track-order.html','order-success.html','account.html',
-    'admin/payments.html','js/order-tracking.js','js/payment.js','js/dispatch.js',
-    'js/dispatch-track.js','js/store.js','js/app.js','js/admin-payments.js'
-  ];
-  for(const file of operationalFiles){
+  const supportFiles=['js/order-tracking.js','js/dispatch.js','js/dispatch-track.js','js/store.js'];
+  for(const file of supportFiles){
     const src=fs.readFileSync(path.join(root,file),'utf8');
-    assert.doesNotMatch(src,/2348100584211|\+234 810 058 4211|08100584211/,file+' still uses the old operational WhatsApp number');
+    assert.match(src,/BUSINESS\.whatsapp/,file+' should use public support WhatsApp');
   }
 
+  const payment=fs.readFileSync(path.join(root,'js','payment.js'),'utf8');
+  assert.match(payment,/BUSINESS\.orderWhatsapp/);
+
   const home=fs.readFileSync(path.join(root,'index.html'),'utf8');
-  assert.match(home,/\+234 811 810 3510/);
   assert.match(home,/\+234 810 058 4211/);
-  assert.doesNotMatch(home,/wa\.me\/2348100584211/);
+  assert.match(home,/\+234 811 810 3510/);
+  assert.match(home,/wa\.me\/2348100584211/);
 });
