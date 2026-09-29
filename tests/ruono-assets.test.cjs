@@ -104,12 +104,12 @@ test('optimized hero banner is the expected responsive PNG',()=>{
   assert.match(home,/assets\/hero-banner\.png\?v=20260925-enhanced/);
 });
 
-test('store cache-busts the enhanced Ruono asset paths',()=>{
+test('store keeps Ruono asset versioning and final script cache bust',()=>{
   const store=fs.readFileSync(path.join(root,'js','store.js'),'utf8');
   assert.match(store,/RUONO_ASSET_VERSION = "20260927-b04"/);
   assert.match(store,/assets\/ruono-products\//);
   for(const page of ['index.html','shop.html','cart.html','checkout.html','farmers-market.html']){
-    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260927-b04/,page);
+    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260929-final/,page);
   }
 });
 
