@@ -101,21 +101,27 @@ async function loadDashboard() {
   if (btn) { btn.disabled = true; btn.textContent = "Refreshing…"; }
   try {
     const productsQ = collection(db,"products");
-    const ordersQ = collection(db,"orders");
-    const pendingQ = query(collection(db,"orders"),where("orderStatus","==","Pending"));
     const dispatchQ = query(collection(db,"dispatchers"),where("isPublic","==",true));
     const paymentsQ = query(collection(db,"paymentProofs"),where("status","==","Awaiting Verification"));
     const bookingsQ = collection(db,"dispatchBookings");
     const dispatchPaymentsQ = query(collection(db,"dispatchPaymentProofs"),where("status","==","Awaiting Verification"));
 
-    const [products,orders,pending,dispatchers,payments,bookingTotal,dispatchPayments] = await Promise.all([
-      count(productsQ),count(ordersQ),count(pendingQ),count(dispatchQ),
+    const [products,orderSnap,dispatchers,payments,bookingTotal,dispatchPayments] = await Promise.all([
+      count(productsQ),getDocs(collection(db,"orders")),count(dispatchQ),
       count(paymentsQ),count(bookingsQ),count(dispatchPaymentsQ)
     ]);
+    const orderRows=orderSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const activeOrders=orderRows.filter(o=>o.orderStatus!=="Cancelled");
+    const paidRows=activeOrders.filter(o=>o.paymentStatus==="Paid");
+    const unpaidRows=activeOrders.filter(o=>o.paymentStatus!=="Paid");
+    const cancelledRows=orderRows.filter(o=>o.orderStatus==="Cancelled");
+    const paidRevenue=paidRows.reduce((sum,o)=>sum+Number(o.total||0),0);
 
     document.getElementById("productCount").textContent = products;
-    document.getElementById("orderCount").textContent = orders;
-    document.getElementById("pendingCount").textContent = pending;
+    document.getElementById("orderCount").textContent = activeOrders.length;
+    document.getElementById("paidRevenue").textContent = money(paidRevenue);
+    document.getElementById("pendingCount").textContent = unpaidRows.length;
+    document.getElementById("cancelledCount").textContent = cancelledRows.length;
     document.getElementById("dispatchCount").textContent = dispatchers;
     document.getElementById("paymentPendingCount").textContent = Number(payments || 0) + Number(dispatchPayments || 0);
     document.getElementById("dispatchBookingCount").textContent = bookingTotal;
