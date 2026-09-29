@@ -1,17 +1,22 @@
 name: Live catalogue verification
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/catalogue-live-check.yml']
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+
 permissions:
   contents: read
+
 jobs:
   browser:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
