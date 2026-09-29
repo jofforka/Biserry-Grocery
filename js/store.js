@@ -12,9 +12,11 @@ const fallbackProducts = [
   {id:"demo-3",name:"Tomato Paste",category:"spices",price:1200,stock:20,imageUrl:"assets/tomato-paste.jpg",isFeatured:true}
 ];
 
-let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;\nlet searchIndexPromise=null, remoteSearchResults=null, activeSearchRequest=0, searchTimer=null;
+let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;
+let searchIndexPromise=null, remoteSearchResults=null, activeSearchRequest=0, searchTimer=null;
 const PRODUCT_BATCH_SIZE=24;
-const SHOP_CATALOGUE_LIMIT=150;\nconst SEARCH_MAX_MATCHES=60;
+const SHOP_CATALOGUE_LIMIT=150;
+const SEARCH_MAX_MATCHES=60;
 const CATEGORY_ORDER=["grains","oil","spices","fresh","drinks","household"];
 const CATEGORY_LABELS={grains:"Grains",oil:"Oils",spices:"Spices",fresh:"Fresh Produce",drinks:"Drinks",household:"Household"};
 let productCursor=null, productCatalogueExhausted=false, productLoading=false;
@@ -42,7 +44,8 @@ async function loadProducts({append=false}={}){
   if(productLoading||productCatalogueExhausted&&append)return; productLoading=true;if(!append)showProductSkeletons();
   const moreBtn=document.getElementById("loadMoreProductsBtn"); if(moreBtn){moreBtn.disabled=true;moreBtn.textContent="Loading…";}
   try{
-    const pageLimit=!append&&productGrid&&searchInput?SHOP_CATALOGUE_LIMIT:PRODUCT_BATCH_SIZE;\n    const base=query(collection(db,"products"),where("isActive","==",true),...(append&&productCursor?[startAfter(productCursor)]:[]),limit(pageLimit));
+    const pageLimit=!append&&productGrid&&searchInput?SHOP_CATALOGUE_LIMIT:PRODUCT_BATCH_SIZE;
+    const base=query(collection(db,"products"),where("isActive","==",true),...(append&&productCursor?[startAfter(productCursor)]:[]),limit(pageLimit));
     const snap=await getDocs(base); const incoming=snap.docs.map(d=>({id:d.id,...d.data()}));
     products=append?[...products,...incoming]:incoming; productCursor=snap.docs[snap.docs.length-1]||productCursor; productCatalogueExhausted=snap.size<pageLimit;
   }catch(e){console.warn("Product load failed:",e.message);if(!append)products=[];}
