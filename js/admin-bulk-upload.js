@@ -370,6 +370,10 @@ function assessProduct(product) {
   let matchConfidence = match.confidence;
 
   if (!product.sku && !product.barcode) warnings.push("No SKU/barcode; matching relies on name/category.");
+  if (Number(product.price||0)<0) issues.push("Selling price cannot be negative.");
+  if (Number(product.estimatedCost||0)<0) issues.push("Cost price cannot be negative.");
+  if (Number(product.stock||0)<0 || (product.variants||[]).some(v=>Number(v.stock||0)<0)) issues.push("Stock cannot be negative.");
+  if (Number(product.lowStockThreshold||0)<0) issues.push("Low-stock threshold cannot be negative.");
   if (!product.price && mode !== "stock") issues.push("No usable selling price or cost price.");
   if (product.estimatedCost && product.price < product.estimatedCost) issues.push("Selling price is below cost.");
 
