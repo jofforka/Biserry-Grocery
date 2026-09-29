@@ -54,6 +54,4 @@ test("dispatch rules prevent riders from self-settling and earning early",()=>{
   assert.match(rules,/request\.resource\.data\.status != 'Delivered'[\s\S]*request\.resource\.data\.earningStatus == 'Earned'/);
 });
 
-test("service worker rotates cache for dispatch hardening",()=>{
-  assert.match(read("service-worker.js"),/biserry-groceries-v11-7-whatsapp-routing/);
-});
+test("service worker rotates cache for final launch",()=>{\n  assert.match(read("service-worker.js"),/biserry-groceries-v11-8-final-launch/);\n});
