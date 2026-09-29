@@ -20,6 +20,7 @@ const DEFAULTS = {
   expressMultiplier: 1.30,
   scheduledMultiplier: 1.00,
   offerWindowMinutes: 15,
+  scheduledAssignmentLeadMinutes: 30,
   maxAssignmentAttempts: 8,
   unpaidExpiryHours: 24
 };
@@ -35,6 +36,19 @@ function serviceMultiplier(serviceType, cfg) {
   if (serviceType === "Express") return n(cfg.expressMultiplier, 1.30);
   if (serviceType === "Scheduled") return n(cfg.scheduledMultiplier, 1.00);
   return 1;
+}
+
+function scheduledPickupMillis(booking) {
+  if (booking.pickupWhen !== "Scheduled" || !booking.pickupDate || !booking.pickupTime) return null;
+  const ms = Date.parse(`${booking.pickupDate}T${booking.pickupTime}:00+01:00`);
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function shouldWaitForScheduledPickup(booking, cfg) {
+  const pickupMs = scheduledPickupMillis(booking);
+  if (!pickupMs) return false;
+  const leadMinutes = Math.max(0, n(cfg.scheduledAssignmentLeadMinutes, 30));
+  return pickupMs - Date.now() > leadMinutes * 60_000;
 }
 
 function zoneMatches(rider, booking) {
@@ -79,6 +93,7 @@ async function quoteNewBooking(docSnap, cfg) {
   }
 
   const z = zoneSnap.data();
+  const zoneName = String(z.zone || z.name || z.zoneName || z.label || b.zoneName || b.zoneId || "").trim();
   const baseFare = n(z.fee);
   if (baseFare <= 0) {
     await docSnap.ref.set({
@@ -109,6 +124,7 @@ async function quoteNewBooking(docSnap, cfg) {
 
   await docSnap.ref.set({
     confirmedFare,
+    zoneName,
     riderEarning,
     biserryCommission,
     commissionPercent,
@@ -123,7 +139,8 @@ async function quoteNewBooking(docSnap, cfg) {
   await mirrorTracking(docSnap.id, {
     status: "Awaiting Payment",
     paymentStatus: "Unpaid",
-    confirmedFare
+    confirmedFare,
+    zoneName
   });
 
   return { action: "quoted" };
@@ -141,12 +158,14 @@ async function loadAvailableRiders() {
 
 async function loadRiderLoads() {
   const loads = new Map();
-  const snap = await db.collection("dispatchBookings")
-    .where("status", "in", activeStatuses)
-    .get();
+  const [standaloneSnap, grocerySnap] = await Promise.all([
+    db.collection("dispatchBookings").where("status", "in", activeStatuses).get(),
+    db.collection("dispatchRequests").where("status", "in", ["Offered", ...activeStatuses]).get()
+  ]);
 
-  for (const d of snap.docs) {
-    const rider = d.data().assignedDispatcherId;
+  for (const d of [...standaloneSnap.docs, ...grocerySnap.docs]) {
+    const data = d.data();
+    const rider = data.assignedDispatcherId || data.dispatcherId;
     if (rider) loads.set(rider, (loads.get(rider) || 0) + 1);
   }
   return loads;
@@ -281,6 +300,16 @@ async function processBooking(docSnap, cfg, riders, loads) {
   // Human bank verification is intentionally the only routine payment gate.
   // Once an admin marks the payment Paid, Autopilot handles rider assignment.
   if (b.paymentStatus === "Paid" && ["Awaiting Payment", "Ready"].includes(b.status)) {
+    if (shouldWaitForScheduledPickup(b, cfg)) {
+      await docSnap.ref.set({
+        status: "Ready",
+        automationState: "Waiting for Scheduled Pickup",
+        automationNote: "Rider matching will begin shortly before the scheduled pickup time.",
+        updatedAt: FieldValue.serverTimestamp()
+      }, { merge: true });
+      await mirrorTracking(docSnap.id, { status: "Ready", paymentStatus: "Paid" });
+      return { action: "waiting_schedule" };
+    }
     if (b.status !== "Ready") {
       await docSnap.ref.set({
         status: "Ready",
