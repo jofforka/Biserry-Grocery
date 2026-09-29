@@ -41,15 +41,19 @@ test("customer records include registered and guest buyers from orders",()=>{
 });
 
 
-test("admin dashboard exposes safe email verification workflow",()=>{
-  const service=read("js/firebase-service.js");
+test("admin security stages UID migration without risking lockout",()=>{
+  const config=read("js/firebase-config.js");
+  const auth=read("js/admin-auth.js");
   const dash=read("js/admin-dashboard.js");
   const html=read("admin/dashboard.html");
-  assert.match(service,/sendEmailVerification/);
-  assert.match(dash,/sendAdminVerificationEmail/);
-  assert.match(dash,/refreshAdminVerification/);
-  assert.match(dash,/emailVerified/);
-  assert.match(dash,/getIdToken\?\.\(true\)/);
-  assert.match(html,/adminSecurityActions/);
-  assert.doesNotMatch(dash,/email_verified\s*==\s*true/);
+  const rules=read("firestore.rules.v11.1-stability");
+  assert.match(config,/export const ADMIN_UIDS = \[\]/);
+  assert.match(auth,/if \(uids\.length\) return uids\.includes/);
+  assert.match(dash,/Firebase UID:/);
+  assert.match(dash,/copyAdminUidBtn/);
+  assert.match(dash,/navigator\.clipboard\.writeText\(uid\)/);
+  assert.match(html,/Admin authorization is being migrated from email matching to this exact Firebase UID/);
+  assert.match(rules,/request\.auth\.token\.email == 'admin@biserry\.com'/);
+  assert.doesNotMatch(rules,/request\.auth\.uid ==/);
+  assert.doesNotMatch(dash,/sendAdminVerificationEmail|refreshAdminVerification/);
 });
