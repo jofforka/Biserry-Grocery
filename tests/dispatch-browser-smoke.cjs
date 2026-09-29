@@ -21,7 +21,7 @@ if(isRider){
 const store=base;
 function snap(id,data){return {id,exists:()=>data!==undefined,data:()=>data,get:(k)=>data?.[k]};}
 function list(name,parts=[]){let entries=Object.entries(store[name]||{});for(const p of parts){if(p?.kind==="where")entries=entries.filter(([,d])=>p.op==="=="?d?.[p.field]===p.value:true);}return entries;}
-function emitWrite(op,ref,data){globalThis.__fbWrites.push({op,collection:ref.name,id:ref.id||null,data:{...data}});}
+function emitWrite(op,ref,data){const entry={op,collection:ref.name,id:ref.id||null,data:{...data}};globalThis.__fbWrites.push(entry);try{const persisted=JSON.parse(localStorage.getItem("__fbWrites")||"[]");persisted.push(entry);localStorage.setItem("__fbWrites",JSON.stringify(persisted));}catch{}}
 export const auth={currentUser:isRider?{uid:"rider-auth",email:"rider@example.com"}:null};
 export const authReady=Promise.resolve();
 export const db={};
@@ -81,7 +81,7 @@ export const deleteDoc=async()=>{};
     await page.getByRole("button",{name:/Request Dispatch/}).click();
     await page.locator("#bookingSuccess:not([hidden])").waitFor();
     assert.equal(await page.locator("#bookingRef").textContent(),"booking-smoke");
-    let writes=await page.evaluate(()=>globalThis.__fbWrites);
+    let writes=await page.evaluate(()=>JSON.parse(localStorage.getItem("__fbWrites")||"[]"));
     const booking=writes.find(w=>w.op==="add"&&w.collection==="dispatchBookings");
     assert.ok(booking,"standalone booking was not created");
     assert.equal(booking.data.zoneName,"Gwarinpa");
@@ -92,10 +92,10 @@ export const deleteDoc=async()=>{};
     await page.goto(baseUrl+"/dispatch.html?order=order-smoke",{waitUntil:"domcontentloaded"});
     await page.waitForSelector(".dispatchCard");
     assert.equal(await page.locator(".dispatchCard").count(),1);
-    await page.route("**/track-order.html*",route=>route.abort());
+    await page.route("**/track-order.html*",route=>route.fulfill({contentType:"text/html",body:"<!doctype html><title>Tracking</title>"}));
     await page.getByRole("button",{name:"Request Dispatcher"}).click();
     await page.waitForTimeout(100);
-    writes=await page.evaluate(()=>globalThis.__fbWrites);
+    writes=await page.evaluate(()=>JSON.parse(localStorage.getItem("__fbWrites")||"[]"));
     const request=writes.find(w=>w.collection==="dispatchRequests"&&w.id==="order-smoke");
     assert.ok(request,"grocery dispatch request was not created");
     assert.equal(request.data.dispatcherId,"rider1");
