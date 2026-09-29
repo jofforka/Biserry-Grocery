@@ -12,10 +12,11 @@ export const ADMIN_EMAILS = [
 ];
 export const BUSINESS = {
   name: "Biserry Groceries",
-  phone: "+234 810 058 4211",
-  whatsapp: "2348100584211",
+  phone: "+234 811 810 3510",
+  whatsapp: "2348118103510",
   orderWhatsapp: "2348118103510",
   backupWhatsapp: "2348137216136",
+  legacyHomepagePhone: "+234 810 058 4211",
   address: "Amac Market, Abuja",
   instagram: "@biserry_groceries",
   currency: "NGN"
