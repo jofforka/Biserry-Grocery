@@ -1,7 +1,7 @@
 import { protectAdminPage } from "./admin-auth.js";
 import {
   auth, db, collection, getDocs, getDoc, doc, getCountFromServer,
-  query, where, orderBy, limit
+  query, where, orderBy, limit, sendEmailVerification
 } from "./firebase-service.js";
 
 const money = v => new Intl.NumberFormat("en-NG", {
@@ -23,17 +23,60 @@ function ageText(ts) {
   return `${Math.round(mins / 60)} hours ago`;
 }
 function loadAdminSecurity() {
-  const el=document.getElementById("adminSecurityStatus");
+  const el=document.getElementById("adminSecurityStatus"),actions=document.getElementById("adminSecurityActions");
   if(!el)return;
   const user=auth.currentUser;
   if(!user){
     el.innerHTML="<strong>Admin identity unavailable.</strong><br>Sign out and sign back in to refresh Firebase Authentication.";
+    if(actions)actions.innerHTML="";
     return;
   }
   const verified=user.emailVerified===true;
-  el.innerHTML=`<strong>${verified?"✓ Email verified":"⚠ Email not verified"}</strong><br>
-    Account: ${esc(user.email||"Unknown")} • Firebase UID: ${esc(user.uid||"")}
-    <br><small>${verified?"This account is ready for verified-email admin enforcement.":"Do not enable email_verified enforcement yet. Verify this account first."}</small>`;
+  el.innerHTML=`<strong>${verified?"✓ Verified":"⚠ Email not verified"}</strong><br>
+    Account: ${esc(user.email||"Unknown")}
+    <br><small>${verified?"Firebase confirms this admin email is verified. Verified-email enforcement can now be enabled safely.":"Verify this exact Biserry admin account before enabling email_verified enforcement."}</small>`;
+  if(actions){
+    actions.innerHTML=verified
+      ? '<button class="btn outline" id="refreshAdminVerificationBtn" type="button">Refresh Verification Status</button>'
+      : '<button class="btn" id="sendAdminVerificationBtn" type="button">Send Verification Email</button><button class="btn outline" id="refreshAdminVerificationBtn" type="button">Refresh Verification Status</button>';
+    document.getElementById("sendAdminVerificationBtn")?.addEventListener("click",sendAdminVerificationEmail);
+    document.getElementById("refreshAdminVerificationBtn")?.addEventListener("click",refreshAdminVerification);
+  }
+}
+
+async function sendAdminVerificationEmail(){
+  const user=auth.currentUser,btn=document.getElementById("sendAdminVerificationBtn");
+  if(!user)return alert("Admin account is not signed in.");
+  if(user.emailVerified){loadAdminSecurity();return alert("This admin email is already verified.");}
+  try{
+    if(btn){btn.disabled=true;btn.textContent="Sending…";}
+    await sendEmailVerification(user);
+    alert(`Verification email sent to ${user.email}. Open that email, click the Firebase verification link, then return here and click “Refresh Verification Status”.`);
+  }catch(e){
+    const msg=e?.code==="auth/too-many-requests"
+      ?"Firebase has temporarily limited verification emails. Wait a little, then try again."
+      :(e?.message||"Could not send verification email.");
+    alert(msg);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent="Send Verification Email";}
+  }
+}
+
+async function refreshAdminVerification(){
+  const user=auth.currentUser,btn=document.getElementById("refreshAdminVerificationBtn");
+  if(!user)return alert("Admin account is not signed in.");
+  try{
+    if(btn){btn.disabled=true;btn.textContent="Refreshing…";}
+    await user.reload();
+    await auth.currentUser?.getIdToken?.(true);
+    loadAdminSecurity();
+    alert(auth.currentUser?.emailVerified?"Email verification confirmed ✓":"Firebase still shows this email as not verified. Click the verification link in the email first.");
+  }catch(e){
+    alert("Could not refresh verification status: "+(e?.message||"Please try again."));
+  }finally{
+    const current=document.getElementById("refreshAdminVerificationBtn");
+    if(current){current.disabled=false;current.textContent="Refresh Verification Status";}
+  }
 }
 
 async function loadAutopilot() {
