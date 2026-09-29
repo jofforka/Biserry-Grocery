@@ -39,3 +39,17 @@ test("customer records include registered and guest buyers from orders",()=>{
   assert.match(src,/Guest/);
   assert.match(src,/paidSpend/);
 });
+
+
+test("admin dashboard exposes safe email verification workflow",()=>{
+  const service=read("js/firebase-service.js");
+  const dash=read("js/admin-dashboard.js");
+  const html=read("admin/dashboard.html");
+  assert.match(service,/sendEmailVerification/);
+  assert.match(dash,/sendAdminVerificationEmail/);
+  assert.match(dash,/refreshAdminVerification/);
+  assert.match(dash,/emailVerified/);
+  assert.match(dash,/getIdToken\?\.\(true\)/);
+  assert.match(html,/adminSecurityActions/);
+  assert.doesNotMatch(dash,/email_verified\s*==\s*true/);
+});
