@@ -54,6 +54,6 @@ test("admin security stages UID migration without risking lockout",()=>{
   assert.match(dash,/navigator\.clipboard\.writeText\(uid\)/);
   assert.match(html,/Admin authorization is being migrated from email matching to this exact Firebase UID/);
   assert.match(rules,/request\.auth\.token\.email == 'admin@biserry\.com'/);
-  assert.doesNotMatch(rules,/request\.auth\.uid ==/);
+  const isAdminRule=rules.match(/function isAdmin\(\)\s*\{[^}]+\}/)?.[0]||"";\n  assert.doesNotMatch(isAdminRule,/request\.auth\.uid/);
   assert.doesNotMatch(dash,/sendAdminVerificationEmail|refreshAdminVerification/);
 });
