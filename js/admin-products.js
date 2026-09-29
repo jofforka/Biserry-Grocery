@@ -26,6 +26,7 @@ let editingImageUrl = "";
 let variants = [];
 let allProducts = [];
 
+const esc=v=>String(v??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\'":"&#39;",'"':"&quot;"}[ch]));
 const form = document.getElementById("productForm");
 const nameInput = document.getElementById("name");
 const categoryInput = document.getElementById("category");
@@ -190,12 +191,12 @@ function renderVariantRows() {
     <div class="variantRow upgradedVariantRow">
       <div>
         <label>${label} Name</label>
-        <input value="${variant.name || ""}" onchange="updateVariant(${index}, 'name', this.value)" placeholder="${getVariantPlaceholder()}">
+        <input value="${esc(variant.name || "")}" onchange="updateVariant(${index}, 'name', this.value)" placeholder="${getVariantPlaceholder()}">
       </div>
 
       <div>
         <label>${label} SKU / Barcode</label>
-        <input value="${variant.sku || ""}" onchange="updateVariant(${index}, 'sku', this.value)" placeholder="Optional">
+        <input value="${esc(variant.sku || "")}" onchange="updateVariant(${index}, 'sku', this.value)" placeholder="Optional">
       </div>
 
       <div>
@@ -215,12 +216,12 @@ function renderVariantRows() {
 
       <div>
         <label>Image URL / Asset Path</label>
-        <input value="${variant.imageUrl || ""}" onchange="updateVariant(${index}, 'imageUrl', this.value)" placeholder="assets/product.jpg">
+        <input value="${esc(variant.imageUrl || "")}" onchange="updateVariant(${index}, 'imageUrl', this.value)" placeholder="assets/product.jpg">
       </div>
 
       <div class="variantPreviewCell">
         <label>Preview</label>
-        <img src="${variant.imageUrl || "../assets/logo.png"}" alt="${variant.name || label}">
+        <img src="${esc(variant.imageUrl || "../assets/logo.png")}" alt="${esc(variant.name || label)}">
       </div>
 
       <div class="variantActions"><button class="duplicateVariantBtn" type="button" onclick="duplicateVariant(${index})">Duplicate</button><button class="removeVariantBtn" type="button" onclick="removeVariant(${index})">Remove</button></div>
@@ -406,22 +407,22 @@ function renderProductsTable(products) {
       ? `${(product.variants || []).length} ${optionLabel.toLowerCase()}`
       : formatNaira(Number(product.price || 0));
     const image = product.imageUrl || product.variants?.[0]?.imageUrl || "../assets/logo.png";
-    const skuText = product.sku ? `<br><small>SKU: ${product.sku}</small>` : "";
+    const skuText = product.sku ? `<br><small>SKU: ${esc(product.sku)}</small>` : "";
     const active = isProductActive(product);
 
     return `
       <tr>
         <td style="text-align:center;"><input class="productSelectionCheck" type="checkbox" data-product-id="${id}" ${selectedProductIds.has(id) ? "checked" : ""}></td>
-        <td><img class="adminProductThumb" loading="lazy" decoding="async" src="${image}" alt="${product.name || "Product"}" onerror="this.src='../assets/logo.png'" style="width:56px;height:56px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"></td>
-        <td><strong>${product.name || "Unnamed product"}</strong>${product.brand?`<br><small>${product.brand}${product.packSize?` • ${product.packSize}`:""}</small>`:""}${Number(product.costPrice||0)>0&&!isOptionProduct?`<br><small>Margin: ${Math.round(((Number(product.price||0)-Number(product.costPrice||0))/Math.max(1,Number(product.price||0)))*100)}%</small>`:""}${skuText}${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}</td>
-        <td>${optionLabel}</td><td>${product.category || ""}</td><td>${priceDisplay}</td><td>${totalStock}</td>
+        <td><img class="adminProductThumb" loading="lazy" decoding="async" src="${esc(image)}" alt="${esc(product.name || "Product")}" onerror="this.src='../assets/logo.png'" style="width:56px;height:56px;object-fit:contain;border-radius:12px;border:1px solid #e9ddc3;padding:4px;background:#fff;display:block;"></td>
+        <td><strong>${esc(product.name || "Unnamed product")}</strong>${product.brand?`<br><small>${esc(product.brand)}${product.packSize?` • ${esc(product.packSize)}`:""}</small>`:""}${Number(product.costPrice||0)>0&&!isOptionProduct?`<br><small>Margin: ${Math.round(((Number(product.price||0)-Number(product.costPrice||0))/Math.max(1,Number(product.price||0)))*100)}%</small>`:""}${skuText}${product.isFeatured ? "<br><span class='statusBadge'>Featured</span>" : ""}</td>
+        <td>${optionLabel}</td><td>${esc(product.category || "")}</td><td>${priceDisplay}</td><td>${totalStock}</td>
         <td><span class="qualityPill image-${(product.imageStatus||imageQuality(product))}">${(product.imageStatus||imageQuality(product)) === "real" ? "Real image" : (product.imageStatus||imageQuality(product)) === "missing" ? "No image" : "Placeholder"}</span></td>
         <td><span class="qualityPill ${(product.qualityStatus||catalogueQuality(product).qualityStatus)}">${product.qualityScore ?? catalogueQuality(product).qualityScore}% • ${(product.qualityStatus||catalogueQuality(product).qualityStatus)==="ready"?"Ready":"Review"}</span></td>
         <td><span class="statusBadge" style="background:${active ? "#e6f5ea" : "#f4e7e7"};color:${active ? "#176b37" : "#8b2d2d"};">${active ? "Active" : "Inactive"}</span></td>
         <td><div class="actionBtns">
           <button class="${active ? "duplicateBtn" : "editBtn"}" onclick="setProductActive('${id}', ${active ? "false" : "true"})">${active ? "Deactivate" : "Activate"}</button>
-          <button class="editBtn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Edit</button>
-          <button class="duplicateBtn" onclick="duplicateProduct('${id}', '${encodeURIComponent(JSON.stringify(product))}')">Duplicate</button>
+          <button class="editBtn" onclick="editProduct('${id}')">Edit</button>
+          <button class="duplicateBtn" onclick="duplicateProduct('${id}')">Duplicate</button>
           <button class="deleteBtn" onclick="deleteProduct('${id}')">Delete</button>
         </div></td>
       </tr>`;
@@ -436,6 +437,7 @@ function renderProductsTable(products) {
   updateVisibilitySummary();
 }
 
+function getLoadedProduct(id){return allProducts.find(item=>String(item.id)===String(id))?.product||null;}
 function renderCurrentProducts() {
   const term = adminProductSearch?.value.trim().toLowerCase() || "";
   renderProductsTable(term ? allProducts.filter(item => productMatchesSearch(item.product, term)) : allProducts);
@@ -662,6 +664,10 @@ form.addEventListener("submit", async (event) => {
     };
   }
 
+  const numericStocks=hasOptions?(productData.variants||[]).map(v=>Number(v.stock||0)):[Number(productData.stock||0)];
+  if(numericStocks.some(v=>!Number.isFinite(v)||v<0)){alert("Stock cannot be negative.");return;}
+  if(Number(productData.lowStockThreshold||0)<0){alert("Low-stock threshold cannot be negative.");return;}
+  if(Number(productData.costPrice||0)<0){alert("Cost price cannot be negative.");return;}
   productData = {...productData, ...catalogueQuality(productData)};
   try {
     if (editingId) {
@@ -684,8 +690,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-window.editProduct = function(id, encodedProduct) {
-  const product = JSON.parse(decodeURIComponent(encodedProduct));
+function populateProductForm(id,product){
   const productType = productTypeFromProduct(product);
 
   editingId = id;
@@ -722,8 +727,15 @@ window.editProduct = function(id, encodedProduct) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-window.duplicateProduct = async function(id, encodedProduct) {
-  const product = JSON.parse(decodeURIComponent(encodedProduct));
+window.editProduct = function(id){
+  const product=getLoadedProduct(id);
+  if(!product)return alert("Product is not loaded on this page. Refresh and try again.");
+  populateProductForm(id,product);
+};
+
+window.duplicateProduct = async function(id) {
+  const product=getLoadedProduct(id);
+  if(!product)return alert("Product is not loaded on this page. Refresh and try again.");
 
   const duplicatedVariants = (product.variants || []).map(variant => ({
     ...variant,
@@ -748,7 +760,7 @@ window.duplicateProduct = async function(id, encodedProduct) {
     alert("Product duplicated. The copy has been created and opened for editing.");
 
     await loadProducts();
-    window.editProduct(newDoc.id, encodeURIComponent(JSON.stringify(duplicatedProduct)));
+    populateProductForm(newDoc.id,duplicatedProduct);
   } catch (error) {
     alert("Duplicate failed: " + error.message);
   }
