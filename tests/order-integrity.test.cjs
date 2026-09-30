@@ -46,3 +46,14 @@ test("pickup orders do not expose dispatch calls to action",()=>{
   assert.match(payment,/tracking\.fulfillment==="Pickup"/);
   assert.match(tracking,/o\.fulfillment==="Delivery"\?/);
 });
+
+
+test("stock transaction uses explicit productRef handles",()=>{
+  const src=read("js/admin-orders.js");
+  const html=read("admin/orders.html");
+  assert.match(src,/const productRef=doc\(db,"products",productId\)/);
+  assert.match(src,/records\.push\(\{productId,items,productRef,data:snap\.data\(\)\}\)/);
+  assert.match(src,/tx\.update\(w\.productRef,w\.data\)/);
+  assert.doesNotMatch(src,/\bconst ref=doc\(db,"products"/);
+  assert.match(html,/admin-orders\.js\?v=20260930-stockref-fix/);
+});
