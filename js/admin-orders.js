@@ -68,9 +68,10 @@ async function applyStockTransaction(orderId,mode){
     const groups=groupedItems(order.items||[]);
     const records=[];
     for(const [productId,items] of groups){
-      const ref=doc(db,"products",productId),snap=await tx.get(ref);
+      const productRef=doc(db,"products",productId);
+      const snap=await tx.get(productRef);
       if(!snap.exists())throw new Error(`A product in this order no longer exists (${productId}).`);
-      records.push({productId,items,ref,data:snap.data()});
+      records.push({productId,items,productRef,data:snap.data()});
     }
 
     let expectedProductTotal=0;
@@ -114,7 +115,7 @@ async function applyStockTransaction(orderId,mode){
       }
 
       if(p.hasVariants)nextStock=nextVariants.reduce((s,v)=>s+Number(v.stock||0),0);
-      writes.push({ref,data:p.hasVariants?{variants:nextVariants,stock:nextStock,updatedAt:serverTimestamp()}:{stock:nextStock,updatedAt:serverTimestamp()}});
+      writes.push({productRef:record.productRef,data:p.hasVariants?{variants:nextVariants,stock:nextStock,updatedAt:serverTimestamp()}:{stock:nextStock,updatedAt:serverTimestamp()}});
     }
 
     if(mode==="deduct"){
@@ -124,7 +125,7 @@ async function applyStockTransaction(orderId,mode){
       }
     }
 
-    for(const w of writes)tx.update(w.ref,w.data);
+    for(const w of writes)tx.update(w.productRef,w.data);
     for(const log of logs){
       const logRef=doc(collection(db,"inventory_logs"));
       tx.set(logRef,{
