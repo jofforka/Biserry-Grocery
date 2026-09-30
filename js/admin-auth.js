@@ -6,16 +6,10 @@ import {
   onAuthStateChanged
 } from "./firebase-service.js";
 
-import { ADMIN_EMAILS, ADMIN_UIDS } from "./firebase-config.js";
+import { ADMIN_UIDS } from "./firebase-config.js";
 
 const loginForm = document.getElementById("loginForm");
 const logoutBtn = document.getElementById("logoutBtn");
-
-function normalizedAdminEmails() {
-  return (Array.isArray(ADMIN_EMAILS) ? ADMIN_EMAILS : [])
-    .map(x => String(x || "").trim().toLowerCase())
-    .filter(Boolean);
-}
 
 function normalizedAdminUids() {
   return (Array.isArray(ADMIN_UIDS) ? ADMIN_UIDS : [])
@@ -26,9 +20,7 @@ function normalizedAdminUids() {
 function isAuthorizedAdmin(user) {
   if (!user) return false;
   const uids = normalizedAdminUids();
-  if (uids.length) return uids.includes(String(user.uid || "").trim());
-  const email = String(user.email || "").trim().toLowerCase();
-  return normalizedAdminEmails().includes(email);
+  return uids.includes(String(user.uid || "").trim());
 }
 
 function ensureOpsNav() {
