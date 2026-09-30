@@ -1,10 +1,7 @@
-name: One-time UID Firestore Rules Deploy
+name: Manual Firestore Rules Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/deploy-firestore-rules.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
