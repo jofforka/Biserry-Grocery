@@ -52,7 +52,8 @@ test("admin security is pinned to one Firebase UID",()=>{
   assert.match(auth,/return uids\.includes\(String\(user\.uid \|\| ""\)\.trim\(\)\)/);
   assert.doesNotMatch(auth,/normalizedAdminEmails|ADMIN_EMAILS/);
   assert.match(dash,/Biserry OS UID pinned/);
-  assert.match(html,/authorizes the admin by this exact Firebase UID/);\n  assert.match(html,/Publish the matching Firestore rule in Firebase Console/);
+  assert.match(html,/authorizes the admin by this exact Firebase UID/);
+  assert.match(html,/Publish the matching Firestore rule in Firebase Console/);
   for(const rules of [rulesStable,rulesAutonomous]){
     const isAdminRule=rules.match(/function isAdmin\(\)\s*\{[^}]+\}/)?.[0]||"";
     assert.match(isAdminRule,/request\.auth\.uid == 'mFmTWqhWOxfxE9G0yHDuzZrmKy13'/);
