@@ -41,20 +41,21 @@ test("customer records include registered and guest buyers from orders",()=>{
 });
 
 
-test("admin security stages UID migration without risking lockout",()=>{
+test("admin security is pinned to one Firebase UID",()=>{
   const config=read("js/firebase-config.js");
   const auth=read("js/admin-auth.js");
   const dash=read("js/admin-dashboard.js");
   const html=read("admin/dashboard.html");
-  const rules=read("firestore.rules.v11.1-stability");
-  assert.match(config,/export const ADMIN_UIDS = \[\]/);
-  assert.match(auth,/if \(uids\.length\) return uids\.includes/);
-  assert.match(dash,/Firebase UID:/);
-  assert.match(dash,/copyAdminUidBtn/);
-  assert.match(dash,/navigator\.clipboard\.writeText\(uid\)/);
-  assert.match(html,/Admin authorization is being migrated from email matching to this exact Firebase UID/);
-  assert.match(rules,/request\.auth\.token\.email == 'admin@biserry\.com'/);
-  const isAdminRule=rules.match(/function isAdmin\(\)\s*\{[^}]+\}/)?.[0]||"";
-  assert.doesNotMatch(isAdminRule,/request\.auth\.uid/);
-  assert.doesNotMatch(dash,/sendAdminVerificationEmail|refreshAdminVerification/);
+  const rulesStable=read("firestore.rules.v11.1-stability");
+  const rulesAutonomous=read("firestore.rules.v11-autonomous-launch");
+  assert.match(config,/export const ADMIN_UIDS = \[\s*"mFmTWqhWOxfxE9G0yHDuzZrmKy13"\s*\]/);
+  assert.match(auth,/return uids\.includes\(String\(user\.uid \|\| ""\)\.trim\(\)\)/);
+  assert.doesNotMatch(auth,/normalizedAdminEmails|ADMIN_EMAILS/);
+  assert.match(dash,/UID authorization active/);
+  assert.match(html,/authorizes the admin by this exact Firebase UID/);
+  for(const rules of [rulesStable,rulesAutonomous]){
+    const isAdminRule=rules.match(/function isAdmin\(\)\s*\{[^}]+\}/)?.[0]||"";
+    assert.match(isAdminRule,/request\.auth\.uid == 'mFmTWqhWOxfxE9G0yHDuzZrmKy13'/);
+    assert.doesNotMatch(isAdminRule,/token\.email|admin@biserry\.com/);
+  }
 });
