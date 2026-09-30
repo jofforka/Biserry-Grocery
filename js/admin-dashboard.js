@@ -35,10 +35,10 @@ function loadAdminSecurity() {
   const configuredUids=(Array.isArray(ADMIN_UIDS)?ADMIN_UIDS:[]).map(x=>String(x||"").trim()).filter(Boolean);
   const uid=String(user.uid||"");
   const pinned=configuredUids.length>0&&configuredUids.includes(uid);
-  el.innerHTML=`<strong>${pinned?"✓ UID authorization active":"UID migration ready"}</strong><br>
+  el.innerHTML=`<strong>${pinned?"✓ Biserry OS UID pinned":"UID mismatch"}</strong><br>
     Account: ${esc(user.email||"Unknown")}<br>
     Firebase UID: <code id="adminFirebaseUid">${esc(uid||"Unavailable")}</code>
-    <br><small>${pinned?"This exact Firebase user is pinned as the Biserry admin. Firestore access should use the same UID rule.":"This signed-in account does not match the configured Biserry admin UID."}</small>`;
+    <br><small>${pinned?"Frontend admin authorization is UID-only. Publish the matching UID-pinned Firestore rule in Firebase Console to complete backend migration.":"This signed-in account does not match the configured Biserry admin UID."}</small>`;
   if(actions){
     actions.innerHTML=uid
       ? '<button class="btn outline" id="copyAdminUidBtn" type="button">Copy Firebase UID</button>'
