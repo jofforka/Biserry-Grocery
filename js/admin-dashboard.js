@@ -38,7 +38,7 @@ function loadAdminSecurity() {
   el.innerHTML=`<strong>${pinned?"✓ UID authorization active":"UID migration ready"}</strong><br>
     Account: ${esc(user.email||"Unknown")}<br>
     Firebase UID: <code id="adminFirebaseUid">${esc(uid||"Unavailable")}</code>
-    <br><small>${pinned?"This exact Firebase user is pinned as the Biserry admin.":"Biserry is still using the existing email fallback until this exact UID is inserted into the admin configuration and Firestore rules."}</small>`;
+    <br><small>${pinned?"This exact Firebase user is pinned as the Biserry admin. Firestore access should use the same UID rule.":"This signed-in account does not match the configured Biserry admin UID."}</small>`;
   if(actions){
     actions.innerHTML=uid
       ? '<button class="btn outline" id="copyAdminUidBtn" type="button">Copy Firebase UID</button>'
