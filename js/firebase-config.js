@@ -11,9 +11,10 @@ export const ADMIN_EMAILS = [
   "admin@biserry.com"
 ];
 
-// Populate this with the exact Firebase UID shown in Biserry OS > Admin Security.
-// Once populated, the frontend will use UID authorization instead of email fallback.
-export const ADMIN_UIDS = [];
+// Exact Firebase Authentication UID authorized for Biserry OS admin access.
+export const ADMIN_UIDS = [
+  "mFmTWqhWOxfxE9G0yHDuzZrmKy13"
+];
 export const BUSINESS = {
   name: "Biserry Groceries",
   phone: "+234 810 058 4211",
