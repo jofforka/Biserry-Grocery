@@ -12,7 +12,7 @@ const fallbackProducts = [
   {id:"demo-3",name:"Tomato Paste",category:"spices",price:1200,stock:20,imageUrl:"assets/tomato-paste.jpg",isFeatured:true}
 ];
 
-let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", activeModalProductId=null, activeModalImageIndex=0;
+let products=[], cart=loadCart(), wishlist=loadWishlist(), selectedQuantities={}, selectedVariants={}, currentCategory="all", currentSource="fresh", activeModalProductId=null, activeModalImageIndex=0;
 let searchIndexPromise=null, remoteSearchResults=null, activeSearchRequest=0, searchTimer=null;
 const PRODUCT_BATCH_SIZE=24;
 const SHOP_CATALOGUE_LIMIT=150;
@@ -21,7 +21,7 @@ const CATEGORY_ORDER=["grains","oil","spices","fresh","drinks","household"];
 const CATEGORY_LABELS={grains:"Grains",oil:"Oils",spices:"Spices",fresh:"Fresh Produce",drinks:"Drinks",household:"Household"};
 let productCursor=null, productCatalogueExhausted=false, productLoading=false;
 
-const productGrid=document.getElementById("productGrid"), featuredGrid=document.getElementById("featuredGrid"), searchInput=document.getElementById("searchInput");
+const productGrid=document.getElementById("productGrid"), featuredGrid=document.getElementById("featuredGrid"), searchInput=document.getElementById("searchInput"), categoryFilters=document.getElementById("categoryFilters"), catalogueTitle=document.getElementById("catalogueTitle"), catalogueIntro=document.getElementById("catalogueIntro");
 const cartItems=document.getElementById("cartItems"), cartTotal=document.getElementById("cartTotal"), cartCount=document.getElementById("cartCount"), navCartCount=document.getElementById("navCartCount"), floatingCartCount=document.getElementById("floatingCartCount"), bottomCartCount=document.getElementById("bottomCartCount");
 const checkoutPreview=document.getElementById("checkoutPreview"), checkoutTotal=document.getElementById("checkoutTotal");
 const floatingCartBtn=document.getElementById("floatingCartBtn"), bottomCartBtn=document.getElementById("bottomCartBtn"), miniCart=document.getElementById("miniCart"), miniCartOverlay=document.getElementById("miniCartOverlay"), closeMiniCartBtn=document.getElementById("closeMiniCartBtn"), miniCartItems=document.getElementById("miniCartItems"), miniCartTotal=document.getElementById("miniCartTotal");
@@ -33,6 +33,12 @@ function loadWishlist(){try{return JSON.parse(localStorage.getItem(WISHLIST_STOR
 function saveWishlist(){localStorage.setItem(WISHLIST_STORAGE_KEY,JSON.stringify(wishlist))}
 function rememberViewed(p){try{let r=JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)||"[]");r=[{id:p.id,name:p.name,imageUrl:p.imageUrl||p.image||"assets/logo.png",price:p.price||0,category:p.category||""},...r.filter(x=>String(x.id)!==String(p.id))].slice(0,12);localStorage.setItem(RECENT_STORAGE_KEY,JSON.stringify(r));}catch{}}
 function normalizeSearch(v){return String(v||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g," ").trim()}
+function productSource(product){
+  const explicit=String(product?.source||product?.catalogueSource||"").toLowerCase();
+  if(["wholesale","tracepos","supplier"].includes(explicit)||product?.traceposProductId||product?.supplierId)return "wholesale";
+  return "fresh";
+}
+function sourceLabel(source){return source==="wholesale"?"Wholesale Products":"Fresh Products"}
 function formatNaira(amount){return new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(amount||0)}
 function normalizeImageUrl(url){if(!url)return"assets/logo.png";const clean=String(url).trim();const file=clean.match(/drive\.google\.com\/file\/d\/([^/]+)/);if(file?.[1])return`https://drive.google.com/thumbnail?id=${file[1]}&sz=w1000`;const id=clean.match(/[?&]id=([^&]+)/);if(clean.includes("drive.google.com")&&id?.[1])return`https://drive.google.com/thumbnail?id=${id[1]}&sz=w1000`;if(clean.startsWith("assets/ruono-products/")){const separator=clean.includes("?")?"&":"?";return clean.includes(`v=${RUONO_ASSET_VERSION}`)?clean:`${clean}${separator}v=${RUONO_ASSET_VERSION}`}return clean}
 function toast(msg){const el=document.getElementById("cartToast");if(!el)return;el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600)}
@@ -50,11 +56,35 @@ async function loadProducts({append=false}={}){
     products=append?[...products,...incoming]:incoming; productCursor=snap.docs[snap.docs.length-1]||productCursor; productCatalogueExhausted=snap.size<pageLimit;
   }catch(e){console.warn("Product load failed:",e.message);if(!append)products=[];}
   finally{productLoading=false;}
-  applyUrlCategory();renderProducts();renderFeatured();renderCart(); updateLoadMoreButton();
+  applyUrlCategory();updateSourceUi();renderCategoryFilters();renderProducts();renderFeatured();renderCart(); updateLoadMoreButton();
 }
 function updateLoadMoreButton(){const btn=document.getElementById("loadMoreProductsBtn");if(!btn)return;btn.style.display=productCatalogueExhausted?"none":"inline-flex";btn.disabled=false;btn.textContent="Load more products";}
 window.loadMoreProducts=()=>loadProducts({append:true});
-function applyUrlCategory(){const params=new URLSearchParams(location.search);const cat=params.get("category");if(cat){currentCategory=cat;document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b.dataset.category===cat));}}
+function applyUrlCategory(){
+  const params=new URLSearchParams(location.search),cat=params.get("category"),source=params.get("source");
+  if(source==="fresh"||source==="wholesale")currentSource=source;
+  if(cat)currentCategory=cat;
+}
+function updateSourceUi(){
+  document.querySelectorAll(".catalogueSourceBtn").forEach(btn=>{
+    const active=btn.dataset.source===currentSource;
+    btn.classList.toggle("active",active);
+    btn.setAttribute("aria-selected",String(active));
+  });
+  if(catalogueTitle)catalogueTitle.textContent=sourceLabel(currentSource);
+  if(catalogueIntro)catalogueIntro.textContent=currentSource==="wholesale"
+    ?"Browse partner-supplied wholesale products. Prices shown are Biserry customer prices."
+    :"Browse Biserry-managed products and fresh essentials.";
+}
+function renderCategoryFilters(){
+  if(!categoryFilters)return;
+  const list=products.filter(p=>productSource(p)===currentSource);
+  const categories=[...new Set(list.map(p=>String(p.category||"other").toLowerCase()).filter(Boolean))]
+    .sort((a,b)=>categoryRank(a)-categoryRank(b)||categoryLabel(a).localeCompare(categoryLabel(b)));
+  if(currentCategory!=="all"&&!categories.includes(String(currentCategory).toLowerCase()))currentCategory="all";
+  categoryFilters.innerHTML=[{key:"all",label:"All"},...categories.map(key=>({key,label:categoryLabel(key)}))]
+    .map(item=>`<button class="filter ${currentCategory===item.key?"active":""}" data-category="${item.key}" type="button">${item.label}</button>`).join("");
+}
 function getSelectedQuantity(id){return selectedQuantities[id]||1}
 function availableVariants(product){return (product?.variants||[]).filter(v=>v.isActive!==false)}
 function getSelectedVariant(product){if(!product?.hasVariants)return null;const variants=availableVariants(product),vid=selectedVariants[product.id]||variants[0]?.id;return variants.find(v=>String(v.id)===String(vid))||variants[0]||null}
@@ -63,7 +93,7 @@ window.increaseProductQty=id=>{const p=products.find(x=>String(x.id)===String(id
 window.decreaseProductQty=id=>{selectedQuantities[id]=Math.max(1,getSelectedQuantity(id)-1);renderProducts();renderFeatured();if(String(activeModalProductId)===String(id))refreshProductModal()};
 window.toggleWishlist=id=>{wishlist=wishlist.includes(id)?wishlist.filter(x=>x!==id):[...wishlist,id];saveWishlist();renderProducts();renderFeatured();toast(wishlist.includes(id)?"Added to wishlist":"Removed from wishlist")};
 
-function productCard(p){const v=getSelectedVariant(p),q=getSelectedQuantity(p.id),price=v?Number(v.price||0):Number(p.price||0),stock=v?Number(v.stock||0):Number(p.stock||0),img=normalizeImageUrl(v?.imageUrl||p.imageUrl||p.image),tag=p.variantLabel?`${p.variantLabel}s`:p.hasVariants?"Options":p.category,wished=wishlist.includes(p.id),stockClass=stock<=Number(p.lowStockThreshold||5)?"stockText low":"stockText";const variantHtml=p.hasVariants&&availableVariants(p).length?`<div class="variantBox"><label for="variant-${p.id}">${p.variantLabel||"Size"}</label><select id="variant-${p.id}" aria-label="Choose ${p.variantLabel||"size"} for ${p.name}" onchange="selectVariant('${p.id}',this.value)">${availableVariants(p).map(x=>`<option value="${x.id}" ${v?.id===x.id?"selected":""}>${x.name} — ${Number(x.price)>1?formatNaira(Number(x.price)):"Price being confirmed"}</option>`).join("")}</select></div>`:"";return `<div class="card"><button class="productImage productImageButton" type="button" onclick="openProductModal('${p.id}')"><img src="${img}" alt="${p.name}" onerror="this.src='assets/logo.png'"><span class="imageHint">View</span></button><div class="cardBody"><div class="productBadges">${(p.isFeatured||p.featured)?'<span class="productBadge">Featured</span>':''}${stock<=Number(p.lowStockThreshold||5)&&stock>0?'<span class="productBadge">Low</span>':''}</div><div class="productMeta"><h3>${p.name}</h3><span class="categoryTag">${tag}</span></div><div class="ratingLine">★★★★★</div>${variantHtml}${!p.hasVariants&&p.packSize?`<p class="productPackSize">Size: ${p.packSize}</p>`:""}<p class="price">${price>1?formatNaira(price):"Price being confirmed"}</p><p class="${stockClass}">${stock>0?`Stock: ${stock}`:"Out of Stock"}</p><div class="quantityRow"><button class="qtyBtn" onclick="decreaseProductQty('${p.id}')" type="button">−</button><div class="qtyDisplay">${q}</div><button class="qtyBtn" onclick="increaseProductQty('${p.id}')" type="button">+</button></div><div class="productActionRow"><button class="wishlistBtn ${wished?'active':''}" onclick="toggleWishlist('${p.id}')" type="button">♥</button><button class="btn addBtn" onclick="addToCart('${p.id}')" type="button" ${stock<=0||price<=1?"disabled":""}>${price<=1?"Price unavailable":"🛒 Add"}</button></div></div></div>`}
+function productCard(p){const v=getSelectedVariant(p),q=getSelectedQuantity(p.id),price=v?Number(v.price||0):Number(p.price||0),stock=v?Number(v.stock||0):Number(p.stock||0),img=normalizeImageUrl(v?.imageUrl||p.imageUrl||p.image),tag=p.variantLabel?`${p.variantLabel}s`:p.hasVariants?"Options":p.category,wished=wishlist.includes(p.id),stockClass=stock<=Number(p.lowStockThreshold||5)?"stockText low":"stockText",source=productSource(p);const variantHtml=p.hasVariants&&availableVariants(p).length?`<div class="variantBox"><label for="variant-${p.id}">${p.variantLabel||"Size"}</label><select id="variant-${p.id}" aria-label="Choose ${p.variantLabel||"size"} for ${p.name}" onchange="selectVariant('${p.id}',this.value)">${availableVariants(p).map(x=>`<option value="${x.id}" ${v?.id===x.id?"selected":""}>${x.name} — ${Number(x.price)>1?formatNaira(Number(x.price)):"Price being confirmed"}</option>`).join("")}</select></div>`:"";return `<div class="card"><button class="productImage productImageButton" type="button" onclick="openProductModal('${p.id}')"><img src="${img}" alt="${p.name}" onerror="this.src='assets/logo.png'"><span class="imageHint">View</span></button><div class="cardBody"><div class="productBadges">${source==="wholesale"?'<span class="productBadge wholesaleBadge">Wholesale</span>':''}${(p.isFeatured||p.featured)?'<span class="productBadge">Featured</span>':''}${stock<=Number(p.lowStockThreshold||5)&&stock>0?'<span class="productBadge">Low</span>':''}</div><div class="productMeta"><h3>${p.name}</h3><span class="categoryTag">${tag}</span></div><div class="ratingLine">★★★★★</div>${variantHtml}${!p.hasVariants&&p.packSize?`<p class="productPackSize">Size: ${p.packSize}</p>`:""}<p class="price">${price>1?formatNaira(price):"Price being confirmed"}</p><p class="${stockClass}">${stock>0?`Stock: ${stock}`:"Out of Stock"}</p><div class="quantityRow"><button class="qtyBtn" onclick="decreaseProductQty('${p.id}')" type="button">−</button><div class="qtyDisplay">${q}</div><button class="qtyBtn" onclick="increaseProductQty('${p.id}')" type="button">+</button></div><div class="productActionRow"><button class="wishlistBtn ${wished?'active':''}" onclick="toggleWishlist('${p.id}')" type="button">♥</button><button class="btn addBtn" onclick="addToCart('${p.id}')" type="button" ${stock<=0||price<=1?"disabled":""}>${price<=1?"Price unavailable":"🛒 Add"}</button></div></div></div>`}
 function categoryRank(category){const i=CATEGORY_ORDER.indexOf(String(category||"").toLowerCase());return i<0?CATEGORY_ORDER.length:i}
 function categoryLabel(category){const key=String(category||"").toLowerCase();return CATEGORY_LABELS[key]||String(category||"Other").replace(/[-_]+/g," ").replace(/\b\w/g,m=>m.toUpperCase())}
 function dedupeProducts(list){
@@ -135,10 +165,11 @@ function productSearchText(p){
 }
 function getFiltered(){
   const term=normalizeSearch(searchInput?.value||"");
-  const source=term.length>=2&&Array.isArray(remoteSearchResults)?remoteSearchResults:products;
-  return source.filter(p=>{
+  const catalogue=term.length>=2&&Array.isArray(remoteSearchResults)?remoteSearchResults:products;
+  return catalogue.filter(p=>{
+    const sourceOk=Boolean(term)||productSource(p)===currentSource;
     const categoryOk=currentCategory==="all"||String(p.category||"").toLowerCase()===String(currentCategory).toLowerCase();
-    return categoryOk&&(!term||productSearchText(p).includes(term));
+    return sourceOk&&categoryOk&&(!term||productSearchText(p).includes(term));
   }).sort((a,b)=>categoryRank(a.category)-categoryRank(b.category)||categoryLabel(a.category).localeCompare(categoryLabel(b.category))||String(a.name||"").localeCompare(String(b.name||"")));
 }
 function groupedProductHtml(list){
@@ -155,12 +186,14 @@ function renderProducts(){
   if(filtered.length){
     productGrid.innerHTML=(currentCategory==="all"||term)?groupedProductHtml(filtered):filtered.map(productCard).join("");
   }else{
-    productGrid.innerHTML=`<div class="emptyState premiumEmpty"><strong>${term?`No match for “${term}”`:"No products found"}</strong><br><span>${term?"Check the spelling or try a shorter product name.":"Try another category."}</span></div>`;
+    const emptyTitle=term?`No match for “${term}”`:currentSource==="wholesale"?"Wholesale products are being connected":"No products found";
+    const emptyText=term?"Check the spelling or try a shorter product name.":currentSource==="wholesale"?"Products from our wholesale partner will appear here automatically once the supplier catalogue is connected.":"Try another category.";
+    productGrid.innerHTML=`<div class="emptyState premiumEmpty sourceEmptyState"><strong>${emptyTitle}</strong><br><span>${emptyText}</span></div>`;
   }
 }
 function renderFeatured(){if(!featuredGrid)return;const featured=products.filter(p=>p.isFeatured||p.featured).slice(0,8),display=(featured.length?featured:products).slice(0,8);featuredGrid.innerHTML=display.length?display.map(productCard).join(""):'<div class="emptyState">No featured products yet.</div>'}
 
-window.addToCart=id=>{const p=products.find(x=>String(x.id)===String(id));if(!p)return;const v=getSelectedVariant(p),q=getSelectedQuantity(id),cartId=v?`${p.id}__${v.id}`:p.id,price=v?Number(v.price||0):Number(p.price||0),stock=v?Number(v.stock||0):Number(p.stock||0),name=v?`${p.name} - ${v.name}`:p.name,img=normalizeImageUrl(v?.imageUrl||p.imageUrl||p.image);if(price<=1){alert("This product price is being confirmed. Please choose another item or contact Biserry.");return}const existing=cart.find(i=>String(i.cartId)===String(cartId));if(existing){if(stock&&existing.quantity+q>stock){alert("Cart quantity cannot exceed available stock.");return}existing.quantity+=q}else cart.push({cartId,productId:p.id,variantId:v?.id||null,name,price,stock,imageUrl:img,quantity:q});selectedQuantities[id]=1;saveCart();renderProducts();renderFeatured();renderCart();toast("Added to cart")};
+window.addToCart=id=>{const p=products.find(x=>String(x.id)===String(id));if(!p)return;const v=getSelectedVariant(p),q=getSelectedQuantity(id),cartId=v?`${p.id}__${v.id}`:p.id,price=v?Number(v.price||0):Number(p.price||0),stock=v?Number(v.stock||0):Number(p.stock||0),name=v?`${p.name} - ${v.name}`:p.name,img=normalizeImageUrl(v?.imageUrl||p.imageUrl||p.image);if(price<=1){alert("This product price is being confirmed. Please choose another item or contact Biserry.");return}const existing=cart.find(i=>String(i.cartId)===String(cartId));if(existing){if(stock&&existing.quantity+q>stock){alert("Cart quantity cannot exceed available stock.");return}existing.quantity+=q}else cart.push({cartId,productId:p.id,variantId:v?.id||null,name,price,stock,imageUrl:img,quantity:q,source:productSource(p),supplierId:p.supplierId||null,traceposProductId:p.traceposProductId||null});selectedQuantities[id]=1;saveCart();renderProducts();renderFeatured();renderCart();toast("Added to cart")};
 window.increaseCartQty=cid=>{const i=cart.find(x=>String(x.cartId)===String(cid));if(!i)return;if(i.stock&&i.quantity>=Number(i.stock)){alert("Quantity cannot exceed available stock.");return}i.quantity++;saveCart();renderCart()};
 window.decreaseCartQty=cid=>{const i=cart.find(x=>String(x.cartId)===String(cid));if(!i)return;i.quantity--;if(i.quantity<=0)cart=cart.filter(x=>String(x.cartId)!==String(cid));saveCart();renderCart()};
 window.removeFromCart=cid=>{cart=cart.filter(x=>String(x.cartId)!==String(cid));saveCart();renderCart()};
@@ -177,14 +210,34 @@ window.openProductModal=id=>{const viewed=products.find(x=>String(x.id)===String
 
 async function submitFarmersMarket(e){e.preventDefault();const data={customerName:document.getElementById("fmName").value.trim(),customerPhone:document.getElementById("fmPhone").value.trim(),deliveryAddress:document.getElementById("fmAddress").value.trim(),shoppingList:document.getElementById("fmList").value.trim(),budgetRange:document.getElementById("fmBudget").value.trim(),preferredDeliveryDate:document.getElementById("fmDate").value,notes:document.getElementById("fmNotes").value.trim(),status:"New",createdAt:serverTimestamp()};try{await addDoc(collection(db,"farmers_market_requests"),data);toast("Market list submitted");const msg=encodeURIComponent(`Farmers Market Request\nName: ${data.customerName}\nPhone: ${data.customerPhone}\nAddress: ${data.deliveryAddress}\nBudget: ${data.budgetRange}\nDate: ${data.preferredDeliveryDate}\nList: ${data.shoppingList}\nNotes: ${data.notes}`);const primary=`https://wa.me/${BUSINESS.whatsapp}?text=${msg}`,backup=`https://wa.me/${BUSINESS.backupWhatsapp}?text=${msg}`;const actions=document.getElementById("fmWhatsAppActions"),primaryLink=document.getElementById("fmPrimaryWhatsApp"),backupLink=document.getElementById("fmBackupWhatsApp");if(primaryLink)primaryLink.href=primary;if(backupLink)backupLink.href=backup;if(actions)actions.style.display="block";window.open(primary,"_blank","noopener");farmersMarketForm.reset()}catch(err){alert("Request failed: "+err.message)}}
 
-document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentCategory=b.dataset.category;renderProducts()}));searchInput?.addEventListener("input",()=>{
+document.querySelectorAll(".catalogueSourceBtn").forEach(btn=>btn.addEventListener("click",()=>{
+  currentSource=btn.dataset.source==="wholesale"?"wholesale":"fresh";
+  currentCategory="all";
+  remoteSearchResults=null;
+  if(searchInput)searchInput.value="";
+  updateSourceUi();
+  renderCategoryFilters();
+  renderProducts();
+  const url=new URL(location.href);
+  url.searchParams.set("source",currentSource);
+  url.searchParams.delete("category");
+  history.replaceState({}, "", url);
+}));
+categoryFilters?.addEventListener("click",event=>{
+  const b=event.target.closest(".filter");
+  if(!b||!categoryFilters.contains(b))return;
+  currentCategory=b.dataset.category||"all";
+  renderCategoryFilters();
+  renderProducts();
+});
+searchInput?.addEventListener("input",()=>{
   const term=normalizeSearch(searchInput.value);
   clearTimeout(searchTimer);
   if(term.length<2){
     activeSearchRequest++;
     remoteSearchResults=null;
     const status=document.getElementById("catalogueSearchStatus");
-    if(status)status.textContent=term?"Type at least 2 characters to search the full catalogue.":"Search by product name, category, size or SKU.";
+    if(status)status.textContent=term?"Type at least 2 characters to search all fresh and wholesale products.":"Search across fresh and wholesale products.";
     renderProducts();
     return;
   }
