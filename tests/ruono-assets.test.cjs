@@ -109,7 +109,7 @@ test('store keeps Ruono asset versioning and final script cache bust',()=>{
   assert.match(store,/RUONO_ASSET_VERSION = "20260927-b04"/);
   assert.match(store,/assets\/ruono-products\//);
   for(const page of ['index.html','shop.html','cart.html','checkout.html','farmers-market.html']){
-    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20260929-final/,page);
+    assert.match(fs.readFileSync(path.join(root,page),'utf8'),/js\/store\.js\?v=20261002-sources-v1/,page);
   }
 });
 

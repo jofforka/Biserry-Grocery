@@ -776,3 +776,61 @@ input,textarea,select,#searchInput,.search{width:100%;padding:12px 14px;border:1
   .catalogueCategoryHeader{padding-top:15px}
   .catalogueCategoryHeader span{font-size:17px}
 }
+
+
+/* v2026-10-02: Fresh + Wholesale catalogue source switch */
+.catalogueSourceSwitch{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin:0 0 18px;
+}
+.catalogueSourceBtn{
+  appearance:none;
+  width:100%;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--green);
+  border-radius:20px;
+  padding:16px 18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.catalogueSourceBtn:hover{transform:translateY(-2px)}
+.catalogueSourceBtn.active{
+  border-color:var(--green);
+  background:linear-gradient(135deg,#fff,#f0f8f2);
+  box-shadow:0 14px 34px rgba(15,79,43,.12);
+}
+.catalogueSourceBtn span:last-child{display:grid;gap:3px;min-width:0}
+.catalogueSourceBtn strong{font-size:16px;line-height:1.2}
+.catalogueSourceBtn small{font-size:12px;color:var(--muted);font-weight:700}
+.catalogueSourceIcon{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:var(--soft);
+  font-size:21px;
+}
+.wholesaleBadge{background:#eef2ff;color:#31448f}
+.sourceEmptyState{grid-column:1 / -1;padding:44px 20px}
+.sourceEmptyState strong{font-size:18px;color:var(--green)}
+.sourceEmptyState span{display:inline-block;max-width:620px;margin-top:7px;line-height:1.55}
+@media(max-width:680px){
+  .catalogueSourceSwitch{gap:9px}
+  .catalogueSourceBtn{padding:12px 11px;border-radius:16px;gap:8px}
+  .catalogueSourceIcon{width:36px;height:36px;flex-basis:36px;border-radius:12px;font-size:18px}
+  .catalogueSourceBtn strong{font-size:14px}
+  .catalogueSourceBtn small{font-size:10px}
+}
+@media(max-width:390px){
+  .catalogueSourceSwitch{grid-template-columns:1fr}
+}
